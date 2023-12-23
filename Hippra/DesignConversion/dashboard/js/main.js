@@ -54,6 +54,35 @@ const toggleSidebar = () => {
   userInfobox.classList.toggle("show", isExpanded);
 };
 
+// Sidebar Menu Active by url
+
+const sidebarMenu = document.querySelectorAll(".sidebar-menu ul li a");
+
+const activeSidebarMenu = () => {
+  const url = window.location.href;
+
+  sidebarMenu.forEach((item) => {
+    if (item.href === url) {
+      const iconSpan = item.querySelector(".sidebar-link-icon svg");
+      const svgPaths = iconSpan.querySelectorAll("path");
+
+      svgPaths.forEach((path) => {
+        path.setAttribute("stroke", "#1da39d");
+      });
+      item.classList.add("active");
+    } else {
+      const iconSpan = item.querySelector(".sidebar-link-icon svg");
+      const svgPaths = iconSpan.querySelectorAll("path");
+
+      svgPaths.forEach((path) => {
+        path.setAttribute("stroke", "#40454A");
+      });
+      item.classList.remove("active");
+    }
+  });
+};
+
+activeSidebarMenu();
 
 // Handle Outside Clicks
 const handleDocumentClick = (event) => {

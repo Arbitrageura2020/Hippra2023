@@ -58,7 +58,7 @@
   }
   
   .dashboard-case-create .create-case .form-case::placeholder {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 500;
     font-family: Roboto;
   }
@@ -136,6 +136,7 @@
     font-family: Roboto;
     font-size: 14px;
     font-weight: 400;
+    cursor: pointer;
     transition-property: all;
     transition-timing-function: ease-in-out;
     transition-duration: 150ms;
@@ -168,6 +169,11 @@
     font-size: 12px;
     font-weight: 500;
     color: var(--orange);
+  }
+
+  .dashboard-case-item .case-tags ul li a:hover {
+    background-color: var(--orange);
+    color: #ffffff;
   }
   
   .dashboard-case-item .case-item-tags ul li:not(:last-child) {
