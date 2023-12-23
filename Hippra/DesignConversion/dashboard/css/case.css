@@ -1,0 +1,416 @@
+/* Case */
+.case-layout {
+  position: relative;
+}
+
+.case-top {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.case-top-action {
+  position: relative;
+}
+
+.case-top-action a {
+  color: var(--green);
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.case-content {
+  position: relative;
+  padding: 0 55px;
+}
+
+.case-content-heading {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.case-content-heading h3 {
+  color: var(--darkBlue);
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-bottom: 5px;
+}
+.case-content-heading h4 {
+  color: var(--darkBlue);
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.case-content-meta {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2px solid #dddddd;
+  border-bottom: 2px solid #dddddd;
+  padding: 12px 0 12px 33px;
+  margin-bottom: 40px;
+}
+
+.case-profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  overflow: hidden;
+}
+
+.case-profile img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+.case-profile .case-profile-info h4 {
+  font-family: Roboto;
+  color: #2b2c34;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 22px;
+  text-transform: capitalize;
+}
+.case-profile .case-profile-info p {
+  font-family: Roboto;
+  color: #0e0e0e;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-transform: capitalize;
+}
+
+.case-content-date {
+  position: relative;
+}
+.case-content-info {
+  position: relative;
+}
+
+.case-content-date p,
+.case-content-info p {
+  color: #aaa;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.case-content-actions {
+  position: relative;
+  display: flex;
+  gap: 0 10px;
+}
+
+.case-content-actions button {
+  background-color: #ffffff;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
+.case-main-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 0 30px;
+}
+
+.case-main-content .case-main-left {
+  position: relative;
+  width: 35%;
+}
+
+.case-main-content .case-main-right {
+  position: relative;
+  width: 65%;
+}
+
+.case-patient {
+  position: relative;
+  background: #f6fbfb;
+  border-radius: 10px;
+  padding: 25px 30px;
+}
+
+.case-patient-info {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.case-patient-info h4 {
+  color: var(--green);
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin-bottom: 14px;
+}
+
+.case-patient-info ul {
+  list-style: none;
+}
+
+.case-patient-info ul li {
+  font-family: Roboto;
+  color: #000;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.case-patient-info ul li span {
+  font-weight: 600;
+}
+
+.case-patient-lab {
+  position: relative;
+  margin-bottom: 30px;
+  font-family: Roboto;
+}
+
+.case-patient-lab h6 {
+  color: var(--green);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.case-patient-lab p {
+  color: #aaaaaa;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+/* Tags */
+
+.case-patient-tags {
+  position: relative;
+}
+
+.case-patient-tags ul {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.case-patient-tags ul li a {
+  font-family: Roboto;
+  display: flex;
+  padding: 4px 8px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  background-color: #d9d9d9;
+  font-size: 12px;
+  font-weight: 500;
+  color: #000000;
+  margin-bottom: 8px;
+  text-decoration: none;
+}
+
+.case-patient-tags ul li a.active {
+  background-color: #88e7e2;
+}
+
+.case-patient-tags ul li:not(:last-child) {
+  margin-right: 5px;
+}
+
+/* Case Informations */
+
+.case-informations {
+  position: relative;
+}
+
+.case-informations:not(:last-child) {
+  margin-bottom: 30px;
+}
+
+.case-info-title {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.case-info-title h4 {
+  color: var(--green);
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.case-info-title hr {
+  margin-top: 8px;
+  height: 3px;
+  border: none;
+  background-color: var(--green);
+}
+
+.case-info-desc {
+  font-family: Roboto;
+  color: #aaa;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+}
+
+/* Case Tabs */
+
+.case-tabs {
+  padding-right: 55px;
+  padding-left: 55px;
+}
+
+.case-tab-top {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  margin-bottom: 25px;
+}
+
+.case-tab-top .case-tab-left {
+  position: relative;
+  width: 35%;
+}
+
+.case-tab-top .case-tab-right {
+  position: relative;
+  width: 65%;
+}
+
+.case-tab-btn {
+  position: relative;
+  display: inline-flex;
+  padding: 5px 20px;
+  width: 100%;
+  outline: none;
+  border: none;
+  border-radius: 8px 8px 0px 0px;
+  color: var(--green);
+  background-color: #ffffff;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  cursor: pointer;
+}
+.case-tab-btn.active {
+  background-color: var(--green);
+  color: #ffffff;
+}
+
+.case-tab-content {
+  position: relative;
+}
+
+.case-tab-content p {
+  color: #aaa;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.tab-case-one {
+  display: none;
+}
+
+.tab-case-two {
+  display: none;
+}
+
+.tab-case-one.active {
+  display: block;
+}
+
+.tab-case-two.active {
+  display: block;
+}
+
+/********************* Orange Theme *********************/
+
+.main-layout.orange .case-patient {
+  background-color: #fff5ef;
+}
+
+.main-layout.orange .case-patient-info h4 {
+  color: var(--orange);
+}
+
+.main-layout.orange .case-info-title h4 {
+  color: var(--orange);
+}
+
+.main-layout.orange .case-patient-lab h6 {
+  color: var(--orange);
+}
+
+.main-layout.orange .case-patient-tags ul li a.active {
+  background-color: #ffc6c6;
+}
+
+.main-layout.orange .case-info-title hr {
+  background-color: var(--orange);
+}
+
+.main-layout.orange .case-tab-btn {
+  color: var(--orange);
+}
+
+.main-layout.orange .case-tab-btn.active {
+  background-color: var(--orange);
+  color: #ffffff;
+}
+
+/************** Responsive **************/
+
+@media only screen and (max-width: 1280px) {
+  .case-content {
+    padding: 0 25px;
+  }
+
+  .case-content-heading h3 {
+    font-size: 26px;
+  }
+
+  .case-content-heading h4 {
+    font-size: 16px;
+  }
+
+  .case-content-meta {
+    padding: 12px 0 12px 20px;
+    margin-bottom: 30px;
+  }
+
+  .case-main-content {
+    gap: 0 20px;
+  }
+  .case-patient {
+    padding: 20px;
+  }
+
+  .case-content-date p,
+  .case-content-info p {
+    font-size: 14px;
+  }
+}

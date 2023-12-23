@@ -1,0 +1,114 @@
+/* Post */
+
+.post-layout {
+  position: relative;
+  width: 100%;
+  height: 100%j;
+}
+
+.post-layout .post-head-left {
+  position: relative;
+  width: 35%;
+}
+
+.post-layout .post-head-right {
+  position: relative;
+  width: 65%;
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0 10px;
+}
+
+.post-header > * {
+  display: flex;
+  justify-content: space-between;
+}
+
+.post-header .post-tab {
+  position: relative;
+  flex: 1;
+}
+
+.post-header .post-tab button {
+  position: relative;
+  display: inline-flex;
+  padding: 8px 20px;
+  width: 100%;
+  outline: none;
+  border: none;
+  border-radius: 8px 8px 0px 0px;
+  color: #ffffff;
+  background-color: #d9d9d9;
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  cursor: pointer;
+}
+
+.post-header .post-tab button.active {
+  background-color: var(--green);
+}
+
+.post-layout .post-tab-content {
+  display: none;
+}
+
+.post-layout .post-tab-content.active {
+  display: flex;
+}
+
+/* Post Content */
+
+.post-tab-content {
+  position: relative;
+  display: flex;
+  align-items: start;
+  gap: 0 30px;
+  width: 100%;
+  height: 100%;
+}
+
+.post-tab-content .create-content {
+  position: relative;
+  width: 35%;
+}
+
+.post-tab-content .content-left {
+  position: relative;
+  width: 35%;
+}
+
+.post-tab-content .content-right {
+  position: relative;
+  width: 65%;
+}
+
+.post-tab-content .content-form {
+  border-radius: 12px;
+  border: 1px solid var(--green);
+  padding: 14px;
+}
+
+/* Orange Theme */
+
+.main-layout.orange .post-tab button.active {
+  background-color: var(--orange);
+}
+
+.main-layout.orange .post-tab-content .content-form {
+  border-color: var(--orange);
+}
+
+/************** Responsive **************/
+
+@media only screen and (max-width: 1280px) {
+  .post-header .post-tab button {
+    padding: 10px 8px;
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Hipraa</title>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+
+  <!-- Globle CSS (Required) -->
+  <link rel="stylesheet" href="./css/main.css">
+
+  <!-- Posts CSS -->
+  <link rel="stylesheet" href="./css/post.css">
+</head>
+
+<body>
+  <!-- Sidebar Start -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-profile">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
+        <div class="sidebar-profile-info">
+          <h4>Mary Kate</h4>
+          <p>Nurse Practitioner</p>
+        </div>
+      </div>
+      <div class="sidebar-menu">
+        <ul>
+          <li>
+            <a href="/dashboard" class="active">
+              <span class="sidebar-link-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7 13V18C7 18.5523 6.55228 19 6 19H2C1.44772 19 1 18.5523 1 18V9.03545C1 8.4213 1.28216 7.8412 1.76531 7.46206L8.76606 1.96832C9.49057 1.39977 10.5097 1.39947 11.2345 1.96759L18.2338 7.45349C18.7175 7.8326 19 8.41304 19 9.0276V18C19 18.5523 18.5524 19 18.0001 19H13.9987C13.4464 19 13 18.5523 13 18V13C13 12.4477 12.5523 12 12 12H8C7.44772 12 7 12.4477 7 13Z" stroke="#039F98" stroke-width="2" stroke-linecap="round" />
+                </svg> </span>
+              <span class="sidebar-link-txt">Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="">
+              <span class="sidebar-link-icon">
+                <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9.92222 1.96436C6.23004 1.96436 3.22946 4.6383 3.22946 7.92854V10.8013C3.22946 11.4077 2.93944 12.3321 2.59364 12.849L1.31087 14.7476C0.518893 15.9206 1.06547 17.2228 2.51556 17.6601C7.32319 19.0915 12.5101 19.0915 17.3177 17.6601C18.6674 17.2625 19.2586 15.8411 18.5224 14.7476L17.3177 12.849C16.9054 12.1794 16.615 11.4087 16.615 10.8013V8.23368C16.6556 7.92776 16.6315 7.21066 16.2104 6.7896" stroke="#40454A" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" />
+                  <path d="M11.9846 2.25248C11.6388 2.16302 11.2819 2.09343 10.9138 2.05367C9.84294 1.93439 8.81672 2.00397 7.85742 2.25248C8.1809 1.5169 8.98403 1 9.92102 1C10.858 1 11.6611 1.5169 11.9846 2.25248Z" stroke="#40454A" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M13.2669 18.0181C13.2669 19.6582 11.7611 21.0002 9.92056 21.0002C9.00588 21.0002 8.15814 20.6622 7.55582 20.1254C6.95347 19.5886 6.57422 18.8332 6.57422 18.0181" stroke="#40454A" stroke-width="1.5" stroke-miterlimit="10" />
+                  <path d="M15.0254 7.03778C16.4061 7.03778 17.5254 5.92184 17.5254 4.54526C17.5254 3.16868 16.4061 2.05273 15.0254 2.05273C13.6447 2.05273 12.5254 3.16868 12.5254 4.54526C12.5254 5.92184 13.6447 7.03778 15.0254 7.03778Z" stroke="#40454A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class="sidebar-link-txt">Notifications</span>
+            </a>
+          </li>
+          <li>
+            <a href="dashboard/post.html">
+              <span class="sidebar-link-icon">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5.16652 2.26957C6.89323 1.11581 8.9233 0.5 11 0.5C13.7848 0.5 16.4555 1.60625 18.4246 3.57538C20.3938 5.54451 21.5 8.21523 21.5 11C21.5 13.0767 20.8842 15.1068 19.7304 16.8335C18.5767 18.5602 16.9368 19.906 15.0182 20.7007C13.0996 21.4955 10.9884 21.7034 8.95156 21.2982C6.91476 20.8931 5.04383 19.8931 3.57538 18.4246C2.10693 16.9562 1.1069 15.0852 0.701759 13.0484C0.296615 11.0116 0.50455 8.90045 1.29927 6.98182C2.09399 5.0632 3.4398 3.42332 5.16652 2.26957ZM5.48399 19.2553C7.11673 20.3463 9.03632 20.9286 11 20.9286C13.6332 20.9286 16.1586 19.8825 18.0206 18.0206C19.8825 16.1586 20.9286 13.6332 20.9286 11C20.9286 9.03631 20.3463 7.11673 19.2553 5.48398C18.1643 3.85124 16.6137 2.57867 14.7995 1.8272C12.9853 1.07573 10.989 0.879107 9.06304 1.2622C7.13708 1.6453 5.36798 2.5909 3.97944 3.97944C2.59091 5.36797 1.6453 7.13708 1.26221 9.06303C0.879112 10.989 1.07573 12.9853 1.8272 14.7995C2.57867 16.6137 3.85124 18.1643 5.48399 19.2553Z" fill="#40454A" stroke="#40454A" />
+                  <path d="M11.7868 10.2144V4.71443C11.7868 4.50604 11.704 4.30619 11.5567 4.15884C11.4093 4.01149 11.2095 3.92871 11.0011 3.92871C10.7927 3.92871 10.5929 4.01149 10.4455 4.15884C10.2982 4.30619 10.2154 4.50604 10.2154 4.71443V10.2144H4.7154C4.50702 10.2144 4.30717 10.2972 4.15982 10.4446C4.01247 10.5919 3.92969 10.7918 3.92969 11.0001C3.92969 11.2085 4.01247 11.4084 4.15982 11.5557C4.30717 11.7031 4.50702 11.7859 4.7154 11.7859H10.2154V17.2859C10.2154 17.4942 10.2982 17.6941 10.4455 17.8414C10.5929 17.9888 10.7927 18.0716 11.0011 18.0716C11.2095 18.0716 11.4093 17.9888 11.5567 17.8414C11.704 17.6941 11.7868 17.4942 11.7868 17.2859V11.7859H17.2868C17.4952 11.7859 17.6951 11.7031 17.8424 11.5557C17.9898 11.4084 18.0725 11.2085 18.0725 11.0001C18.0725 10.7918 17.9898 10.5919 17.8424 10.4446C17.6951 10.2972 17.4952 10.2144 17.2868 10.2144H11.7868Z" fill="#40454A" />
+                </svg>
+              </span>
+              <span class="sidebar-link-txt">New Posts</span>
+            </a>
+          </li>
+          <li>
+            <a href="">
+              <span class="sidebar-link-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7.74671 2.72652C8.39366 0.424492 11.6063 0.424493 12.2533 2.72652C12.6003 3.9614 13.8497 4.69387 15.0763 4.38164C17.363 3.79957 18.9694 6.62492 17.3296 8.34489C16.45 9.26753 16.45 10.7325 17.3296 11.6551C18.9694 13.3751 17.363 16.2004 15.0763 15.6184C13.8497 15.3061 12.6003 16.0386 12.2533 17.2735C11.6063 19.5755 8.39366 19.5755 7.74671 17.2735C7.39966 16.0386 6.15033 15.3061 4.92368 15.6184C2.63698 16.2004 1.03064 13.3751 2.67039 11.6551C3.54999 10.7325 3.54999 9.26753 2.67039 8.34489C1.03064 6.62492 2.63698 3.79957 4.92368 4.38164C6.15033 4.69387 7.39966 3.9614 7.74671 2.72652Z" stroke="#40454A" stroke-width="1.5" />
+                  <path d="M13 10C13 11.6569 11.6569 13 10 13C8.34315 13 7 11.6569 7 10C7 8.34315 8.34315 7 10 7C11.6569 7 13 8.34315 13 10Z" stroke="#40454A" stroke-width="1.5" />
+                </svg>
+              </span>
+              <span class="sidebar-link-txt">Settings</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Sidebar Expand & Collapse -->
+    <div class="sidebar-bot">
+      <button id="sidebar-btn" class="sidebar-btn">
+        <img src="./img/icons/expand.svg" alt="">
+      </button>
+    </div>
+
+  </aside>
+  <!-- Sidebar End -->
+  <!-- Main Content Start -->
+  <main class="main">
+    <!-- Main Navigation Start -->
+    <nav class="nav">
+      <div class="container">
+        <div class="nav-inner">
+          <!-- Nav Logo -->
+          <div class="nav-logo">
+            <img src="./img/logo.png" alt="">
+          </div>
+          <!-- Nav Search -->
+          <div class="nav-search">
+            <form action="#">
+              <div class="nav-search-box">
+                <div class="nav-search-bar">
+                  <!-- Search Input -->
+                  <input id="nav-search" type="search" name="" placeholder="Search">
+                  <!-- Search Dropdown -->
+                  <div id="search-dropdown" class="nav-search-dropdown">
+                    <div class="search-dropdown-inner">
+                      <div class="recent-search">
+                        <ul>
+                          <!-- Recent Search Loop Here -->
+                          <li>
+                            <a href=""><img src="./img/icons/search.svg" alt="" /> <span> recent search topic 1recent search topic 1</span></a>
+                          </li>
+                          <li>
+                            <a href=""><img src="./img/icons/search.svg" alt="" /> <span> recent search topic 1recent search topic 2</span></a>
+                          </li>
+                          <li>
+                            <a href=""><img src="./img/icons/search.svg" alt="" /> <span> recent search topic 1recent search topic 3</span></a>
+                          </li>
+                        </ul>
+                        <hr>
+                      </div>
+                      <!-- Ask Topics -->
+                      <div class="ask-topics">
+                        <div class="search-dropdown-title">
+                          <h4>Ask-4-Help Cases Found:</h4>
+                        </div>
+                        <div class="search-dropdown-list">
+                          <!-- Ask-4 Case Loop Here -->
+                          <div class="search-dropdown-item">
+                            <div class="dropdown-item-img">
+                              <img src="" alt="">
+                            </div>
+                            <div class="dropdown-item-info">
+                              <a href="#">Acute loss of taste after fever?</a>
+                              <p>Ask-4-Help</p>
+                            </div>
+                          </div>
+                          <div class="search-dropdown-item">
+                            <div class="dropdown-item-img">
+                              <img src="" alt="">
+                            </div>
+                            <div class="dropdown-item-info">
+                              <a href="#">Acute loss of taste after fever?</a>
+                              <p>Ask-4-Help</p>
+                            </div>
+                          </div>
+                          <div class="search-dropdown-item">
+                            <div class="dropdown-item-img">
+                              <img src="" alt="">
+                            </div>
+                            <div class="dropdown-item-info">
+                              <a href="#">Acute loss of taste after fever?</a>
+                              <p>Ask-4-Help</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- Knowledge Cases -->
+                      <div class="knowledge-cases">
+                        <div class="search-dropdown-title">
+                          <h4>Clinical Knowledge Cases Found:</h4>
+                        </div>
+                        <div class="search-dropdown-list">
+                          <!-- Knowledge Case Loop Here -->
+                          <div class="search-dropdown-item orange">
+                            <div class="dropdown-item-img">
+                              <img src="./img/icons/knowledge.svg" alt="">
+                            </div>
+                            <div class="dropdown-item-info">
+                              <a href="#">Acute loss of taste after fever?</a>
+                              <p>Ask-4-Help</p>
+                            </div>
+                          </div>
+                          <div class="search-dropdown-item orange">
+                            <div class="dropdown-item-img">
+                              <img src="./img/icons/knowledge.svg" alt="">
+                            </div>
+                            <div class="dropdown-item-info orange">
+                              <a href="#">Acute loss of taste after fever?</a>
+                              <p>Ask-4-Help</p>
+                            </div>
+                          </div>
+                          <div class="search-dropdown-item orange">
+                            <div class="dropdown-item-img">
+                              <img src="./img/icons/knowledge.svg" alt="">
+                            </div>
+                            <div class="dropdown-item-info">
+                              <a href="#">Acute loss of taste after fever?</a>
+                              <p>Ask-4-Help</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Search Filter -->
+                <div class="nav-search-filter">
+                  <!-- Search Filter Button -->
+                  <button id="search-filter" type="button"><img id="search-filter-icon" src="./img/icons/search-settings.svg" alt="search"></button>
+                  <!-- Search Filter Box -->
+                  <div id="search-filter-box" class="search-filter-box">
+                    <div class="filter-box-inner">
+                      <div class="form-group search-filter-group">
+                        <label for="">Category:</label>
+                        <div class="form-select-wrapper">
+                          <select class="form-select" name="">
+                            <option value="" selected hidden>Select</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                          </select>
+                          <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                      </div>
+                      <div class="form-group search-filter-group">
+                        <label for="">Tags:</label>
+                        <div class="form-select-wrapper mini">
+                          <select class="form-select tag" name="">
+                            <option value="" selected hidden>All Tags</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                          </select>
+                          <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                      </div>
+                      <div class="form-group search-filter-group">
+                        <label for="" class="search-label">Priority:</label>
+                        <div class="form-select-wrapper">
+                          <select class="form-select" name="">
+                            <option value="" selected hidden>Select</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                          </select>
+                          <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                      </div>
+                      <div class="form-group search-filter-group">
+                        <label for="" class="search-label">Time:</label>
+                        <div class="form-select-wrapper">
+                          <select class="form-select" name="">
+                            <option value="" selected hidden>Select</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                          </select>
+                          <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                      </div>
+                      <div class="form-group search-filter-group checkbox">
+                        <label for="checkbox" class="text">Show closed cases</label>
+                        <input class="form-checkbox" type="checkbox" id="checkbox" value="red" />
+                        <label for="checkbox" class="custom-checkbox"></label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <!-- Nav Control -->
+          <div class="nav-control">
+            <div class="nav-notification">
+              <img src="./img/icons/bell.svg" alt="">
+            </div>
+            <div class="nav-profile">
+              <button class="profile-btn">
+                <img class="profile-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
+                <img class="profile-icon" src="./img/icons/chevron-down.svg" alt="">
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      </div>
+    </nav>
+    <!-- Main Navigation Start -->
+
+    <!-- Main Content -->
+    <!-- Add the "orange" class to the "main-layout" to apply the orange theme. -->
+    <div class="main-layout">
+      <div class="container">
+        <div class="post-layout">
+          <!-- Tabs -->
+          <div class="post-header">
+            <div class="post-head-left">
+              <div class="post-tab">
+                <button class="post-tab-btn " data-target="post-ask-4-content">
+                  ASK-4-HELP CASES
+                </button>
+              </div>
+            </div>
+            <div class="post-head-right">
+              <div class="post-tab">
+                <button class="post-tab-btn  active" data-target="post-clinical-content" class="active">
+                  CLINICAL KNOWLEDGE SHARING
+                </button>
+              </div>
+
+              <div class="heading-actions">
+                <h4>Sort By View:</h4>
+                <button class="btn btn-md btn-recent btn-roboto">Recent</button>
+                <button class="btn btn-md btn-orange-outline btn-roboto">Trending</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ask 4 -->
+          <div id="post-ask-4-content" class="post-tab-content">
+            <div class="content-left">
+              <!--Ask 4 Form -->
+              <section class="dashboard-content">
+                <div class="content-form">
+                  <form action="" method="post">
+                    <div class="form-group">
+                      <label for="">Title</label>
+                      <input class="form-control" type="text" placeholder="Title">
+                    </div>
+                    <div class="form-group">
+                      <label for="">Description</label>
+                      <textarea class="form-control textarea" placeholder="Description"> </textarea>
+                    </div>
+
+                    <!-- Multi Mini Inputs -->
+                    <div class="form-group multi">
+                      <label for="">Patient Information</label>
+                      <div class="form-multi-inputs">
+                        <input class="form-control mini" type="text" placeholder="Age">
+                        <input class="form-control mini" type="text" placeholder="Race">
+                        <input class="form-control mini" type="text" placeholder="Gender">
+                        <input class="form-control mini" type="text" placeholder="Ethnicity">
+                      </div>
+                      <div class="form-multi-select">
+                        <div class="form-select-wrapper">
+                          <select class="form-select mini" name="">
+                            <option value="" selected hidden>Category</option>
+                            <option value="option1">Diagnostics</option>
+                            <option value="option2">Medicine</option>
+                            <option value="option3">Surgery</option>
+                          </select>
+                          <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                        <div class="form-select-wrapper">
+                          <select class="form-select mini" name="">
+                            <option value="" selected hidden>Medical Specialty</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                          </select>
+                          <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="">Case Information</label>
+                      <input class="form-control" type="text" placeholder="Lab Values">
+                    </div>
+                  </form>
+                </div>
+              </section>
+            </div>
+            <div class="content-right">
+              <section class="dashboard-content">
+                <div class="main-articles">
+                  <!-- Clinical Knowledge Loop Here -->
+                  <div class="main-article-item">
+                    <div class="article-date">
+                      <p>Just now</p>
+                    </div>
+                    <div class="article-top">
+                      <div class="article-caption">
+                         <a href="#">Spontaneous pneumomediastinum in COVID-19</a>
+                      </div>
+                      <div class="article-actions">
+                        <button class="article-action-btn">
+                          <img src="./img/icons/message-orange.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/bookmark-orange.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/three-dots-orange.svg" alt="">
+                        </button>
+                      </div>
+                    </div>
+                    <div class="article-content">
+                      <p>A 49-year-old man presented to the emergency room with 3 days of increasing cough and shortness of breath, both at rest and with minimal exertion, associated with decreased appetite and anosmia. He denied fevers, chills, chest pains, nausea or vomiting. He did suspect recent coronavirus exposure...</p>
+                    </div>
+                    <div class="article-bot">
+                      <div class="article-author"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
+                        <div class="article-author-info">
+                          <h6>Emma Rye</h6>
+                          <p>Disease Speacialist</p>
+                        </div>
+                      </div>
+                      <div class="article-bot-actions">
+                        <a href=""><img src="./img/icons/arrow-right-orange.svg" alt=""></a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="main-article-item">
+                    <div class="article-date">
+                      <p>Just now</p>
+                    </div>
+                    <div class="article-top">
+                      <div class="article-caption">
+                         <a href="#">Spontaneous pneumomediastinum in COVID-19</a>
+                      </div>
+                      <div class="article-actions">
+                        <button class="article-action-btn">
+                          <img src="./img/icons/message-orange.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/bookmark-orange.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/three-dots-orange.svg" alt="">
+                        </button>
+                      </div>
+                    </div>
+                    <div class="article-content">
+                      <p>A 49-year-old man presented to the emergency room with 3 days of increasing cough and shortness of breath, both at rest and with minimal exertion, associated with decreased appetite and anosmia. He denied fevers, chills, chest pains, nausea or vomiting. He did suspect recent coronavirus exposure...</p>
+                    </div>
+                    <div class="article-bot">
+                      <div class="article-author"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
+                        <div class="article-author-info">
+                          <h6>Emma Rye</h6>
+                          <p>Disease Speacialist</p>
+                        </div>
+                      </div>
+                      <div class="article-bot-actions">
+                        <a href=""><img src="./img/icons/arrow-right-orange.svg" alt=""></a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="main-article-item">
+                    <div class="article-date">
+                      <p>Just now</p>
+                    </div>
+                    <div class="article-top">
+                      <div class="article-caption">
+                         <a href="#">Spontaneous pneumomediastinum in COVID-19</a>
+                      </div>
+                      <div class="article-actions">
+                        <button class="article-action-btn">
+                          <img src="./img/icons/message-orange.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/bookmark-orange.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/three-dots-orange.svg" alt="">
+                        </button>
+                      </div>
+                    </div>
+                    <div class="article-content">
+                      <p>A 49-year-old man presented to the emergency room with 3 days of increasing cough and shortness of breath, both at rest and with minimal exertion, associated with decreased appetite and anosmia. He denied fevers, chills, chest pains, nausea or vomiting. He did suspect recent coronavirus exposure...</p>
+                    </div>
+                    <div class="article-bot">
+                      <div class="article-author"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
+                        <div class="article-author-info">
+                          <h6>Emma Rye</h6>
+                          <p>Disease Speacialist</p>
+                        </div>
+                      </div>
+                      <div class="article-bot-actions">
+                        <a href=""><img src="./img/icons/arrow-right-orange.svg" alt=""></a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="main-article-item">
+                    <div class="article-date">
+                      <p>Just now</p>
+                    </div>
+                    <div class="article-top">
+                      <div class="article-caption">
+                         <a href="#">Spontaneous pneumomediastinum in COVID-19</a>
+                      </div>
+                      <div class="article-actions">
+                        <button class="article-action-btn">
+                          <img src="./img/icons/message-orange.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/bookmark-orange.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/three-dots-orange.svg" alt="">
+                        </button>
+                      </div>
+                    </div>
+                    <div class="article-content">
+                      <p>A 49-year-old man presented to the emergency room with 3 days of increasing cough and shortness of breath, both at rest and with minimal exertion, associated with decreased appetite and anosmia. He denied fevers, chills, chest pains, nausea or vomiting. He did suspect recent coronavirus exposure...</p>
+                    </div>
+                    <div class="article-bot">
+                      <div class="article-author"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
+                        <div class="article-author-info">
+                          <h6>Emma Rye</h6>
+                          <p>Disease Speacialist</p>
+                        </div>
+                      </div>
+                      <div class="article-bot-actions">
+                        <a href=""><img src="./img/icons/arrow-right-orange.svg" alt=""></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+            </div>
+          </div>
+
+
+          <div id="post-clinical-content" class="post-tab-content  active">
+            <div class="content-left">
+              <!-- Clinical Knowledge Form -->
+              <section class="dashboard-content">
+                <div class="content-form">
+                  <form action="" method="post">
+                    <div class="form-group">
+                      <label for="">Title</label>
+                      <input class="form-control" type="text" placeholder="Title">
+                    </div>
+                    <div class="form-group">
+                      <label for="">Description</label>
+                      <textarea class="form-control textarea" placeholder="Description"> </textarea>
+                    </div>
+
+                    <!-- Multi Mini Inputs -->
+                    <div class="form-group multi">
+                      <label for="">Patient Information</label>
+                      <div class="form-multi-inputs">
+                        <input class="form-control mini" type="text" placeholder="Age">
+                        <input class="form-control mini" type="text" placeholder="Race">
+                        <input class="form-control mini" type="text" placeholder="Gender">
+                        <input class="form-control mini" type="text" placeholder="Ethnicity">
+                      </div>
+                      <div class="form-multi-select">
+                        <div class="form-select-wrapper">
+                          <select class="form-select mini" name="">
+                            <option value="" selected hidden>Category</option>
+                            <option value="option1">Diagnostics</option>
+                            <option value="option2">Medicine</option>
+                            <option value="option3">Surgery</option>
+                          </select>
+                          <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                        <div class="form-select-wrapper">
+                          <select class="form-select mini" name="">
+                            <option value="" selected hidden>Medical Specialty</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                          </select>
+                          <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="">Case Information</label>
+                      <input class="form-control" type="text" placeholder="Lab Values">
+                    </div>
+                  </form>
+                </div>
+              </section>
+
+            </div>
+            <!-- Clinical Knowledge -->
+            <div class="content-right">
+              <section class="dashboard-content">
+                <div class="main-articles">
+                  <!-- Clinical Knowledge Loop Here -->
+                  <div class="main-article-item">
+                    <div class="article-date">
+                      <p>Just now</p>
+                    </div>
+                    <div class="article-top">
+                      <div class="article-caption">
+                         <a href="#">Spontaneous pneumomediastinum in COVID-19</a>
+                      </div>
+                      <div class="article-actions">
+                        <button class="article-action-btn">
+                          <img src="./img/icons/message-green.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/bookmark-green.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/three-dots-green.svg" alt="">
+                        </button>
+                      </div>
+                    </div>
+                    <div class="article-content">
+                      <p>A 49-year-old man presented to the emergency room with 3 days of increasing cough and shortness of breath, both at rest and with minimal exertion, associated with decreased appetite and anosmia. He denied fevers, chills, chest pains, nausea or vomiting. He did suspect recent coronavirus exposure...</p>
+                    </div>
+                    <div class="article-bot">
+                      <div class="article-author"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
+                        <div class="article-author-info">
+                          <h6>Emma Rye</h6>
+                          <p>Disease Speacialist</p>
+                        </div>
+                      </div>
+                      <div class="article-bot-actions">
+                        <a href=""><img src="./img/icons/arrow-right-green.svg" alt=""></a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="main-article-item">
+                    <div class="article-date">
+                      <p>Just now</p>
+                    </div>
+                    <div class="article-top">
+                      <div class="article-caption">
+                         <a href="#">Spontaneous pneumomediastinum in COVID-19</a>
+                      </div>
+                      <div class="article-actions">
+                        <button class="article-action-btn">
+                          <img src="./img/icons/message-green.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/message-green.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/bookmark-green.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/three-dots-green.svg" alt="">
+                        </button>
+                      </div>
+                    </div>
+                    <div class="article-content">
+                      <p>A 49-year-old man presented to the emergency room with 3 days of increasing cough and shortness of breath, both at rest and with minimal exertion, associated with decreased appetite and anosmia. He denied fevers, chills, chest pains, nausea or vomiting. He did suspect recent coronavirus exposure...</p>
+                    </div>
+                    <div class="article-bot">
+                      <div class="article-author"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
+                        <div class="article-author-info">
+                          <h6>Emma Rye</h6>
+                          <p>Disease Speacialist</p>
+                        </div>
+                      </div>
+                      <div class="article-bot-actions">
+                        <a href=""><img src="./img/icons/arrow-right-green.svg" alt=""></a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="main-article-item">
+                    <div class="article-date">
+                      <p>Just now</p>
+                    </div>
+                    <div class="article-top">
+                      <div class="article-caption">
+                         <a href="#">Spontaneous pneumomediastinum in COVID-19</a>
+                      </div>
+                      <div class="article-actions">
+                        <button class="article-action-btn">
+                          <img src="./img/icons/message-green.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/bookmark-green.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/three-dots-green.svg" alt="">
+                        </button>
+                      </div>
+                    </div>
+                    <div class="article-content">
+                      <p>A 49-year-old man presented to the emergency room with 3 days of increasing cough and shortness of breath, both at rest and with minimal exertion, associated with decreased appetite and anosmia. He denied fevers, chills, chest pains, nausea or vomiting. He did suspect recent coronavirus exposure...</p>
+                    </div>
+                    <div class="article-bot">
+                      <div class="article-author"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
+                        <div class="article-author-info">
+                          <h6>Emma Rye</h6>
+                          <p>Disease Speacialist</p>
+                        </div>
+                      </div>
+                      <div class="article-bot-actions">
+                        <a href=""><img src="./img/icons/arrow-right-green.svg" alt=""></a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="main-article-item">
+                    <div class="article-date">
+                      <p>Just now</p>
+                    </div>
+                    <div class="article-top">
+                      <div class="article-caption">
+                         <a href="#">Spontaneous pneumomediastinum in COVID-19</a>
+                      </div>
+                      <div class="article-actions">
+                        <button class="article-action-btn">
+                          <img src="./img/icons/message-green.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/bookmark-green.svg" alt="">
+                        </button>
+                        <button class="article-action-btn">
+                          <img src="./img/icons/three-dots-green.svg" alt="">
+                        </button>
+                      </div>
+                    </div>
+                    <div class="article-content">
+                      <p>A 49-year-old man presented to the emergency room with 3 days of increasing cough and shortness of breath, both at rest and with minimal exertion, associated with decreased appetite and anosmia. He denied fevers, chills, chest pains, nausea or vomiting. He did suspect recent coronavirus exposure...</p>
+                    </div>
+                    <div class="article-bot">
+                      <div class="article-author"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
+                        <div class="article-author-info">
+                          <h6>Emma Rye</h6>
+                          <p>Disease Speacialist</p>
+                        </div>
+                      </div>
+                      <div class="article-bot-actions">
+                        <a href=""><img src="./img/icons/arrow-right-green.svg" alt=""></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+  <!-- Main Content End -->
+  <script src="./js/main.js"></script>
+  <script src="./js/post.js"></script>
+</body>
+
+</html>
