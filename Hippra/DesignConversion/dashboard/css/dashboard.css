@@ -58,7 +58,7 @@
   }
   
   .dashboard-case-create .create-case .form-case::placeholder {
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 500;
     font-family: Roboto;
   }
@@ -166,7 +166,7 @@
     align-items: center;
     border-radius: 20px;
     background-color: #f4f4f4;
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 500;
     color: var(--orange);
   }

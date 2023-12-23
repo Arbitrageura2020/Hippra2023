@@ -14,7 +14,7 @@
 
 .case-top-action a {
   color: var(--green);
-  font-size: 18px;
+  font-size: 1.125rem;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -32,7 +32,7 @@
 
 .case-content-heading h3 {
   color: var(--darkBlue);
-  font-size: 30px;
+  font-size: 1.875rem;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
@@ -40,7 +40,7 @@
 }
 .case-content-heading h4 {
   color: var(--darkBlue);
-  font-size: 20px;
+  font-size: 1.25rem;
   font-style: italic;
   font-weight: 600;
   line-height: normal;
@@ -75,7 +75,7 @@
 .case-profile .case-profile-info h4 {
   font-family: Roboto;
   color: #2b2c34;
-  font-size: 16px;
+  font-size: 1rem;
   font-style: normal;
   font-weight: 600;
   line-height: 22px;
@@ -84,7 +84,7 @@
 .case-profile .case-profile-info p {
   font-family: Roboto;
   color: #0e0e0e;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -101,7 +101,7 @@
 .case-content-date p,
 .case-content-info p {
   color: #aaa;
-  font-size: 16px;
+  font-size: 1rem;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -153,7 +153,7 @@
 
 .case-patient-info h4 {
   color: var(--green);
-  font-size: 18px;
+  font-size: 1.125rem;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -167,7 +167,7 @@
 .case-patient-info ul li {
   font-family: Roboto;
   color: #000;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -185,7 +185,7 @@
 
 .case-patient-lab h6 {
   color: var(--green);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -193,7 +193,7 @@
 
 .case-patient-lab p {
   color: #aaaaaa;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
@@ -219,7 +219,7 @@
   align-items: center;
   border-radius: 10px;
   background-color: #d9d9d9;
-  font-size: 12px;
+  font-size: 0.125rem;
   font-weight: 500;
   color: #000000;
   margin-bottom: 8px;
@@ -251,7 +251,7 @@
 
 .case-info-title h4 {
   color: var(--green);
-  font-size: 20px;
+  font-size:  1.25rem;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -267,7 +267,7 @@
 .case-info-desc {
   font-family: Roboto;
   color: #aaa;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-style: normal;
   font-weight: 400;
   line-height: 22px;
@@ -325,7 +325,7 @@
 
 .case-tab-content p {
   color: #aaa;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -390,11 +390,11 @@
   }
 
   .case-content-heading h3 {
-    font-size: 26px;
+    font-size: 1.625rem;
   }
 
   .case-content-heading h4 {
-    font-size: 16px;
+    font-size: 1rem;
   }
 
   .case-content-meta {
@@ -411,6 +411,16 @@
 
   .case-content-date p,
   .case-content-info p {
-    font-size: 14px;
+    font-size: 0.875rem;
+  }
+
+  .case-tabs {
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+
+  .case-tab-btn {
+    font-size: 0.875rem;
+
   }
 }
