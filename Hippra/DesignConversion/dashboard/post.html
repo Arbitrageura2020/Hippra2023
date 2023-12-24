@@ -4,28 +4,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | Hipraa</title>
+  <title>Post | Hipraa</title>
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 
-  <!-- Globle CSS (Required) -->
+  <!-- Globle CSS  -->
   <link rel="stylesheet" href="./css/main.css">
 
-  <!-- Dashboard (Required) -->
+  <!-- Dashboard  -->
   <link rel="stylesheet" href="./css/dashboard.css">
 
-  <!-- Posts CSS (Required) -->
+  <!-- Posts CSS  -->
   <link rel="stylesheet" href="./css/post.css">
 
-  <!-- Case CSS (Required) -->
+  <!-- Case CSS  -->
   <link rel="stylesheet" href="./css/case.css">
 
-  <!-- Case CSS (Required) -->
+  <!-- Case CSS  -->
   <link rel="stylesheet" href="./css/profile.css">
 
-  <!-- Case CSS (Required) -->
+  <!-- Case CSS  -->
   <link rel="stylesheet" href="./css/search.css">
 </head>
 
@@ -303,19 +303,26 @@
           <div class="post-header">
             <div class="post-head-left">
               <div class="post-tab">
-                <button class="post-tab-btn " data-target="post-ask-4-content">
+                <button class="post-tab-btn " data-target="post-ask-4-content" data-action="ask-4-action">
                   ASK-4-HELP CASES
                 </button>
               </div>
             </div>
             <div class="post-head-right">
               <div class="post-tab">
-                <button class="post-tab-btn  active" data-target="post-clinical-content" class="active">
+                <button class="post-tab-btn  active" data-target="post-clinical-content" data-action="clinical-action">
                   CLINICAL KNOWLEDGE SHARING
                 </button>
               </div>
 
-              <div class="heading-actions">
+              <!-- Filter Action for both Tabs -->
+              <div id="ask-4-action" class="heading-actions">
+                <h4>Sort By View:</h4>
+                <button class="btn btn-md btn-recent orange btn-roboto">Recent</button>
+                <button class="btn btn-md btn-green-outline btn-roboto">Trending</button>
+              </div>
+
+              <div id="clinical-action" class="heading-actions active ">
                 <h4>Sort By View:</h4>
                 <button class="btn btn-md btn-recent btn-roboto">Recent</button>
                 <button class="btn btn-md btn-orange-outline btn-roboto">Trending</button>

@@ -846,6 +846,10 @@ select {
 }
 
 .heading-actions {
+  display: none;
+}
+
+.heading-actions.active {
   flex: 1;
   display: flex;
   justify-content: end;
@@ -994,13 +998,6 @@ select {
   .article-author-info
   p {
   color: var(--orange);
-}
-
-/* Buttons */
-
-.main-layout.orange .btn-recent {
-  background-color: var(--orange);
-  color: #ffffff;
 }
 
 /* Form */
