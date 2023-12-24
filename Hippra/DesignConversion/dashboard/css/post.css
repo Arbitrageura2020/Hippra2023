@@ -1,26 +1,25 @@
 /* Post */
 
-.post-layout {
+.main-tab-layout {
   position: relative;
   width: 100%;
-  height: 100%j;
+  height: 100%;
 }
-
-.post-layout .post-head-left {
-  position: relative;
-  width: 35%;
-}
-
-.post-layout .post-head-right {
-  position: relative;
-  width: 65%;
-}
-
 .post-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0 10px;
+}
+
+.main-tab-layout .post-head-left {
+  position: relative;
+  width: 35%;
+}
+
+.main-tab-layout .post-head-right {
+  position: relative;
+  width: 65%;
 }
 
 .post-header > * {
@@ -54,11 +53,11 @@
   background-color: var(--green);
 }
 
-.post-layout .post-tab-content {
+.main-tab-layout .post-tab-content {
   display: none;
 }
 
-.post-layout .post-tab-content.active {
+.main-tab-layout .post-tab-content.active {
   display: flex;
 }
 

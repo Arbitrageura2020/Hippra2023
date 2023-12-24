@@ -296,177 +296,78 @@
     <!-- Main Content -->
     <!-- Add the "orange" class to the "main-layout" to apply the orange theme. -->
     <div class="main-layout">
-
       <div class="container">
-        <div class="dashboard-layout">
-          <!-- Dashboard ASK-4-HELP -->
-          <div class="dashboard-left">
-            <div class="main-header">
-              <div class="heading orange">
-                <h3>ASK-4-HELP CASES</h3>
+        <div class="main-tab-layout">
+          <!-- Tabs -->
+          <div class="post-header">
+            <div class="post-head-left">
+              <div class="post-tab">
+                <button class="post-tab-btn " data-target="post-ask-4-content">
+                  ASK-4-HELP CASES
+                </button>
               </div>
             </div>
-            <section class="dashboard-content">
-              <div class="dashboard-case-create">
-                <form action="" method="post">
-                  <div class="form-group create-case">
-                    <input class="form-case" type="text" placeholder="What case would you like to share today?">
-                    <button type="button">
-                      <img src="./img/icons/extra.svg" alt="">
-                    </button>
-                  </div>
-                  <div class="form-group create-case-actions">
-                    <button class="btn btn-sm btn-gray  btn-high-radius btn-roboto">Add Tags</button>
-                    <button class="btn btn-sm btn-orange  btn-roboto">Post</button>
-                  </div>
-                </form>
+            <div class="post-head-right">
+              <div class="post-tab">
+                <button class="post-tab-btn  active" data-target="post-clinical-content" class="active">
+                  CLINICAL KNOWLEDGE SHARING
+                </button>
               </div>
-              <div class="dashboard-cases">
-                <!-- Ask-4 Help Loop Started -->
-                <div class="dashboard-case-item">
-                  <div class="case-tags">
-                    <!-- Case Item Tags Loop Here -->
-                    <ul>
-                      <li><a href="">Family Medicine</a></li>
-                      <li><a href="">Family Medicine</a></li>
-                      <li><a href="">Family Medicine</a></li>
-                    </ul>
-                  </div>
-                  <div class="case-caption">
-                    <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
-                  </div>
-                  <div class="case-action">
-                    <button>
-                      <img src="./img/icons/chat.svg" alt="">
-                      <span>Reply</span>
-                    </button>
-                    <button>
-                      <img src="./img/icons/share.svg" alt="">
-                      <span>Share</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="dashboard-case-item">
-                  <div class="case-tags">
-                    <!-- Case Item Tags Loop Here -->
-                    <ul>
-                      <li><a href="">Family Medicine</a></li>
-                      <li><a href="">Family Medicine</a></li>
-                      <li><a href="">Family Medicine</a></li>
-                    </ul>
-                  </div>
-                  <div class="case-caption">
-                    <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
-                  </div>
-                  <div class="case-action">
-                    <button>
-                      <img src="./img/icons/chat.svg" alt="">
-                      <span>Reply</span>
-                    </button>
-                    <button>
-                      <img src="./img/icons/share.svg" alt="">
-                      <span>Share</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="dashboard-case-item">
-                  <div class="case-tags">
-                    <!-- Case Item Tags Loop Here -->
-                    <ul>
-                      <li><a href="">Family Medicine</a></li>
-                      <li><a href="">Family Medicine</a></li>
-                      <li><a href="">Family Medicine</a></li>
-                    </ul>
-                  </div>
-                  <div class="case-caption">
-                    <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
-                  </div>
-                  <div class="case-action">
-                    <button>
-                      <img src="./img/icons/chat.svg" alt="">
-                      <span>Reply</span>
-                    </button>
-                    <button>
-                      <img src="./img/icons/share.svg" alt="">
-                      <span>Share</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="dashboard-case-item">
-                  <div class="case-tags">
-                    <!-- Case Item Tags Loop Here -->
-                    <ul>
-                      <li><a href="">Family Medicine</a></li>
-                      <li><a href="">Family Medicine</a></li>
-                      <li><a href="">Family Medicine</a></li>
-                    </ul>
-                  </div>
-                  <div class="case-caption">
-                    <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
-                  </div>
-                  <div class="case-action">
-                    <button>
-                      <img src="./img/icons/chat.svg" alt="">
-                      <span>Reply</span>
-                    </button>
-                    <button>
-                      <img src="./img/icons/share.svg" alt="">
-                      <span>Share</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
 
-          <!-- Dashboard CLINICAL KNOWLEDGE SHARING -->
-          <div class="dashboard-right">
-            <div class="main-header">
-              <div class="heading">
-                <h3>CLINICAL KNOWLEDGE SHARING</h3>
-              </div>
               <div class="heading-actions">
                 <h4>Sort By View:</h4>
                 <button class="btn btn-md btn-recent btn-roboto">Recent</button>
                 <button class="btn btn-md btn-orange-outline btn-roboto">Trending</button>
               </div>
             </div>
-            <section class="dashboard-content">
-              <div class="main-articles">
-                <!-- Clinical Knowledge Loop Here -->
-                <div class="main-article-item">
-                  <div class="article-date">
-                    <p>Just now</p>
+          </div>
+
+          <!-- Ask 4 -->
+          <div id="post-ask-4-content" class="post-tab-content">
+            <section class="expand-search-content">
+              <div class="search-contents">
+                <div class="search-content-item">
+                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
+                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
+                  <div class="search-content-meta">
+                    <ul>
+                      <li class="name">Hugh Mitti Fire</li>
+                      <li class="field">Disease Specialist</li>
+                      <li class="timestamp">09:56 November 11 2023</li>
+                    </ul>
                   </div>
-                  <div class="article-top">
-                    <div class="article-caption">
-                      <a href="#">Spontaneous pneumomediastinum in COVID-19</a>
-                    </div>
-                    <div class="article-actions">
-                      <button class="article-action-btn">
-                        <img src="./img/icons/message-green.svg" alt="">
-                      </button>
-                      <button class="article-action-btn">
-                        <img src="./img/icons/bookmark-green.svg" alt="">
-                      </button>
-                      <button class="article-action-btn">
-                        <img src="./img/icons/three-dots-green.svg" alt="">
-                      </button>
-                    </div>
+                </div>
+                <div class="search-content-item">
+                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
+                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
+                  <div class="search-content-meta">
+                    <ul>
+                      <li class="name">Hugh Mitti Fire</li>
+                      <li class="field">Disease Specialist</li>
+                      <li class="timestamp">09:56 November 11 2023</li>
+                    </ul>
                   </div>
-                  <div class="article-content">
-                    <p>A 49-year-old man presented to the emergency room with 3 days of increasing cough and shortness of breath, both at rest and with minimal exertion, associated with decreased appetite and anosmia. He denied fevers, chills, chest pains, nausea or vomiting. He did suspect recent coronavirus exposure...</p>
+                </div>
+                <div class="search-content-item">
+                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
+                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
+                  <div class="search-content-meta">
+                    <ul>
+                      <li class="name">Hugh Mitti Fire</li>
+                      <li class="field">Disease Specialist</li>
+                      <li class="timestamp">09:56 November 11 2023</li>
+                    </ul>
                   </div>
-                  <div class="article-bot">
-                    <div class="article-author"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
-                      <div class="article-author-info">
-                        <h6>Emma Rye</h6>
-                        <p>Disease Speacialist</p>
-                      </div>
-                    </div>
-                    <div class="article-bot-actions">
-                      <a href=""><img src="./img/icons/arrow-right-green.svg" alt=""></a>
-                    </div>
+                </div>
+                <div class="search-content-item">
+                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
+                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
+                  <div class="search-content-meta">
+                    <ul>
+                      <li class="name">Hugh Mitti Fire</li>
+                      <li class="field">Disease Specialist</li>
+                      <li class="timestamp">09:56 November 11 2023</li>
+                    </ul>
                   </div>
                 </div>
 
@@ -474,12 +375,80 @@
               </div>
             </section>
           </div>
+
+          <!-- Clinical Knowledge -->
+          <div id="post-clinical-content" class="post-tab-content  active">
+            <section class="expand-search-content">
+              <div class="search-contents">
+                <div class="search-content-item">
+                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
+                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery” A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
+                  <div class="search-content-meta">
+                    <ul>
+                      <li class="name">Hugh Mitti Fire</li>
+                      <li class="field">Disease Specialist</li>
+                      <li class="timestamp">09:56 November 11 2023</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="search-content-item">
+                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
+                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
+                  <div class="search-content-meta">
+                    <ul>
+                      <li class="name">Hugh Mitti Fire</li>
+                      <li class="field">Disease Specialist</li>
+                      <li class="timestamp">09:56 November 11 2023</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="search-content-item">
+                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
+                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
+                  <div class="search-content-meta">
+                    <ul>
+                      <li class="name">Hugh Mitti Fire</li>
+                      <li class="field">Disease Specialist</li>
+                      <li class="timestamp">09:56 November 11 2023</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="search-content-item">
+                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
+                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
+                  <div class="search-content-meta">
+                    <ul>
+                      <li class="name">Hugh Mitti Fire</li>
+                      <li class="field">Disease Specialist</li>
+                      <li class="timestamp">09:56 November 11 2023</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="search-content-item">
+                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
+                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
+                  <div class="search-content-meta">
+                    <ul>
+                      <li class="name">Hugh Mitti Fire</li>
+                      <li class="field">Disease Specialist</li>
+                      <li class="timestamp">09:56 November 11 2023</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
         </div>
+
       </div>
     </div>
   </main>
   <!-- Main Content End -->
   <script src="./js/main.js"></script>
+  <script src="./js/post.js"></script>
+  <script src="./js/search.js"></script>
 </body>
 
 </html>

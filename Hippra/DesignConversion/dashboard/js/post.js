@@ -1,4 +1,4 @@
-// Handle New Post Page Tabs
+// Handle New Post Page & Search Page Tabs
 
 const tabButtons = document.querySelectorAll(".post-tab-btn");
 const tabContents = document.querySelectorAll(".post-tab-content");

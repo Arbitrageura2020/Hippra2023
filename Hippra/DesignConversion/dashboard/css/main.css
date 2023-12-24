@@ -128,9 +128,21 @@ main.sidebar-expand {
   background-color: var(--lightGreen);
 }
 
-.btn-recent:hover {
+.btn-recent.orange {
   color: #ffffff;
-  background-color: var(--green);
+  background-color: var(--orange);
+}
+
+.btn-recent.orange:hover {
+  color: var(--orange);
+  background-color: #ffffff;
+  border-color: var(--orange);
+}
+
+.btn-recent:hover {
+  color: var(--green);
+  background-color: #ffffff;
+  border-color: var(--green);
 }
 
 .btn-orange {
@@ -153,6 +165,17 @@ main.sidebar-expand {
 .btn-orange-outline:hover {
   color: #ffffff;
   background-color: var(--orange);
+}
+
+.btn-green-outline {
+  color: var(--green);
+  background-color: #ffffff;
+  border-color: var(--green);
+}
+
+.btn-green-outline:hover {
+  color: #ffffff;
+  background-color: var(--green);
 }
 
 .btn-gray {
@@ -692,8 +715,6 @@ select {
 .search-dropdown-item:hover {
   background-color: #f1f1f1;
 }
-
-
 
 .search-dropdown-item .dropdown-item-img {
   display: flex;

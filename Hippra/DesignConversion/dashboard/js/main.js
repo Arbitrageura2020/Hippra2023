@@ -35,7 +35,7 @@ const sidebarMenuText = document.querySelectorAll(
 // Handle Sidebar Toggle
 const toggleSidebar = () => {
   if (!sidebar) return;
-
+  
   const isExpanded = sidebarIcon.src.includes("expand.svg");
   const main = document.querySelector("main");
   const userInfobox = document.querySelector(
