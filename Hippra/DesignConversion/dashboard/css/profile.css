@@ -40,7 +40,7 @@
 }
 .profile-frame-info h5 {
   color: #4c535f;
-  font-size: 16px;
+  font-size: 1rem;
   font-style: normal;
   font-weight: 400;
 }
@@ -157,6 +157,40 @@
 
 .profile-tags ul li:not(:last-child) {
   margin-right: 20px;
+}
+
+.profile-contact {
+  position: relative;
+}
+
+.profile-contact-info {
+  position: relative;
+}
+
+.profile-contact-item {
+  position: relative;
+}
+
+.profile-contact-item label {
+  display: block;
+  color: #000;
+  font-family: Open Sans;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  margin-bottom: 5px;
+}
+
+.profile-contact-item .profile-contact-box {
+  position: relative;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #e0e4ec;
+  background-color: #ffffff;
+}
+
+.profile-contact-item:not(:last-child) {
+  margin-bottom: 10px;
 }
 
 /* Profile Activities */

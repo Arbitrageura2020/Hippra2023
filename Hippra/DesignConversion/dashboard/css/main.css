@@ -123,6 +123,15 @@ main.sidebar-expand {
   border-radius: 4px;
 }
 
+.btn-lg {
+  padding: 8px 25px;
+  border-radius: 4px;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
 .btn-recent {
   color: #ffffff;
   background-color: var(--lightGreen);
@@ -154,6 +163,17 @@ main.sidebar-expand {
   color: var(--orange);
   background-color: #ffffff;
   border-color: var(--orange);
+}
+
+.btn-green {
+  color: #ffffff;
+  background-color: var(--green);
+}
+
+.btn-green:hover {
+  color: var(--green);
+  background-color: #ffffff;
+  border-color: var(--green);
 }
 
 .btn-orange-outline {
@@ -208,11 +228,12 @@ select {
   position: relative;
   display: flex;
   flex-direction: column;
-}
-
-.form-group:not(:last-child) {
   margin-bottom: 15px;
 }
+
+/* .form-group:not(:last-child) {
+  margin-bottom: 15px;
+} */
 
 .form-group label {
   color: #4c535f;
@@ -236,7 +257,13 @@ select {
   transition-duration: 150ms;
 }
 
-.form-control:focus-visible {
+
+
+.form-control.is-invalid {
+  border: 1px solid var(--orange);
+}
+
+.form-control:not(.is-invalid):focus-visible {
   outline: none;
   border: 1px solid var(--green);
 }
@@ -284,6 +311,20 @@ select {
   transition-timing-function: ease-in-out;
   transition-duration: 150ms;
 }
+
+.form-select.main {
+  border: 1px solid #e0e4ec;
+}
+
+.form-select.main:focus-visible {
+  border: 1px solid var(--green);
+}
+
+.form-select.main {
+  color: #4c535f;
+}
+
+
 
 .form-select.tag {
   min-width: 100px;
@@ -850,6 +891,14 @@ select {
 }
 
 .heading-actions.active {
+  flex: 1;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 0 10px;
+}
+
+.heading-actions-search {
   flex: 1;
   display: flex;
   justify-content: end;

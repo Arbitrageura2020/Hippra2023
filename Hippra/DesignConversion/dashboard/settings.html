@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Search | Hipraa</title>
+  <title>Profile | Hipraa</title>
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,6 +27,9 @@
 
   <!-- Case CSS  -->
   <link rel="stylesheet" href="./css/search.css">
+
+  <!-- Settings CSS  -->
+  <link rel="stylesheet" href="./css/settings.css">
 </head>
 
 <body>
@@ -296,116 +299,111 @@
     <!-- Main Content -->
     <!-- Add the "orange" class to the "main-layout" to apply the orange theme. -->
     <div class="main-layout">
-      <div class="container">
-        <div class="search-layout">
-          <!-- Search ASK-4-HELP -->
-          <div class="search-left">
-            <div class="main-header">
-              <div class="heading orange search-page">
-                <h3>ASK-4-HELP CASES</h3>
-                <a href="./search-expand.html#post-ask-4-content"><img src="./img/icons/arrow-right-gray.svg" alt=""></a>
+      <section class="settings-content">
+        <div class="container">
+          <div class="settings-layout">
+            <div class="settings-nav">
+              <div class="settings-nav-item active">
+                <a href="settings.html" class="active">Profile & Contact</a>
               </div>
-              <div class="heading-actions-search">
-                <h4>Sort By View:</h4>
-                <button class="btn btn-md btn-recent orange btn-roboto ">Recent</button>
-                <button class="btn btn-md btn-green-outline btn-roboto">Trending</button>
+              <div class="settings-nav-item">
+                <a href="account-password.html">Account & Password</a>
               </div>
-            </div>
-            <!-- Add the "orange" class to the "search-content" to apply the orange theme. -->
-            <section class="search-content orange">
-              <div class="search-contents no-extend">
-                <!-- Search Content Loop -->
-                <div class="search-content-item">
-                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
-                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
-                  <div class="search-content-meta">
-                    <ul>
-                      <li class="name">Hugh Mitti Fire</li>
-                      <li class="field">Disease Specialist</li>
-                      <li class="timestamp">09:56 November 11 2023</li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="search-content-item">
-                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
-                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
-                  <div class="search-content-meta">
-                    <ul>
-                      <li class="name">Hugh Mitti Fire</li>
-                      <li class="field">Disease Specialist</li>
-                      <li class="timestamp">09:56 November 11 2023</li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="search-content-item">
-                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
-                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
-                  <div class="search-content-meta">
-                    <ul>
-                      <li class="name">Hugh Mitti Fire</li>
-                      <li class="field">Disease Specialist</li>
-                      <li class="timestamp">09:56 November 11 2023</li>
-                    </ul>
-                  </div>
-                </div>
+              <div class="settings-nav-item">
+                <a href="#">Notifications & Subscriptions</a>
               </div>
-            </section>
-          </div>
 
-          <!-- Search CLINICAL KNOWLEDGE SHARING -->
-          <div class="search-right">
-            <div class="main-header">
-              <div class="heading search-page">
-                <h3>CLINICAL KNOWLEDGE SHARING</h3>
-                <a href="./search-expand.html#post-clinical-content"><img src="./img/icons/arrow-right-gray.svg" alt=""></a>
-              </div>
-              <div class="heading-actions-search">
-                <h4>Sort By View:</h4>
-                <button class="btn btn-md btn-recent btn-roboto">Recent</button>
-                <button class="btn btn-md btn-orange-outline btn-roboto">Trending</button>
+            </div>
+            <div class="settings-title">
+              <h4>Profile</h4>
+            </div>
+            <div class="settings-profile">
+              <div class="settings-profile-form">
+                <form action="" method="post">
+                  <div class="settings-profile-top">
+                    <!-- Profile Picture -->
+                    <div class="settings-profile-picture">
+                      <label for="uploadProfilePicture">Your Profile Picture</label>
+                      <input id="uploadProfilePictureInput" type="file" hidden>
+                      <div class="settings-profile-preview">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
+
+                      </div>
+                      <button id="uploadProfilePictureBtn" type="button"> <img src="./img/icons/edit.svg" alt=""> <span>Edit</span></button>
+                    </div>
+                    <div class="settings-profile-inputs">
+                      <div class="form-group">
+                        <label for="">First Name</label>
+                        <input type="text" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label for="">Last Name</label>
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Profile Details -->
+                  <div class="settings-bot">
+                    <div class="settings-row">
+                      <div class="form-group">
+                        <label for="">Profession</label>
+                        <div class="form-select-wrapper">
+                          <select class="form-select main" name="">
+                            <option value="" selected disabled hidden>Please select your profession</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                          </select>
+                          <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="">Country</label>
+                        <div class="form-select-wrapper">
+                          <select class="form-select main" name="">
+                            <option value="" selected disabled hidden>Please select your medical specialty</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                          </select>
+                          <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="">Medical Specialty</label>
+                        <div class="form-select-wrapper">
+                          <select class="form-select main" name="">
+                            <option value="" selected disabled hidden>Please select your country of residence</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                          </select>
+                          <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="">Timezone</label>
+                        <div class="form-select-wrapper">
+                          <select class="form-select main" name="">
+                            <option value="" selected disabled hidden>Please select your timezone</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                          </select>
+                          <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-submit">
+                    <button type="submit" class="btn btn-lg btn-green">Save</button>
+                  </div>
+                </form>
               </div>
             </div>
-            <section class="search-content">
-              <div class="search-contents no-extend">
-                <!-- Search Content Loop -->
-                <div class="search-content-item">
-                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
-                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
-                  <div class="search-content-meta">
-                    <ul>
-                      <li class="name">Hugh Mitti Fire</li>
-                      <li class="field">Disease Specialist</li>
-                      <li class="timestamp">09:56 November 11 2023</li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="search-content-item">
-                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
-                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
-                  <div class="search-content-meta">
-                    <ul>
-                      <li class="name">Hugh Mitti Fire</li>
-                      <li class="field">Disease Specialist</li>
-                      <li class="timestamp">09:56 November 11 2023</li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="search-content-item">
-                  <a href="#">Warning Signs of Hypertension in Pregnancy?</a>
-                  <p>A patient had history of “functional class 1 idiopathic pulmonary arterial hypertension” and presented with a “positive vasoreactive response to adenosine” and "had a full-term non-complicated delivery”</p>
-                  <div class="search-content-meta">
-                    <ul>
-                      <li class="name">Hugh Mitti Fire</li>
-                      <li class="field">Disease Specialist</li>
-                      <li class="timestamp">09:56 November 11 2023</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </section>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </main>
   <!-- Main Content End -->
@@ -415,6 +413,7 @@
   <script src="./js/post.js"></script>
   <script src="./js/search.js"></script>
   <script src="./js/case.js"></script>
+  <script src="./js/settings.js"></script>
 </body>
 
 </html>
