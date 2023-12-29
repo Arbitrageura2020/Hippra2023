@@ -201,7 +201,8 @@
 
 .activities-list-item {
   position: relative;
-  border-radius: 0px 0px 12px 12px;
+  border-radius: 12px 12px 12px 12px;
+  box-shadow: rgb(0 0 0 / 0%) 1px -2px 4px 0px, rgba(0, 0, 0, 0.25) 0px 2px 4px 0px;
 }
 
 .activities-list-item:not(:last-child) {
@@ -258,8 +259,7 @@
   border-radius: 0px 0px 12px 12px;
   background: rgba(243, 250, 249, 0.9);
   padding: 15px 30px;
-  box-shadow: rgb(0 0 0 / 0%) 1px -2px 4px 0px,
-    rgba(0, 0, 0, 0.25) 0px 2px 4px 0px;
+
 }
 
 .activities-list-item .activity-bot-actions {

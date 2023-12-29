@@ -95,10 +95,7 @@ const settingNavLinks = document.querySelectorAll(".settings-nav-item a");
 if (settingNavLinks.length > 0) {
   const url = window.location.href;
 
-  console.log("url", url);
-
   settingNavLinks.forEach((link) => {
-    console.log("xd", link.href);
     if (link.href === url) {
       link.classList.add("active");
       link.parentElement.classList.add("active");
@@ -108,3 +105,28 @@ if (settingNavLinks.length > 0) {
     }
   });
 }
+
+// Handle Notification and Subscriptions
+const handleCheckboxChange = (checkbox, items) => {
+  if (checkbox) {
+    checkbox.addEventListener("change", () => {
+      items.forEach((item) => {
+        item.checked = checkbox.checked;
+      });
+    });
+  }
+};
+
+const notificationCheckBox = document.querySelector("#emailNotification");
+const subscriptionCheckBox = document.querySelector(
+  "#subscriptionsNotification"
+);
+const notificationItems = document.querySelectorAll(
+  ".settings-notification-item.notification .form-switch input"
+);
+const subscriptionItems = document.querySelectorAll(
+  ".settings-notification-item.subscriptions .form-switch input"
+);
+
+handleCheckboxChange(notificationCheckBox, notificationItems);
+handleCheckboxChange(subscriptionCheckBox, subscriptionItems);
