@@ -152,14 +152,6 @@
   border-radius: 50%;
 }
 
-.settings-profile-preview img {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  object-fit: cover;
-}
-
 .settings-profile-picture button {
   position: absolute;
   bottom: 10px;
@@ -306,6 +298,7 @@
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
+  margin-left: 60px;
 }
 
 .settings-notification-item h6 {
@@ -332,7 +325,6 @@
   display: inline-block;
   width: 40px;
   height: 22px;
-  margin-right: 60px;
 }
 
 .form-switch input {
@@ -348,7 +340,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #E5E5E5;
+  background-color: #e5e5e5;
   -webkit-transition: 0.4s;
   transition: 0.4s;
   border: 1px solid transparent;
@@ -375,10 +367,8 @@
 .form-switch input:checked + .form-slider:before {
   background-color: #ffffff;
   box-shadow: rgb(0 0 0 / 12%) -6px 0px 4px;
-    border: 2px solid var(--orange);
+  border: 2px solid var(--orange);
 }
-
-
 
 .form-switch input:focus + .form-slider {
   box-shadow: 0 0 1px #ffffff;

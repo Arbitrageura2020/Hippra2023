@@ -114,6 +114,7 @@
 
 .main-layout.orange .search-content-item a {
   color: var(--orange);
+  opacity: 0.85;
 }
 
 .main-layout.orange .search-content-item .search-content-meta ul li.field {
@@ -122,11 +123,14 @@
 
 .search-content.orange .search-content-item a {
   color: var(--orange);
+  opacity: 0.85;
 }
 
 .search-content.orange .search-content-item .search-content-meta ul li.field {
   color: var(--orange);
 }
+
+/************** Responsive **************/
 
 @media only screen and (max-width: 1280px) {
   .search-content {

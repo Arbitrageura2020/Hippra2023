@@ -23,6 +23,21 @@ const toggleSearchFilter = () => {
   }
 };
 
+// Handle Profile Dropdown
+
+const profileDropdownBtn = document.querySelector(".nav-profile .profile-btn");
+const profileDropdownMenu = document.querySelector(".nav-profile-dropdown");
+
+if (profileDropdownBtn) {
+  profileDropdownBtn.addEventListener("click", (e) => {
+    const icon = profileDropdownBtn.querySelector(".profile-icon");
+
+    icon.classList.toggle("rotate");
+
+    profileDropdownMenu.classList.toggle("visible");
+  });
+}
+
 // Sidebar Collapse Expand
 const sidebar = document.querySelector("#sidebar");
 const sidebarButton = document.querySelector("#sidebar-btn");
@@ -92,12 +107,21 @@ const handleDocumentClick = (event) => {
   const isClickFilterBox =
     searchFilterBox && searchFilterBox.contains(event.target);
 
+  // Handle Outside click for search dropdown
   if (!isClickInsideSearchInput && !isClickInsideSearchDropdown) {
     searchDropdown.classList.remove("visible");
   }
   if (!isClickFilterBtn && !isClickFilterBox) {
     searchFilterIcon.src = "./img/icons/search-settings.svg";
     searchFilterBox.classList.remove("visible");
+  }
+
+  // Handle Outside click for profile dropdown
+  const isClickProfileDropdown =
+    profileDropdownBtn && profileDropdownBtn.contains(event.target);
+
+  if (!isClickProfileDropdown) {
+    profileDropdownMenu.classList.remove("visible");
   }
 };
 

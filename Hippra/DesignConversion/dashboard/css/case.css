@@ -10,9 +10,13 @@
 
 .case-top-action {
   position: relative;
+
 }
 
 .case-top-action a {
+  display: flex;
+  align-items: center;
+  gap: 0 5px;
   color: var(--green);
   font-size: 1.125rem;
   font-style: normal;

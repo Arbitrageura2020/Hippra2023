@@ -10,23 +10,29 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 
-  <!-- Globle CSS  -->
-  <link rel="stylesheet" href="./css/main.css">
+ <!-- Globle CSS  -->
+ <link rel="stylesheet" href="./css/main.css">
 
-  <!-- Dashboard  -->
-  <link rel="stylesheet" href="./css/dashboard.css">
+ <!-- Dashboard  -->
+ <link rel="stylesheet" href="./css/dashboard.css">
 
-  <!-- Posts CSS  -->
-  <link rel="stylesheet" href="./css/post.css">
+ <!-- Posts CSS  -->
+ <link rel="stylesheet" href="./css/post.css">
 
-  <!-- Case CSS  -->
-  <link rel="stylesheet" href="./css/case.css">
+ <!-- Case CSS  -->
+ <link rel="stylesheet" href="./css/case.css">
 
-  <!-- Case CSS  -->
-  <link rel="stylesheet" href="./css/profile.css">
+ <!-- Case CSS  -->
+ <link rel="stylesheet" href="./css/profile.css">
 
-  <!-- Case CSS  -->
-  <link rel="stylesheet" href="./css/search.css">
+ <!-- Case CSS  -->
+ <link rel="stylesheet" href="./css/search.css">
+
+ <!-- Settings CSS  -->
+ <link rel="stylesheet" href="./css/settings.css">
+
+ <!-- Notification CSS  -->
+ <link rel="stylesheet" href="./css/notification.css">
 </head>
 
 <body>
@@ -40,7 +46,7 @@
           <p>Nurse Practitioner</p>
         </div>
       </div>
-      <div class="sidebar-menu">
+     <div class="sidebar-menu">
         <ul>
           <li>
             <a href="index.html" class="active">
@@ -51,7 +57,7 @@
             </a>
           </li>
           <li>
-            <a href="#">
+            <a href="notifications.html">
               <span class="sidebar-link-icon">
                 <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9.92222 1.96436C6.23004 1.96436 3.22946 4.6383 3.22946 7.92854V10.8013C3.22946 11.4077 2.93944 12.3321 2.59364 12.849L1.31087 14.7476C0.518893 15.9206 1.06547 17.2228 2.51556 17.6601C7.32319 19.0915 12.5101 19.0915 17.3177 17.6601C18.6674 17.2625 19.2586 15.8411 18.5224 14.7476L17.3177 12.849C16.9054 12.1794 16.615 11.4087 16.615 10.8013V8.23368C16.6556 7.92776 16.6315 7.21066 16.2104 6.7896" stroke="#40454A" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" />
@@ -284,6 +290,19 @@
                 <img class="profile-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU" alt="">
                 <img class="profile-icon" src="./img/icons/chevron-down.svg" alt="">
               </button>
+              <!-- Nav Profile Dropdown -->
+              <div class="nav-profile-dropdown">
+                <div class="nav-profile-dropdown-inner">
+                  <ul>
+                    <li>
+                     <a href="profile.html"><img src="./img/icons/profile.svg" alt=""> <span>Profile</span></a>
+                    </li>
+                    <li>
+                      <a href="" class="logout"><img src="./img/icons/logout.svg" alt=""> <span>Logout</span></a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -301,8 +320,8 @@
           <div class="case-top">
             <div class="case-top-action">
               <a href="#">
-
-                < Back</a>
+                <img src="./img/icons/chevron-left.svg" alt="">
+                <span>Back</span></a>
             </div>
           </div>
           <section class="case-content no-pad">
@@ -429,11 +448,19 @@
   </main>
   <!-- Main Content End -->
 
-  <!-- Scripts -->
+   <!-- Scripts -->
+  <!-- Home Page And Main -->
   <script src="./js/main.js"></script>
+  <!-- Post -->
   <script src="./js/post.js"></script>
+  <!-- Search -->
   <script src="./js/search.js"></script>
+  <!-- Case  -->
   <script src="./js/case.js"></script>
+  <!-- Settings -->
+  <script src="./js/settings.js"></script>
+  <!-- Notification -->
+  <script src="./js/notification.js"></script>
 </body>
 
 </html>
