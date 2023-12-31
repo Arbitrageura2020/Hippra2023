@@ -10,7 +10,6 @@
 
 .case-top-action {
   position: relative;
-
 }
 
 .case-top-action a {
@@ -255,7 +254,7 @@
 
 .case-info-title h4 {
   color: var(--green);
-  font-size:  1.25rem;
+  font-size: 1.25rem;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -425,6 +424,5 @@
 
   .case-tab-btn {
     font-size: 0.875rem;
-
   }
 }
