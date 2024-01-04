@@ -1250,7 +1250,7 @@ input::placeholder {
     display: inline-block;
     position: absolute;
     top: 65%;
-    right: 19%;
+    right: 41%;
 }
 .arrow2::after {
     content: "";
