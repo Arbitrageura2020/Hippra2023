@@ -1,13 +1,55 @@
-<CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(Program).Assembly">
-        <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(FTLayout)" />
-        </Found>
-        <NotFound>
-            @*<LayoutView Layout="@typeof(MainLayout)">
-            <p>Sorry, there's nothing at this address.</p>
-        </LayoutView>*@
-            <Hippra.Pages.FTDesign.Pages.FTError404 />
-        </NotFound>
-    </Router>
-</CascadingAuthenticationState>
+﻿@inject IHostEnvironment Env
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hippra</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/10.0.0/css/fabric.min.css" />
+    @*<link href="~/css/ChartJSBlazor.css" rel="stylesheet" />*@
+    <link href="css/FTDesign.css" rel="stylesheet" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <script src="https://kit.fontawesome.com/081896728a.js" crossorigin="anonymous"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-150898941-4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-150898941-4');
+    </script>
+        <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+<body>
+
+  <Routes @rendermode="InteractiveServer" />
+
+    <div id="blazor-error-ui">
+        @if (Env.IsDevelopment())
+        {
+            <text>
+                An unhandled exception has occurred. See browser dev tools for details.
+            </text>
+        }
+        else
+        {
+            <text>
+                An error has occurred. This app may no longer respond until reloaded.
+            </text>
+        }
+    </div>
+
+    <script src="_framework/blazor.web.js"></script>
+    @*    <script src="_content/BlazorInputFile/inputfile.js"></script>*@
+    <script src="~/js/inputfile.js"></script>
+    <script src="~/Identity/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/Identity/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/siteJsInterop.js"></script>
+</body>
+</html>

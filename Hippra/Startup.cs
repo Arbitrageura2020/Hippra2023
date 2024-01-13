@@ -95,7 +95,8 @@ namespace Hippra
 
             services.AddRazorPages();
             //services.AddMvc();
-            services.AddServerSideBlazor();//.AddCircuitOptions(options => { options.DetailedErrors = true; });
+            services.AddRazorComponents()
+          .AddInteractiveServerComponents();
             services.AddHttpContextAccessor();
             services.ConfigureApplicationCookie(options =>
             {
@@ -178,15 +179,16 @@ namespace Hippra
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseAntiforgery();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
-                endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_Host");
+                endpoints.MapRazorComponents<App>()
+              .AddInteractiveServerRenderMode();
             });
-
+          
         }
     }
 }

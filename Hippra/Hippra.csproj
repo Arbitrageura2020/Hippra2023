@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Components\" />
     <Folder Include="wwwroot\file\" />
     <Folder Include="MapConfigurations\" />
   </ItemGroup>
