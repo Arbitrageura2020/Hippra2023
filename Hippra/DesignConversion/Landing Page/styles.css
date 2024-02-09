@@ -1250,10 +1250,8 @@ input::placeholder {
 }
 .check-box-agreement {
   font: 400 15px/24px "-", sans-serif;
-  margin-top: 20px;
   color: #093b58;
-  margin-right: 150px;
-  padding-top: 25px;
+  padding-top: 35px;
 }
 
 .check-box-agreement input[type="checkbox"] {
@@ -1277,10 +1275,6 @@ input::placeholder {
   z-index: 999;
 }
 
-.rectangle-06,
-.rectangle-06 * {
-  box-sizing: border-box;
-}
 .rectangle-06 {
   box-sizing: border-box;
   background: #093b58;
@@ -1434,15 +1428,10 @@ input::placeholder {
   }
 
   .tag-line-hung {
-    display: flex;
     padding-left: 5%;
     padding-right: 5%;
-    justify-content: center;
-    align-items: center;
-    place-items: center;
     margin-left: 10px;
     margin-top: 0;
-    margin-bottom: 0;
     font-size: 20px;
     font-weight: 400;
     width: 80%;
@@ -1453,12 +1442,8 @@ input::placeholder {
   .bold-tag-line {
     margin-left: 10px;
     margin-top: 10px;
-    color: #fff;
     font-size: 60px;
-    font-style: normal;
     font-weight: 400;
-    line-height: normal;
-    margin-bottom: 0;
   }
 
   .intro-sub {
@@ -1484,17 +1469,10 @@ input::placeholder {
   }
 
   .why-container {
-    position: relative;
     grid-template-columns: repeat(1, 4fr);
-    display: grid;
-    width: 100%;
     height: auto;
-    background-color: rgba(255, 255, 255, 0.55);
-    z-index: 2;
     padding-left: 0;
     padding-right: 0;
-    box-sizing: border-box;
-    text-align: center;
     place-items: center;
   }
 
@@ -1528,23 +1506,16 @@ input::placeholder {
   .container-three {
     width: 80%;
     height: auto;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    background-color: #fff;
-    justify-content: center;
-    align-items: center;
     margin: 0;
   }
 
   .podcast-container {
-    position: relative;
     display: grid;
     width: 100%;
     height: auto;
     padding-left: 0;
     padding-top: 0;
     margin: 0;
-    overflow: hidden;
     margin-top: 215px;
     text-align: center;
   }
@@ -1584,30 +1555,12 @@ input::placeholder {
   }
 
   .rectangle-02 {
-    box-sizing: border-box;
-    background: #ffffff;
-    /* width: 984px; */
     width: 100%;
     height: 594px;
-    position: relative;
-    border-radius: 40px;
-    top: 250px;
-    justify-content: center;
-    align-items: center;
   }
 
   .create-an-account {
-    color: #093b58;
-    text-align: center;
-    font: 700 50px/24px "OpenSans-Bold", sans-serif;
-    position: relative;
-    width: 100%;
-    height: 102px;
-    display: flex;
-    align-items: center;
     line-height: 50px;
-    justify-content: center;
-    padding-top: 23px;
   }
 
   .dot-progress {
@@ -1620,61 +1573,38 @@ input::placeholder {
   .rectangle-03,
   .rectangle-04,
   .rectangle-05 {
-    box-sizing: border-box;
-    background: #ffffff;
     width: 100%;
     height: 900px;
-    position: relative;
-    border-radius: 40px;
-    top: 250px;
-    justify-content: center;
-    align-items: center;
   }
 
   .form-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: auto;
     padding-left: 60px;
     padding-right: 0;
   }
 
   .dropdown-container-profile::after {
-    content: "";
-    width: 23px;
-    height: 13px;
-    background-image: url('data:image/svg+xml;utf8,<svg width="23" height="13" viewBox="0 0 23 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11.5 12L22 1" stroke="%23093B58" stroke-linecap="round" stroke-linejoin="round"/></svg>');
-    background-repeat: no-repeat;
-    background-size: contain;
-    display: inline-block;
-    position: absolute;
     top: 55%;
     right: 15%;
   }
 
+  .dropdown-container-profile-nurse::after {
+    top: 47%;
+    right: 15%;
+  }
+
   .arrow1::after {
-    content: "";
-    width: 23px;
-    height: 13px;
-    background-image: url('data:image/svg+xml;utf8,<svg width="23" height="13" viewBox="0 0 23 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11.5 12L22 1" stroke="%23093B58" stroke-linecap="round" stroke-linejoin="round"/></svg>');
-    background-repeat: no-repeat;
-    background-size: contain;
-    display: inline-block;
-    position: absolute;
-    top: 65%;
-    left: 41%;
+    top: 47%;
+    left: 80%;
   }
   .arrow2::after {
-    content: "";
-    width: 23px;
-    height: 13px;
-    background-image: url('data:image/svg+xml;utf8,<svg width="23" height="13" viewBox="0 0 23 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11.5 12L22 1" stroke="%23093B58" stroke-linecap="round" stroke-linejoin="round"/></svg>');
-    background-repeat: no-repeat;
-    background-size: contain;
-    display: inline-block;
-    position: absolute;
-    top: 55%;
-    right: 19%;
+    top: 60%;
+    right: 15%;
+  }
+
+  .check-box-agreement {
+    padding-left: 10px;
+  }
+  .check-box-agreement input[type="checkbox"] {
+    margin-left: 21px;
   }
 }
