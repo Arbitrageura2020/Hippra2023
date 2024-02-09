@@ -1209,7 +1209,7 @@ input::placeholder {
   background-size: contain;
   display: inline-block;
   position: absolute;
-  top: 65%;
+  top: 67%;
   left: 41%;
 }
 .arrow2::after {
@@ -1221,14 +1221,14 @@ input::placeholder {
   background-size: contain;
   display: inline-block;
   position: absolute;
-  top: 55%;
+  top: 57%;
   right: 19%;
 }
 
 .sub-btn {
   position: relative;
   top: 260px;
-  right: 440px;
+  right: 500px;
 }
 .submit-btn {
   padding: 15px 20px;
@@ -1320,7 +1320,6 @@ input::placeholder {
   height: 102px;
   flex-direction: column;
   justify-content: center;
-  flex-shrink: 0;
   color: #fff;
   font-family: Open Sans;
   font-size: 17px;
@@ -1572,7 +1571,8 @@ input::placeholder {
 
   .rectangle-03,
   .rectangle-04,
-  .rectangle-05 {
+  .rectangle-05,
+  .rectangle-06 {
     width: 100%;
     height: 900px;
   }
@@ -1606,5 +1606,43 @@ input::placeholder {
   }
   .check-box-agreement input[type="checkbox"] {
     margin-left: 21px;
+  }
+
+  .sub-btn {
+    position: relative;
+    top: 160px;
+    right: 0;
+    left: 100px;
+  }
+  .submit-btn {
+    padding: 15px 20px;
+    text-align: center;
+    width: 74px;
+    height: 26px;
+    position: absolute;
+    text-decoration: none;
+  }
+
+  .welcome-hd {
+    letter-spacing: 1px;
+    width: 100%;
+    top: 80px;
+    left: 10px;
+  }
+
+  .ellipse-35 {
+    display: none;
+  }
+
+  .verify-txt {
+    margin-left: 10px;
+  }
+
+  .verify-btn {
+    margin-left: 130px;
+  }
+
+  .resend-email {
+    margin-left: 120px;
   }
 }
