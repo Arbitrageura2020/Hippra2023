@@ -67,11 +67,13 @@
   position: absolute;
   right: 0;
   top: 0;
-  transform: translate(-10px, 13px);
+  transform: translate(-10px, 15px);
   outline: none;
   border: none;
   background-color: transparent;
   cursor: pointer;
+  width: 20px;
+  height: 20px;
 }
 
 .dashboard-case-create .create-case-actions {
@@ -87,7 +89,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
+
+  overflow-y: auto;
 }
+
+
 
 .dashboard-case-item {
   position: relative;

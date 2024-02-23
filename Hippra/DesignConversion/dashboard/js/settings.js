@@ -19,28 +19,9 @@ if (uploadButton) {
   });
 }
 
-// Handle Forgot Password
-const forgotPasswordButton = document.querySelector("#forgotPasswordBtn");
-const forgotPasswordInput = document.querySelectorAll(".forgotPasswordInputs");
+// Handle Password Change Password
 const newPassword = document.querySelector("#newPassword");
 const confirmPassword = document.querySelector("#confirmPassword");
-const passwordChangeSection = document.querySelector(
-  ".settings-password-change"
-);
-
-if (forgotPasswordButton) {
-  forgotPasswordButton.addEventListener("click", () => {
-    forgotPasswordInput.forEach((input) => {
-      if (input.hasAttribute("disabled")) {
-        input.removeAttribute("disabled");
-        passwordChangeSection.classList.add("visible");
-      } else {
-        input.setAttribute("disabled", "disabled");
-        passwordChangeSection.classList.remove("visible");
-      }
-    });
-  });
-}
 
 if (newPassword && confirmPassword) {
   newPassword.addEventListener("input", () => {

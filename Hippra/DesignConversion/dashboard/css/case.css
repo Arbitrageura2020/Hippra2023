@@ -12,15 +12,26 @@
   position: relative;
 }
 
-.case-top-action a {
+.case-top-action button {
   display: flex;
   align-items: center;
-  gap: 0 5px;
+  gap: 0 2px;
   color: var(--green);
   font-size: 1.125rem;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+  background-color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
+
+.main-layout.orange .case-top-action button {
+  color: var(--orange);
+}
+
+.main-layout.orange .case-top-action button svg path {
+  stroke: var(--orange);
 }
 
 .case-content {
@@ -192,6 +203,7 @@
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+  margin-bottom: 5px;
 }
 
 .case-patient-lab p {
@@ -199,13 +211,24 @@
   font-size: 0.875rem;
   font-style: normal;
   font-weight: 400;
-  line-height: normal;
+  line-height: 22px;
 }
 
 /* Tags */
 
 .case-patient-tags {
   position: relative;
+  margin-bottom: 30px;
+  font-family: Roboto;
+}
+
+.case-patient-tags h6 {
+  color: var(--green);
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin-bottom: 5px;
 }
 
 .case-patient-tags ul {
@@ -268,6 +291,10 @@
 }
 
 .case-info-desc {
+  position: relative;
+}
+
+.case-info-desc p {
   font-family: Roboto;
   color: #aaa;
   font-size: 0.875rem;
@@ -317,9 +344,30 @@
   line-height: normal;
   cursor: pointer;
 }
+
 .case-tab-btn.active {
   background-color: var(--green);
   color: #ffffff;
+}
+
+.case-tab-right::after {
+  position: absolute;
+  bottom: 0;
+  content: "";
+  display: block;
+  background-color: var(--green);
+  width: 100%;
+  height: 2px;
+}
+
+.case-tab-left::after {
+  position: absolute;
+  bottom: 0;
+  content: "";
+  display: block;
+  background-color: var(--green);
+  width: 100%;
+  height: 2px;
 }
 
 .case-tab-content {
@@ -327,11 +375,12 @@
 }
 
 .case-tab-content p {
+  font-family: Roboto;
   color: #aaa;
   font-size: 0.875rem;
   font-style: normal;
-  font-weight: 500;
-  line-height: normal;
+  font-weight: 400;
+  line-height: 22px;
 }
 
 .tab-case-one {
@@ -348,6 +397,123 @@
 
 .tab-case-two.active {
   display: block;
+}
+
+/* Case Comment */
+.case-comment {
+  position: relative;
+  padding-right: 55px;
+  padding-left: 55px;
+  margin-bottom: 20px;
+}
+
+.comment-form-box {
+  position: relative;
+}
+
+.case-comment-form {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.comment-form-box input {
+  width: 100%;
+  overflow: hidden;
+}
+
+.comment-form-box button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 16px 25px;
+  border: none;
+  border-radius: 20px;
+  background-color: #39aea9;
+  color: #ffffff;
+  font-family: Roboto;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  border: 2px solid transparent;
+}
+
+.comment-form-box input {
+  width: 100%;
+  border-radius: 20px;
+  background-color: #f1f2f6;
+  padding: 15px;
+  border: 2px solid transparent;
+  outline: none;
+  transition-property: all;
+  transition-timing-function: ease-in-out;
+  transition-duration: 150ms;
+}
+
+.comment-form-box input::placeholder {
+  color: #636468;
+  font-family: Roboto;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.comment-form-box input:focus-visible {
+  border-color: #39aea9;
+}
+
+.case-comments {
+  position: relative;
+}
+
+.case-comment-item {
+  position: relative;
+  display: flex;
+  padding: 15px 20px 15px 20px;
+  align-items: center;
+  border-radius: 12px;
+  border: 1px solid #e0e4ec;
+  background: #ffffff;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.15);
+}
+
+.case-comment-item:not(:last-child) {
+  margin-bottom: 20px;
+}
+
+.comment-info {
+  position: relative;
+  flex: 1;
+  margin-left: 10px;
+}
+
+.comment-info h6 {
+  color: #939393;
+  font-family: "roboto";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-transform: capitalize;
+  margin-bottom: 5px;
+}
+
+.comment-info p {
+  color: #949494;
+  font-family: "roboto";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-transform: capitalize;
+}
+.comment-author {
+  position: relative;
+  width: 45px;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 /********************* Orange Theme *********************/
@@ -368,6 +534,10 @@
   color: var(--orange);
 }
 
+.main-layout.orange .case-patient-tags h6 {
+  color: var(--orange);
+}
+
 .main-layout.orange .case-patient-tags ul li a.active {
   background-color: #ffc6c6;
 }
@@ -383,6 +553,22 @@
 .main-layout.orange .case-tab-btn.active {
   background-color: var(--orange);
   color: #ffffff;
+}
+
+.main-layout.orange .comment-form-box button {
+  background-color: var(--orange);
+}
+
+.main-layout.orange .comment-form-box input:focus-visible {
+  border-color: var(--orange);
+}
+
+.main-layout.orange .case-tab-right::after {
+  background-color: var(--orange);
+}
+
+.main-layout.orange .case-tab-left::after {
+  background-color: var(--orange);
 }
 
 /************** Responsive **************/
@@ -424,5 +610,10 @@
 
   .case-tab-btn {
     font-size: 0.875rem;
+  }
+
+  .case-comment {
+    padding-left: 25px;
+    padding-right: 25px;
   }
 }

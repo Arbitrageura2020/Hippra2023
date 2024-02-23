@@ -24,3 +24,14 @@ caseTabButtons.forEach((item) => {
     document.querySelector(`.${contentTabName}`).classList.add("active");
   });
 });
+
+// Handle Case Page Back
+
+const caseBackButton = document.querySelector(".case-top-action");
+
+if (caseBackButton) {
+  caseBackButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    window.history.back();
+  });
+}

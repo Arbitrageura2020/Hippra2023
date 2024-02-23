@@ -83,7 +83,7 @@
 /* Settings Title */
 .settings-title {
   position: relative;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 
 .settings-title h4 {
@@ -97,9 +97,12 @@
 
 /* Profile Form */
 
-.settings-bot {
+.settings-details {
   position: relative;
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 35px 0;
 }
 
 .settings-profile {
@@ -185,7 +188,11 @@
 .settings-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0 20px;
+  gap: 0 40px;
+}
+
+.settings-single {
+  grid-column: span 2;
 }
 
 .settings-form {
@@ -211,7 +218,7 @@
   margin-bottom: 15px;
 }
 
-.settings-password-action button {
+.settings-password-action a {
   display: block;
   background: none;
   text-decoration: underline;
