@@ -1,6 +1,12 @@
 ﻿@inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
+<HeadContent>
+    <!-- Globle CSS  -->
+    <link rel="stylesheet" href="./css/main.css">
 
+    <!-- Dashboard  -->
+    <link rel="stylesheet" href="./css/dashboard.css">
+</HeadContent>
 <Sidebar ToggleModeChanged="@ToggleSidebar" />
 <!-- Main Content Start -->
 <main class="main @(HasSidebar?"":"sidebar-expand")">

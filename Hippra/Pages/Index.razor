@@ -27,10 +27,10 @@
 @inject ProfileService pService
 @inject HippraService hService
 @inject IAuthorizationService AuthorizationService
-
+@layout LandingLayout
 <AuthorizeView>
 	<Authorized Context="HomeContext">
-		<DashboardIndex></DashboardIndex>
+	@* 	<DashboardIndex></DashboardIndex> *@
 	</Authorized>
 	<NotAuthorized>
 		<Landing></Landing>

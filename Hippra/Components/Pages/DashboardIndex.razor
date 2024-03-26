@@ -1,5 +1,5 @@
 ﻿@page "/dashboardindex"
-
+@layout MainLayout
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authorization
@@ -27,7 +27,7 @@
 @inject ProfileService pService
 @inject HippraService hService
 @inject IAuthorizationService AuthorizationService
-
+@attribute [Authorize]
 <h1>Dashboard</h1>
 
 <FTSubHeaderBar Title="" HasSeparator="false">
