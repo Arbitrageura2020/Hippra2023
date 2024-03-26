@@ -1,0 +1,222 @@
+﻿@inject IJSRuntime JSRuntime;
+
+<!-- Nav Search -->
+<div class="nav-search" onclick="toggleSearchDropdown()">
+    <form action="#">
+        <div class="nav-search-box">
+            <div class="nav-search-bar">
+                <!-- Search Input -->
+                <input id="nav-search" type="search" name="" placeholder="Search">
+                <!-- Search Dropdown -->
+                <div id="search-dropdown" class="nav-search-dropdown">
+                    <div class="search-dropdown-inner">
+                        <div class="recent-search">
+                            <ul>
+                                <!-- Recent Search Loop Here -->
+                                <li>
+                                    <a href="./search.html">
+                                        <img src="./img/icons/search.svg" alt="" /> <span>
+                                            recent search topic
+                                            1
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="./search.html">
+                                        <img src="./img/icons/search.svg" alt="" /> <span>
+                                            recent search topic
+                                            2
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="./search.html">
+                                        <img src="./img/icons/search.svg" alt="" /> <span>
+                                            recent search topic
+                                            3
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <hr>
+                        </div>
+                        <!-- Ask Topics -->
+                        <div class="ask-topics">
+                            <div class="search-dropdown-title">
+                                <h4>Ask-4-Help Cases</h4>
+                            </div>
+                            <div class="search-dropdown-list">
+                                <!-- Ask-4 Case Loop Here -->
+                                <a href="" class="search-dropdown-item orange">
+                                    <div class="dropdown-item-img">
+                                        <img src="./img/icons/book.svg" alt="">
+                                    </div>
+                                    <div class="dropdown-item-info">
+                                        <h4 href="#">Acute loss of taste after fever?</h4>
+                                        <p>Ask-4-Help</p>
+                                    </div>
+                                </a>
+                                <a href="" class="search-dropdown-item orange">
+                                    <div class="dropdown-item-img">
+                                        <img src="./img/icons/book.svg" alt="">
+                                    </div>
+                                    <div class="dropdown-item-info">
+                                        <h4 href="#">Acute loss of taste after fever?</h4>
+                                        <p>Ask-4-Help</p>
+                                    </div>
+                                </a>
+                                <a href="" class="search-dropdown-item orange">
+                                    <div class="dropdown-item-img">
+                                        <img src="./img/icons/book.svg" alt="">
+                                    </div>
+                                    <div class="dropdown-item-info">
+                                        <h4 href="#">Acute loss of taste after fever?</h4>
+                                        <p>Ask-4-Help</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Knowledge Cases -->
+                        <div class="knowledge-cases">
+                            <div class="search-dropdown-title">
+                                <h4>Clinical Knowledge Cases</h4>
+                            </div>
+                            <div class="search-dropdown-list">
+                                <!-- Knowledge Case Loop Here -->
+                                <a href="" class="search-dropdown-item ">
+                                    <div class="dropdown-item-img">
+                                        <img src="./img/icons/knowledge.svg" alt="">
+                                    </div>
+                                    <div class="dropdown-item-info">
+                                        <h4 href="#">Acute loss of taste after fever?</h4>
+                                        <p>Ask-4-Help</p>
+                                    </div>
+                                </a>
+                                <a href="" class="search-dropdown-item ">
+                                    <div class="dropdown-item-img">
+                                        <img src="./img/icons/knowledge.svg" alt="">
+                                    </div>
+                                    <div class="dropdown-item-info">
+                                        <h4 href="#">Acute loss of taste after fever?</h4>
+                                        <p>Ask-4-Help</p>
+                                    </div>
+                                </a>
+                                <a href="" class="search-dropdown-item ">
+                                    <div class="dropdown-item-img">
+                                        <img src="./img/icons/knowledge.svg" alt="">
+                                    </div>
+                                    <div class="dropdown-item-info">
+                                        <h4 href="#">Acute loss of taste after fever?</h4>
+                                        <p>Ask-4-Help</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Search Filter -->
+            <div class="nav-search-filter" onclick="toggleSearchFilter()">
+                <!-- Search Filter Button -->
+                <button id="search-filter" type="button">
+                    <img id="search-filter-icon"
+                         src="./img/icons/search-settings.svg" alt="search">
+                </button>
+
+                <!-- Search Filter Box -->
+                <div id="search-filter-box" class="search-filter-box">
+                    <div class="filter-box-inner">
+                        <div class="form-group search-filter-group">
+                            <label for="">Category:</label>
+                            <div class="form-select-wrapper">
+                                <select class="filter-select" name="">
+                                    <option value="" selected hidden>All Categories</option>
+                                    <option value="option1">Option 1</option>
+                                    <option value="option2">Option 2</option>
+                                    <option value="option3">Option 3</option>
+                                </select>
+                                <img src="./img/icons/chevron-down.svg" alt="">
+                            </div>
+                        </div>
+                        <div class="form-group search-filter-group">
+                            <label for="">Tags:</label>
+                            <div class="form-select-wrapper mini">
+                                <select class="filter-select tag" name="">
+                                    <option value="" selected hidden>All Tags</option>
+                                    <option value="option1">Option 1</option>
+                                    <option value="option2">Option 2</option>
+                                    <option value="option3">Option 3</option>
+                                </select>
+                                <img src="./img/icons/chevron-down.svg" alt="">
+                            </div>
+                        </div>
+                        <div class="form-group search-filter-group">
+                            <label for="" class="search-label">Priority:</label>
+                            <div class="form-select-wrapper">
+                                <select class="filter-select" name="">
+                                    <option value="" selected hidden>Select</option>
+                                    <option value="option1">Option 1</option>
+                                    <option value="option2">Option 2</option>
+                                    <option value="option3">Option 3</option>
+                                </select>
+                                <img src="./img/icons/chevron-down.svg" alt="">
+                            </div>
+                        </div>
+                        <div class="form-group search-filter-group">
+                            <label for="" class="search-label">Time:</label>
+                            <div class="form-select-wrapper">
+                                <select class="filter-select" name="">
+                                    <option value="" selected hidden>Select</option>
+                                    <option value="option1">Option 1</option>
+                                    <option value="option2">Option 2</option>
+                                    <option value="option3">Option 3</option>
+                                </select>
+                                <img src="./img/icons/chevron-down.svg" alt="">
+                            </div>
+                        </div>
+                        <div class="form-group search-filter-group checkbox">
+                            <label for="checkbox" class="text">Show closed cases</label>
+                            <input class="form-checkbox" type="checkbox" id="checkbox" value="red" />
+                            <label for="checkbox" class="custom-checkbox"></label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+@code {
+
+    private bool IsMinMode { get; set; } = false;
+    private string SidebarCssClass { get; set; } = "ft-sidebar";
+    private string SidebarCustomCssClass { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsMinMode = false;
+    }
+
+
+
+    private async Task ToggleMode()
+    {
+        IsMinMode = !IsMinMode;
+        // if (!IsMinMode)
+        // {
+        //     SidebarCssClass = "ft-sidebar";
+        // }
+        // else
+        // {
+        //     SidebarCssClass = "ft-sidebar-min";
+        // }
+        this.StateHasChanged();
+
+    }
+
+    // private async Task wBack()
+    // {
+    //     //await JSRuntime.InvokeAsync<string>("fireAlert","");
+    //     await JSRuntime.InvokeVoidAsync("toggleSidebar");
+    // }
+}

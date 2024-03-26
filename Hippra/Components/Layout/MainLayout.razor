@@ -1,0 +1,144 @@
+﻿@inherits LayoutComponentBase
+@inject IJSRuntime JSRuntime
+
+<Sidebar ToggleModeChanged="@ToggleSidebar" />
+<!-- Main Content Start -->
+<main class="main @(HasSidebar?"":"sidebar-expand")">
+    <!-- Main Navigation Start -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-inner">
+                <!-- Nav Logo -->
+                <div class="nav-logo">
+                    <img src="./img/logo.png" alt="">
+                </div>
+                @* <NavSearch/> *@
+                <!-- Nav Control -->
+                <div class="nav-control">
+                    <div class="nav-notification">
+                        <a href="notifications.html">
+                            <svg width="27" height="30" viewBox="0 0 27 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13.3933 2.45093C8.31655 2.45093 4.19075 6.1276 4.19075 10.6517V14.6018C4.19075 15.4355 3.79197 16.7066 3.31651 17.4173L1.55269 20.0279C0.463722 21.6407 1.21526 23.4312 3.20914 24.0326C9.81962 26.0008 16.9516 26.0008 23.5621 24.0326C25.4179 23.4859 26.2308 21.5314 25.2185 20.0279L23.5621 17.4174C22.9951 16.4966 22.5958 15.4369 22.5958 14.6018V11.0713C22.6516 10.6506 22.6185 9.66459 22.0396 9.08564"
+                                      stroke="#40454A" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" />
+                                <path d="M16.2293 2.84716C15.7539 2.72415 15.2631 2.62847 14.7569 2.5738C13.2845 2.40978 11.8735 2.50546 10.5544 2.84716C10.9992 1.83573 12.1035 1.125 13.3919 1.125C14.6802 1.125 15.7845 1.83573 16.2293 2.84716Z"
+                                      stroke="#40454A" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round"
+                                      stroke-linejoin="round" />
+                                <path d="M17.9925 24.5249C17.9925 26.7801 15.922 28.6253 13.3913 28.6253C12.1336 28.6253 10.9679 28.1606 10.1397 27.4225C9.31152 26.6844 8.79004 25.6457 8.79004 24.5249"
+                                      stroke="#40454A" stroke-width="1.5" stroke-miterlimit="10" />
+                                <path class="dot"
+                                      d="M20.4111 9.42682C22.3096 9.42682 23.8486 7.8924 23.8486 5.99961C23.8486 4.10681 22.3096 2.57239 20.4111 2.57239C18.5127 2.57239 16.9736 4.10681 16.9736 5.99961C16.9736 7.8924 18.5127 9.42682 20.4111 9.42682Z"
+                                      stroke="#40454A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                        <span class="nav-notification-count">10</span>
+                    </div>
+                    <div class="nav-profile">
+                        <button class="profile-btn" @onclick="ToggleProfileDropdown">
+                            <img class="profile-img"
+                                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU"
+                                 alt="">
+                            <img class="profile-icon" src="./img/icons/chevron-down.svg" alt="">
+                        </button>
+                        <!-- Nav Profile Dropdown -->
+                        @if (ShowProfileDropdown)
+                        {
+                            <div class="nav-profile-dropdown visible">
+                                <div class="nav-profile-dropdown-inner">
+                                    <div class="nav-dropdown-user">
+                                        <div class="nav-dropdown-user-img">
+                                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU"
+                                                 alt="">
+                                        </div>
+                                        <div class="nav-dropdown-user-info">
+                                            <h4>Mary Kate</h4>
+                                            <p>Nurse Practitioner</p>
+                                        </div>
+                                    </div>
+                                    <div class="nav-dropdown-links">
+                                        <ul>
+                                            <li>
+                                                <a href="profile.html">
+                                                    <img src="./img/icons/profile-settings.svg" alt=""> <span>
+                                                        Profile
+                                                        Settings
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="profile.html">
+                                                    <img src="./img/icons/help-center.svg" alt=""> <span>
+                                                        Help
+                                                        Center
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="profile.html">
+                                                    <img src="./img/icons/upgrade-tier.svg" alt=""> <span>
+                                                        Upgrade
+                                                        Tier
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="FTLogoff" class="logout"><img src="./img/icons/logout.svg" alt=""> <span>Signout</span></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </nav>
+    <!-- Main Navigation Start -->
+    <!-- Main Content -->
+    <!-- Add the "orange" class to the "main-layout" to apply the orange theme. -->
+    <div class="main-layout">
+
+        <div class="container">
+            @Body
+        </div>
+    </div>
+</main>
+
+
+@code {
+
+    public bool HasSidebar = false;
+
+    public bool ShowProfileDropdown = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+    }
+
+    public void ToggleProfileDropdown()
+    {
+        ShowProfileDropdown = !ShowProfileDropdown;
+    }
+
+
+    public void ToggleSidebar()
+    {
+        HasSidebar = !HasSidebar;
+    }
+
+    // private async Task ToggleProfileDropdown()
+    // {
+    //     await JSRuntime.InvokeVoidAsync("HandleProfileDropdown");
+        // }
+
+
+
+
+
+
+
+}

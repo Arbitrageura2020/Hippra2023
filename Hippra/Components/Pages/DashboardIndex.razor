@@ -1,0 +1,2347 @@
+﻿@page "/dashboardindex"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@using Hippra.Models.FTDesign
+@using Hippra.Services
+@using Hippra.Models.SQL
+@using Hippra.Models.Enums
+@using Hippra.Extensions
+@using Hippra.Pages.Common
+@using Hippra.Pages.FTDesign.Features
+@using Hippra.Pages.FTDesign
+@using Hippra.Pages.Home
+@using Hippra.Pages.MCase
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
+@inject IJSRuntime JSRuntime
+@*@inject SignInManager<AppUser> SignInManager
+	@inject UserManager<AppUser> UserManager*@
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject ProfileService pService
+@inject HippraService hService
+@inject IAuthorizationService AuthorizationService
+
+<h1>Dashboard</h1>
+
+<FTSubHeaderBar Title="" HasSeparator="false">
+
+    <div class="btn-group-toggle" data-toggle="buttons">
+        <label class="btn  btn-outline-dark @cssAllActive" @onclick="(e=>ShowAllCases())">
+            <input type="radio" name="options" id="option1" autocomplete="off" checked> All Cases
+        </label>
+        <label class="btn  btn-outline-dark @cssMyActive" @onclick="(e=>ShowMyCases())">
+            <input type="radio" name="options" id="option2" autocomplete="off"> My Cases
+        </label>
+    </div>
+
+    <div class="flex-grow-1">  </div>
+    <div>
+        @if (Version2)
+        {
+            <button type="button" class="btn my-1 btn-outline-dark" data-backdrop="static" @onclick="(e=>NavToCreateCase())">
+                <i class="fas fa-plus"></i> Create Case
+            </button>
+        }
+        else
+        {
+            <button type="button" class="btn my-1 btn-outline-dark" data-backdrop="static" @onclick="(e=>OpenCreateModal())">
+                <i class="fas fa-plus"></i> Create Case
+            </button>
+        }
+
+
+    </div>
+
+</FTSubHeaderBar>
+<div class="ft-main-px">
+
+    <div class="card">
+        <div class="card-body">
+            @*<div class="btn btn-primary" @onclick="toggerVersion">Toggle UI Version: @verStr</div>*@
+
+
+            @*<div>
+            count: @Count
+            </div>
+            <div>
+            currentPage: @CurrentPage
+            </div>
+            <div>
+            @debug
+            </div>
+            <div class="d-block text-center">
+            <div class="row">
+
+            </div>
+            </div>
+            *@
+            @*<div class="alert alert-primary" role="alert">
+            This is a dev demo build!
+            </div>*@
+
+
+            <br />
+            <div class="d-block text-center">
+                <div class="row">
+                    <div class="offset-md-2 col-md-8 offset-md-2 text-left">
+                        @if (actionOptions == 1)
+                        {
+                            <div class="mb-3 display-4 ">My Cases</div>
+                        }
+                        else
+                        {
+                            <div class="mb-3 display-4 ">All Cases</div>
+                        }
+                        <br />
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <div>
+                                    <EditForm Model="@searchString" OnValidSubmit="@searchHandler">
+                                        <div class="input-group">
+                                            <InputText class="form-control" style="height:40px" placeholder="Search Topic" @bind-Value="@searchString" />
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="submit">Search</button>
+                                                <button type="button" class="btn btn-outline-info" @onclick="@toggleFilters"><i class="ms-Icon ms-Icon--Filter" aria-hidden="true"></i></button>
+                                            </div>
+
+                                        </div>
+                                    </EditForm>
+
+                                </div>
+                                @if (showFilters)
+                                {
+                                    <div class="card-footer text-muted text-left">
+                                        <div class="px-4">
+                                            <EditForm Model="@filters" OnValidSubmit="@searchHandler">
+                                                <div class="row d-flex align-items-center">
+                                                    <div class="flex-grow-1 ">
+                                                        <div class="form-check">
+                                                            <InputCheckbox class="form-check-input" type="checkbox" id="showClosed" @bind-Value="filters.showClosed" />
+                                                            <label class="form-check-label" for="showClosed">
+                                                                Show Closed Cases
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <InputCheckbox class="form-check-input" type="checkbox" id="showTagOnly" @bind-Value="filters.showTagOnly" />
+                                                            <label class="form-check-label" for="showTagOnly">
+                                                                Show Result Contain Tag
+                                                            </label>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <label for="CategoryFilter">Category</label>
+                                                                <select id="CategoryFilter" @onchange=@UpdateSubCategoryFilter>
+                                                                    <option value="-1">All Categories</option>
+                                                                    <option value="0">Diagnostics</option>
+                                                                    <option value="1">Medicine</option>
+                                                                    <option value="2">Surgery</option>
+                                                                </select>
+                                                                <InputSelect id="SubCategoryFilter" @bind-Value="@filters.SubCategory">
+                                                                    @foreach (var h in SubCategoryFilterList)
+                                                                    {
+                                                                        <option value="@h.Value">@h.Text</option>
+                                                                    }
+                                                                    /**/
+                                                                    /**/
+                                                                </InputSelect>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <label for="PriorityFilter">Priority</label>
+                                                                <select id="PriorityFilter" @onchange="@UpdatePriority">
+                                                                    <option value="-1">All</option>
+                                                                    <option value="0">Stat</option>
+                                                                    <option value="1">Over Coffee</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <button class="btn btn-outline-secondary" type="submit">Filter</button>
+                                                    </div>
+                                                </div>
+
+
+                                            </EditForm>
+                                        </div>
+
+                                    </div>
+                                }
+
+
+                            </div>
+
+                        </div>
+                        <br />
+                        <hr />
+                        <br />
+                        <div class="mb-3">
+
+                            @if (IsLoading)
+                            {
+                                <p><em>Searching...</em></p>
+                            }
+                            else
+                            {
+                                @if (Count > 0)
+                                {
+
+                                    foreach (var c in SearchResults)
+                                    {
+                                        <a class="hover-class" href=@($"/viewcase/{c.ID}")>
+                                            <div id="search-result" class="border border-dark rounded p-4 mb-2 hover-class">
+                                                <div class="row">
+                                                    <div class="col-md-9 align-self-center">
+                                                        <h4 class="">@c.Topic</h4>
+                                                        <div class=""><strong></strong>@c.ParsedCategory · @c.ParsedSubCategory</div>
+
+                                                        <hr />
+                                                    </div>
+                                                    <div class="col-md-3 text-right">
+
+                                                        <div class="">Priority: @c.Priority</div>
+                                                        <div class="">@c.DateCreated</div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        @*<div class=""><strong>Category: </strong> @c.ParsedCategory · @c.ParsedSubCategory</div>*@
+                                                        <div class=""><strong>Description:</strong> @c.Description.Left(200)</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </a>
+
+                                    }
+                                }
+                                else
+                                {
+                                    <div>No Case Found. Try Modify Search Criteria or Filter.</div>
+                                }
+
+                            }
+                        </div>
+                        @if (Count > PageSize)
+                        {
+                            <div class="mb-3">
+                                <br />
+                                <hr />
+                                <br />
+                                <FTPagination paginationData="paginationData" ChangePage="ChangePage" />
+                                <br />
+                            </div>
+
+                        }
+
+                        <br />
+                    </div>
+                </div>
+                <br /><br />
+            </div>
+            <br />
+            <br />
+        </div>
+    </div>
+
+
+</div>
+
+
+<!-- Modal -->
+<div id="mPostModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pTitle">@mTitle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            @*<EditBar />*@
+
+
+            @if (@mIsCreate)
+            {
+                <EditForm Model="@pCase" OnValidSubmit="@AddPost">
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div>
+                            <p><small>Please fill in all the case requirements listed below and provide complete details like case summary, patient information, diagnosis/treatment considered, outcomes, etc. to aid the physicians in the Hippra network to give proper/adquate advice.</small></p>
+
+                        </div>
+                        <div class="form-group">
+                            <InputText class="form-control" required placeholder="Topic" @bind-Value="@pCase.Topic" />
+                        </div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" required placeholder="Description" @bind-Value="@pCase.Description" row="12" />
+                        </div>
+
+
+                        <hr />
+                        <div class="form-group">
+                            <div>Priority</div>
+                            <InputRadioGroup Name="rate" @bind-Value="priorityRadio.Priority">
+                                Priority
+                                <br>
+                                <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
+                                <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
+                            </InputRadioGroup>
+
+                            @*<label>
+                        <InputRadio name="rate" SelectedValue="0" @bind-Value="@priorityRadio.Priority" />
+                        High
+                        </label>
+                        <label>
+                        <InputRadio name="rate" SelectedValue="1" @bind-Value="@priorityRadio.Priority" />
+                        Medium
+                        </label>
+                        <label>
+                        <InputRadio name="rate" SelectedValue="2" @bind-Value="@priorityRadio.Priority" />
+                        Low
+                        </label>*@
+                        </div>
+                        <div class="form-group">
+                            <div>Patient Age</div>
+                            <InputNumber class="form-control" required placeholder="Age" @bind-Value="@pCase.PatientAge" />
+                        </div>
+
+                        @*add other fields*@
+                        <div class=" mb-3">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="Category">Category</label>
+                                    @*<InputSelect id="Category" @bind-Value="@bCategory" onchange=@UpdateSubCategory>
+                                @foreach (var g in CategoryList)
+                                {
+                                <option value="@g.Value">@g.Text</option>
+                                }
+                                </InputSelect>*@
+                                    <select id="Category" @onchange=@UpdateSubCategory>
+                                        <option value="0" selected>Diagnostics</option>
+                                        <option value="1">Medicine</option>
+                                        <option value="2">Surgery</option>
+                                    </select>
+
+                                </div>
+                                <div class="col">
+                                    <label for="SubCategory">Sub-Category</label>
+                                    <InputSelect id="SubCategory" @bind-Value="@bSubCategory">
+                                        @foreach (var h in SubCategoryList)
+                                        {
+                                            <option value="@h.Value">@h.Text</option>
+                                        }
+                                        /**/
+
+
+                                    </InputSelect>
+                                </div>
+                            </div>
+
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+                        <div class=" mb-3">
+                            <label for="Gender">Gender</label>
+                            <InputSelect id="Gender" @bind-Value="@bGender">
+                                @foreach (var i in GenderList)
+                                {
+                                    <option value="@i.Value">@i.Text</option>
+                                }
+                                /**/
+
+                            </InputSelect>
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+                        <div class=" mb-3">
+                            <label for="Race">Race</label>
+                            <InputSelect id="Race" @bind-Value="@bRace">
+                                @foreach (var j in RaceList)
+                                {
+                                    <option value="@j.Value">@j.Text</option>
+                                }
+                                /**/
+
+
+                            </InputSelect>
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+                        <div class=" mb-3">
+                            <label for="Ethnicity">Ethnicity</label>
+                            <InputSelect id="Ethnicity" @bind-Value="@bEthnicity">
+                                @foreach (var k in EthnicityList)
+                                {
+                                    <option value="@k.Value">@k.Text</option>
+                                }
+                                /**/
+
+                            </InputSelect>
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Lab Values" @bind-Value="@pCase.LabValues" row="12" />
+                        </div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Current Stage of Disease" @bind-Value="@pCase.CurrentStageOfDisease" row="12" />
+                        </div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Current Treatment Administered" @bind-Value="@pCase.CurrentTreatmentAdministered" row="12" />
+                        </div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Treatment Outcomes" @bind-Value="@pCase.TreatmentOutcomes" row="12" />
+                        </div>
+                        <div>
+                            Add Images Here:
+                            <ImgUpload></ImgUpload>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="create-button" type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </EditForm>
+            }
+            else
+            {
+                <EditForm Model="@pCase" OnValidSubmit="@EditPost">
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div>
+                            <p><small>Please fill in all the case requirements listed below and provide complete details like case summary, patient information, diagnosis/treatment considered, outcomes, etc. to aid the physicians in the Hippra network to give proper/adquate advice.</small></p>
+
+                        </div>
+                        <div class="form-group">
+                            <InputText class="form-control" required placeholder="Topic" @bind-Value="@pCase.Topic" />
+                        </div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" required placeholder="Description" @bind-Value="@pCase.Description" row="12" />
+                        </div>
+
+
+                        <hr />
+                        <div class="form-group">
+                            <div>Priority</div>
+                            <InputRadioGroup Name="rate" @bind-Value="priorityRadio.Priority">
+                                Priority
+                                <br>
+                                <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
+                                <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
+                            </InputRadioGroup>
+                            @*<label>
+                        <InputRadio name="rate" SelectedValue="0" @bind-Value="@priorityRadio.Priority" />
+                        High
+                        </label>
+                        <label>
+                        <InputRadio name="rate" SelectedValue="1" @bind-Value="@priorityRadio.Priority" />
+                        Medium
+                        </label>
+                        <label>
+                        <InputRadio name="rate" SelectedValue="2" @bind-Value="@priorityRadio.Priority" />
+                        Low
+                        </label>*@
+                        </div>
+                        <div class="form-group">
+                            <div>Patient Age</div>
+                            <InputNumber class="form-control" required placeholder="Age" @bind-Value="@pCase.PatientAge" />
+                        </div>
+
+                        @*add other fields*@
+                        <div class=" mb-3">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="Category">Category</label>
+                                    @*<InputSelect id="Category" @bind-Value="@bCategory" onchange=@UpdateSubCategory>
+                                @foreach (var g in CategoryList)
+                                {
+                                <option value="@g.Value">@g.Text</option>
+                                }
+                                </InputSelect>*@
+                                    @if (ParseCategoryValueFromSub(pCase.MedicalCategory) == "0")
+                                    {
+                                        <select id="Category" @onchange=@UpdateSubCategory>
+                                            <option value="0" selected>Diagnostics</option>
+                                            <option value="1">Medicine</option>
+                                            <option value="2">Surgery</option>
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        if (ParseCategoryValueFromSub(pCase.MedicalCategory) == "1")
+                                        {
+                                            <select id="Category" @onchange=@UpdateSubCategory>
+                                                <option value="0">Diagnostics</option>
+                                                <option value="1" selected>Medicine</option>
+                                                <option value="2">Surgery</option>
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <select id="Category" @onchange=@UpdateSubCategory>
+                                                <option value="0" selected>Diagnostics</option>
+                                                <option value="1">Medicine</option>
+                                                <option value="2" selected>Surgery</option>
+                                            </select>
+                                        }
+                                    }
+
+                                </div>
+                                <div class="col">
+                                    <label for="SubCategory">Sub-Category</label>
+                                    <InputSelect id="SubCategory" @bind-Value="@bSubCategory">
+                                        @foreach (var h in SubCategoryList)
+                                        {
+                                            <option value="@h.Value">@h.Text</option>
+                                        }
+                                        /**/
+
+
+                                    </InputSelect>
+                                </div>
+                            </div>
+
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+                        <div class=" mb-3">
+                            <label for="Gender">Gender</label>
+                            <InputSelect id="Gender" @bind-Value="@bGender">
+                                @foreach (var i in GenderList)
+                                {
+                                    <option value="@i.Value">@i.Text</option>
+                                }
+                                /**/
+
+                            </InputSelect>
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+                        <div class=" mb-3">
+                            <label for="Race">Race</label>
+                            <InputSelect id="Race" @bind-Value="@bRace">
+                                @foreach (var j in RaceList)
+                                {
+                                    <option value="@j.Value">@j.Text</option>
+                                }
+                                /**/
+
+
+                            </InputSelect>
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+                        <div class=" mb-3">
+                            <label for="Ethnicity">Ethnicity</label>
+                            <InputSelect id="Ethnicity" @bind-Value="@bEthnicity">
+                                @foreach (var k in EthnicityList)
+                                {
+                                    <option value="@k.Value">@k.Text</option>
+                                }
+                                /**/
+
+                            </InputSelect>
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+
+                        <div>Lab Values</div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Lab Values" @bind-Value="@pCase.LabValues" row="12" />
+                        </div>
+                        <div>Current Stage of Disease</div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Current Stage of Disease" @bind-Value="@pCase.CurrentStageOfDisease" row="12" />
+                        </div>
+                        <div>Current Treatment Administered</div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Current Treatment Administered" @bind-Value="@pCase.CurrentTreatmentAdministered" row="12" />
+                        </div>
+                        <div>Treatment Outcomes</div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Treatment Outcomes" @bind-Value="@pCase.TreatmentOutcomes" row="12" />
+                        </div>
+                        <div>
+                            @if (userId == pCase.PosterID)
+                            {
+                                <div class="modal-footer">
+
+                                    @if (pCase.Status)
+                                    {
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Close Case</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Reopen Case</button>
+                                    }
+
+
+                                </div>
+                            }
+                        </div>
+                        <div>
+                            Add Images Here:
+                            <ImgUpload></ImgUpload>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="create-button" type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </EditForm>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+@if (pCase.ID != 0)
+{
+    <div id="viewPostModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pTitle">Case Details </h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                @if (viewMode)
+                {
+                    <div class="modal-body">
+
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="lead">Case Summary</div>
+                            </div>
+                            <div class="col text-right">
+                                @if (pCase.PosterID == userId)
+                                {
+                                    <button type="button" class="btn btn-secondary" @onclick="@switchEditMode">Edit Case</button>
+                                }
+                            </div>
+                        </div>
+                        <div class="py-5 row justify-content-center">
+                            <div class="col-md-2">
+                            </div>
+                            <div class="col-md-8">
+
+                                <h4 class="" id="vmTitle">@pCase.Topic</h4>
+                                <div class="" id="vmCategory"><small>@pCase.ParsedCategory · <span class="text-black-50">@pCase.ParsedSubCategory</span></small></div>
+
+                                <hr />
+                                <div class=""> Description: @((MarkupString)@pCase.Description)</div>
+                            </div>
+                            <div class="col-md-2">
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="lead">Patient Information</div>
+                        <div class="py-5 row justify-content-center">
+                            <div class="col-md-2">
+                            </div>
+                            <div class="col-md-8" id="vmContent">
+                                <div class="">Age: @pCase.PatientAge</div>
+                                <div class="">Gender: @pCase.ParsedGender</div>
+                                <div class="">Race: @pCase.ParsedRace</div>
+                                <div class="">Ethnicity: @pCase.ParsedEthnicity</div>
+                                <br />
+                                <div class="">Lab Values: @pCase.LabValues</div>
+                                <div class="">Current Stage of Disease: @pCase.CurrentStageOfDisease</div>
+                                <div class="">Current Treatment Administered: @pCase.CurrentTreatmentAdministered </div>
+                                <div class="">Treatment Outcomes: @pCase.TreatmentOutcomes</div>
+                            </div>
+                            <div class="col-md-2">
+                            </div>
+                        </div>
+                        <div class="lead">Case Information</div>
+                        <div class="py-5 row justify-content-center">
+                            <div class="col-md-2">
+                            </div>
+                            <div class="col-md-8">
+                                <div class=""><strong>Created By:</strong> @pCase.PosterName <span class="text-black-50"> (@pCase.PosterSpecialty) </span></div>
+                                <div><strong>Case Status:</strong> @pCase.ParsedStatus</div>
+                                <div><strong>Priority:</strong> @pCase.Priority</div>
+                                <div><strong>Date Created:</strong> @pCase.DateCreated.ToShortDateString() </div>
+                                <div><strong>Last Updated:</strong> @pCase.DateLastUpdated.ToShortDateString()</div>
+                            </div>
+                            <div class="col-md-2">
+                            </div>
+                        </div>
+
+                        <div class="pb-5 row justify-content-center">
+                            <div class="col-md-8" id="vmf">
+                                <FTComments postId="@pCase.ID" CommentList="@pCase.Comments" isOpened="true" />
+                            </div>
+                        </div>
+
+                    </div>
+                }
+                else
+                {
+                    <EditForm Model="@pCase" OnValidSubmit="@EditPost">
+                        <div class="modal-body">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+                            <div>
+                                <p><small>Please fill in all the case requirements listed below and provide complete details like case summary, patient information, diagnosis/treatment considered, outcomes, etc. to aid the physicians in the Hippra network to give proper/adquate advice.</small></p>
+
+                            </div>
+                            <div class="form-group">
+
+
+
+                                <InputText class="form-control" required placeholder="Topic" @bind-Value="@pCase.Topic" />
+                            </div>
+                            <div class="form-group">
+                                <InputTextArea class="form-control" required placeholder="Description" @bind-Value="@pCase.Description" row="12" />
+                            </div>
+
+
+                            <hr />
+                            <div class="form-group">
+                                <div>Priority</div>
+                                <InputRadioGroup Name="rate" @bind-Value="priorityRadio.Priority">
+                                    Priority
+                                    <br>
+                                    <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
+                                    <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                    @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
+                                </InputRadioGroup>
+                                @*<label>
+                        <InputRadio name="rate" SelectedValue="0" @bind-Value="@priorityRadio.Priority" />
+                        High
+                        </label>
+                        <label>
+                        <InputRadio name="rate" SelectedValue="1" @bind-Value="@priorityRadio.Priority" />
+                        Medium
+                        </label>
+                        <label>
+                        <InputRadio name="rate" SelectedValue="2" @bind-Value="@priorityRadio.Priority" />
+                        Low
+                        </label>*@
+                            </div>
+                            <div class="form-group">
+                                <div>Patient Age</div>
+                                <InputNumber class="form-control" required placeholder="Age" @bind-Value="@pCase.PatientAge" />
+                            </div>
+
+                            @*add other fields*@
+                            <div class=" mb-3">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="Category">Category</label>
+                                        @*<InputSelect id="Category" @bind-Value="@bCategory" onchange=@UpdateSubCategory>
+                                @foreach (var g in CategoryList)
+                                {
+                                <option value="@g.Value">@g.Text</option>
+                                }
+                                </InputSelect>*@
+                                        @if (ParseCategoryValueFromSub(pCase.MedicalCategory) == "0")
+                                        {
+                                            <select id="Category" @onchange=@UpdateSubCategory>
+                                                <option value="0" selected>Diagnostics</option>
+                                                <option value="1">Medicine</option>
+                                                <option value="2">Surgery</option>
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            if (ParseCategoryValueFromSub(pCase.MedicalCategory) == "1")
+                                            {
+                                                <select id="Category" @onchange=@UpdateSubCategory>
+                                                    <option value="0">Diagnostics</option>
+                                                    <option value="1" selected>Medicine</option>
+                                                    <option value="2">Surgery</option>
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <select id="Category" @onchange=@UpdateSubCategory>
+                                                    <option value="0" selected>Diagnostics</option>
+                                                    <option value="1">Medicine</option>
+                                                    <option value="2" selected>Surgery</option>
+                                                </select>
+                                            }
+                                        }
+
+                                    </div>
+                                    <div class="col">
+                                        <label for="SubCategory">Sub-Category</label>
+                                        <InputSelect id="SubCategory" @bind-Value="@bSubCategory">
+                                            @foreach (var h in SubCategoryList)
+                                            {
+                                                <option value="@h.Value">@h.Text</option>
+                                            }
+                                            /**/
+                                            /**/
+
+
+                                        </InputSelect>
+                                    </div>
+                                </div>
+
+                                <div class="small text-muted">
+                                    You can change this later
+                                </div>
+                            </div>
+                            <div class=" mb-3">
+                                <label for="Gender">Gender</label>
+                                <InputSelect id="Gender" @bind-Value="@bGender">
+                                    @foreach (var i in GenderList)
+                                    {
+                                        <option value="@i.Value">@i.Text</option>
+                                    }
+                                    /**/
+                                    /**/
+
+                                </InputSelect>
+                                <div class="small text-muted">
+                                    You can change this later
+                                </div>
+                            </div>
+                            <div class=" mb-3">
+                                <label for="Race">Race</label>
+                                <InputSelect id="Race" @bind-Value="@bRace">
+                                    @foreach (var j in RaceList)
+                                    {
+                                        <option value="@j.Value">@j.Text</option>
+                                    }
+                                    /**/
+                                    /**/
+
+
+                                </InputSelect>
+                                <div class="small text-muted">
+                                    You can change this later
+                                </div>
+                            </div>
+                            <div class=" mb-3">
+                                <label for="Ethnicity">Ethnicity</label>
+                                <InputSelect id="Ethnicity" @bind-Value="@bEthnicity">
+                                    @foreach (var k in EthnicityList)
+                                    {
+                                        <option value="@k.Value">@k.Text</option>
+                                    }
+                                    /**/
+                                    /**/
+
+                                </InputSelect>
+                                <div class="small text-muted">
+                                    You can change this later
+                                </div>
+                            </div>
+
+                            <div>Lab Values</div>
+                            <div class="form-group">
+                                <InputTextArea class="form-control" placeholder="Lab Values" @bind-Value="@pCase.LabValues" row="12" />
+                            </div>
+                            <div>Current Stage of Disease</div>
+                            <div class="form-group">
+                                <InputTextArea class="form-control" placeholder="Current Stage of Disease" @bind-Value="@pCase.CurrentStageOfDisease" row="12" />
+                            </div>
+                            <div>Current Treatment Administered</div>
+                            <div class="form-group">
+                                <InputTextArea class="form-control" placeholder="Current Treatment Administered" @bind-Value="@pCase.CurrentTreatmentAdministered" row="12" />
+                            </div>
+                            <div>Treatment Outcomes</div>
+                            <div class="form-group">
+                                <InputTextArea class="form-control" placeholder="Treatment Outcomes" @bind-Value="@pCase.TreatmentOutcomes" row="12" />
+                            </div>
+                            <div>
+                                @if (userId == pCase.PosterID)
+                                {
+                                    <div class="modal-footer">
+
+                                        @if (pCase.Status)
+                                        {
+                                            <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Close Case</button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Reopen Case</button>
+                                        }
+
+
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button id="create-button" type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </EditForm>
+                }
+
+
+
+
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+
+
+
+@code {
+    [Parameter]
+    public int userId { get; set; } = -1; // public ID
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private AuthenticationState authState { get; set; }
+    private ClaimsPrincipal user { get; set; }
+    @*private AppUser usr { get; set; } = new AppUser();*@
+
+    // Feature Config
+    private bool Version2 { get; set; } = true;
+
+    public int CurrentPage { get; set; } = 1;
+    public int Count { get; set; }
+    public int PageSize { get; set; } = 10;
+    public int TotalPages => (int)Math.Ceiling(decimal.Divide(Count, PageSize));
+    public List<FTPaginationModel> paginationData = new List<FTPaginationModel>();
+
+    private bool hasError { get; set; } = false;
+    private int status { get; set; } = 0;
+    private bool IsLoading = false;
+    private string searchString { get; set; } = "";
+
+    private bool showFilters { get; set; } = false;
+
+    private async Task toggleFilters()
+    {
+        showFilters = !showFilters;
+    }
+    private FilterModel filters { get; set; } = new FilterModel();
+    public class FilterModel
+    {
+        public bool showClosed { get; set; } = false;
+        public string SubCategory { get; set; } = "-1";
+        public string Priority { get; set; } = "-1";
+        public bool showTagOnly { get; set; } = false;
+    }
+    private List<SelectListItem> SubCategoryFilterList { get; set; } = new List<SelectListItem>(){
+            new SelectListItem { Value = "-1", Text = "No Filters" }
+            };
+
+
+    private List<ParsedCase> SearchResults { get; set; } = new List<ParsedCase>();
+    private List<Case> cases { get; set; } = new List<Case>();
+
+    public class ParsedCase : Case
+    {
+        public string Priority { get; set; } = "";
+        public string ParsedCategory { get; set; } = "";
+        public string ParsedSubCategory { get; set; } = "";
+        public string ParsedGender { get; set; } = "";
+        public string ParsedRace { get; set; } = "";
+        public string ParsedEthnicity { get; set; } = "";
+        public string ParsedStatus { get; set; } = "";
+
+
+    }
+
+    private int actionOptions { get; set; } = 0; // 0 = all, 1 = my posts
+    private string mTitle { get; set; } = "Post New Case";
+    private bool mIsCreate = true;
+    private bool viewMode = true;
+
+    private ParsedCase pCase { get; set; } = new ParsedCase();
+
+    private string cssAllActive { get; set; } = "active";
+    private string cssMyActive { get; set; } = "";
+
+    private List<SelectListItem> specialtyList { get; set; }
+
+    //private List<SelectListItem> CategoryList { get; set; } = new List<SelectListItem>();
+    private List<SelectListItem> SubCategoryList { get; set; } = new List<SelectListItem>();
+    private List<SelectListItem> GenderList { get; set; } = new List<SelectListItem>();
+    private List<SelectListItem> RaceList { get; set; } = new List<SelectListItem>();
+    private List<SelectListItem> EthnicityList { get; set; } = new List<SelectListItem>();
+
+
+    private string bCategory { get; set; } = "0";
+    private string bSubCategory { get; set; } = "0";
+    private string bGender { get; set; } = "0";
+    private string bRace { get; set; } = "6";
+    private string bEthnicity { get; set; } = "3";
+
+    private string debug { get; set; } = "";
+
+    private PriorityModel priorityRadio = new PriorityModel();
+    public class PriorityModel
+    {
+        [Range(0, 2)]
+        public int Priority { get; set; }
+    }
+
+    private PhysicianProfileModel pProfile = new PhysicianProfileModel();
+    public class PhysicianProfileModel
+    {
+        public int ProfileId { get; set; } = -1;
+        public string Name { get; set; } = "";
+        public string Specialty { get; set; } = "";
+        public bool Certified { get; set; } = false;
+    }
+
+    @*private int userId = -1;*@
+    private string posterSpeciality = "";
+    private string fullName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        authState = await authenticationStateTask;
+        user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            @*usr = await UserManager.GetUserAsync(user);*@
+
+            try
+            {
+                if (userId == -1)
+                {
+                    userId = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
+                }
+
+                posterSpeciality = ParseMedicalSpecialty((MedicalSpecialtyType)Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "MedicalSpecialty")?.Value));
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            fullName = user.Claims.FirstOrDefault(s => s.Type == "FirstName")?.Value + " " + user.Claims.FirstOrDefault(s => s.Type == "LastName")?.Value;
+
+
+            await GetSearchResults(CurrentPage);
+
+            if (Count > PageSize)
+            {
+                for (int i = 1; i <= TotalPages; i++)
+                {
+                    paginationData.Add(new FTPaginationModel()
+                        {
+                            id = i
+                        });
+                }
+                var pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
+                pg.isActive = true;
+            }
+
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //if (firstRender)
+        //{
+        //    var test = await JSRuntime.InvokeAsync<string>("blazorExtensions.SubscribeAnimalChange", "animalIcon");
+        //}
+    }
+
+
+    private async Task GetSearchResults(int targetPage)
+    {
+        SearchResults = new List<ParsedCase>();
+        cases = new List<Case>();
+
+        int tSubCategory = -1;
+        int tPriority = -1;
+        if (!string.IsNullOrEmpty(filters.SubCategory))
+        {
+            tSubCategory = Int32.Parse(filters.SubCategory);
+        }
+        if (!string.IsNullOrEmpty(filters.Priority))
+        {
+            tPriority = Int32.Parse(filters.Priority);
+        }
+
+        List<int> caseListContainTag = new List<int>();
+        if (filters.showTagOnly)
+        {
+            caseListContainTag = await hService.GetCasesIdByTag(searchString);
+        }
+
+        if (actionOptions == 0)
+        {
+            var searchResults = await hService.GetCasesNoTracking(searchString, filters.showClosed, filters.showTagOnly, tSubCategory, tPriority, targetPage, PageSize, -1, caseListContainTag);
+            cases = searchResults.Cases;
+            Count = searchResults.TotalCount;
+            //cases = await hService.GetCasesNoTracking(searchString, filters.showClosed, tSubCategory, targetPage, PageSize, -1);
+            //Count = await hService.GetCaseCount();
+        }
+        else
+        {
+            var searchResults = await hService.GetCasesNoTracking(searchString, filters.showClosed, filters.showTagOnly, tSubCategory, tPriority, targetPage, PageSize, userId, caseListContainTag);
+            cases = searchResults.Cases;
+            Count = searchResults.TotalCount;
+            //cases = await hService.GetCasesNoTracking(searchString, filters.showClosed, tSubCategory, targetPage, PageSize, usr.PublicId);
+            //Count = await hService.GetMyCaseCount(usr.PublicId);
+        }
+
+        //foreach (var i in cases)
+        //{
+
+        //	SearchResults.Add(new ParsedCase()
+        //	{
+        //		ID = i.ID,
+        //		Topic = i.Topic,
+        //		Description = i.Description,
+        //		DateCreated = i.DateCreated,
+        //		Priority = ParsePriority(i.ResponseNeeded),
+        //		ParsedCategory = ParseCategoryFromSub(i.MedicalCategory),
+        //		ParsedSubCategory = ParseSubCategory(i.MedicalCategory)
+        //	});
+        //}
+
+        SearchResults = cases.Select(i => new ParsedCase()
+            {
+                ID = i.ID,
+                Topic = i.Topic,
+                Description = i.Description,
+                DateCreated = i.DateCreated,
+                Priority = ParsePriority(i.ResponseNeeded),
+                ParsedCategory = ParseCategoryFromSub(i.MedicalCategory),
+                ParsedSubCategory = ParseSubCategory(i.MedicalCategory)
+            }).ToList();
+
+        //history stuffs
+        if (searchString != "")
+        {
+            PostHistory newHistory = new PostHistory();
+            newHistory.ID = 0;
+            newHistory.PostID = pCase.ID;
+            newHistory.CreationDate = DateTime.Now;
+            newHistory.PosterID = userId;
+            newHistory.UserDisplayName = fullName;
+            newHistory.Title = "Hippra";
+            newHistory.HistoryTypes = "searched ";
+            if (filters.showTagOnly)
+            {
+                newHistory.Detail = "tag [" + searchString + "]";
+            }
+            else
+            {
+                newHistory.Detail = '"' + searchString + '"';
+            }
+            hService.AddHistory(newHistory);
+        }
+
+    }
+    private async Task searchHandler()
+    {
+        IsLoading = true;
+        if (actionOptions == 1)
+        {
+            await ShowMyCases();
+        }
+        else
+        {
+            await ShowAllCases();
+        }
+    }
+
+
+    private async Task ChangePage(int targetPage)
+    {
+
+        await GetSearchResults(targetPage);
+
+        var pg = paginationData.FirstOrDefault(s => s.isActive);
+        pg.isActive = false;
+        CurrentPage = targetPage;
+        pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
+        pg.isActive = true;
+        this.StateHasChanged();
+    }
+    private async Task ShowAllCases()
+    {
+        actionOptions = 0;
+        CurrentPage = 1;
+        await GetSearchResults(CurrentPage);
+
+        if (Count > PageSize)
+        {
+            paginationData = new List<FTPaginationModel>();
+            for (int i = 1; i <= TotalPages; i++)
+            {
+                paginationData.Add(new FTPaginationModel()
+                    {
+                        id = i
+                    });
+            }
+            var pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
+            pg.isActive = true;
+        }
+
+        mTitle = "All Cases";
+        cssAllActive = "active";
+        cssMyActive = "";
+
+        this.StateHasChanged();
+        IsLoading = false;
+        //await JSRuntime.InvokeAsync<string>("blazorExtensions.toggleModal", "mPostModal");
+    }
+    private async Task ShowMyCases()
+    {
+        actionOptions = 1;
+        CurrentPage = 1;
+        await GetSearchResults(CurrentPage);
+
+        if (Count > PageSize)
+        {
+            paginationData = new List<FTPaginationModel>();
+            for (int i = 1; i <= TotalPages; i++)
+            {
+                paginationData.Add(new FTPaginationModel()
+                    {
+                        id = i
+                    });
+            }
+            var pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
+            pg.isActive = true;
+        }
+
+        cssAllActive = "";
+        cssMyActive = "active";
+
+        mTitle = "My Cases";
+        this.StateHasChanged();
+        IsLoading = false;
+        //await JSRuntime.InvokeAsync<string>("blazorExtensions.toggleModal", "mPostModal");
+    }
+
+    // ver 2
+    private async Task NavToCreateCase()
+    {
+        NavigationManager.NavigateTo("/createcase");
+    }
+
+
+    // ver1
+
+    private async Task OpenCreateModal()
+    {
+        pCase = new ParsedCase();
+        mIsCreate = true;
+        mTitle = "Post New Case";
+
+        //CategoryList = new List<SelectListItem> {
+        //        new SelectListItem { Value = "0", Text = "Diagnostics" },
+        //        new SelectListItem { Value = "1", Text = "Medicine" },
+        //        new SelectListItem { Value = "2", Text = "Surgery" }
+
+        //    };
+
+        //SubCategoryList = new List<SelectListItem> {
+        //        new SelectListItem { Value = "0", Text = "Diseases & Disorders of the Nervous System" },
+        //        new SelectListItem { Value = "1", Text = "Diseases & Disorders of the Eye" },
+        //        new SelectListItem { Value = "2", Text = "Diseases & Disorders of the Ear, Nose, Mouth & Throat" },
+        //        new SelectListItem { Value = "3", Text = "Diseases & Disorders of the Respiratory System" },
+        //        new SelectListItem { Value = "4", Text = "Diseases & Disorders of the Circulatory System" },
+        //        new SelectListItem { Value = "5", Text = "Diseases & Disorders of the Digestive System" },
+        //        new SelectListItem { Value = "6", Text = "Diseases & Disorders of the Hepatobiliary System & Pancreas" },
+        //        new SelectListItem { Value = "7", Text = "Diseases & Disorders of the Musculoskeletal System & Connective Tissue" },
+        //        new SelectListItem { Value = "8", Text = "Diseases & Disorders of the Skin, Subcutaneous Tissue & Breast" },
+        //        new SelectListItem { Value = "9", Text = "Endocrine, Nutritional & Metabolic Diseases & Disorders" },
+
+        //        new SelectListItem { Value = "10", Text = "Diseases & Disorders of the Kidney & Urinary Tract" },
+        //        new SelectListItem { Value = "11", Text = "Diseases & Disorders of the Male Reproductive System" },
+        //        new SelectListItem { Value = "12", Text = "Diseases & Disorders of the Female Reproductive System" },
+        //        new SelectListItem { Value = "13", Text = "Pregnancy, Childbirth & the Puerperium" },
+        //        new SelectListItem { Value = "14", Text = "Newborns & Other Neonates with Conditions Originating in Perinatal Period" },
+        //        new SelectListItem { Value = "15", Text = "Diseases & Disorders of the Blood, Blood Forming Organs, Immunologic Disorders" },
+        //        new SelectListItem { Value = "16", Text = "Myeloproliferative Diseases & Disorders, Poorly Differentiated Neoplasms" },
+        //        new SelectListItem { Value = "17", Text = "Infectious & Parasitic Diseases, Systemic or Unspecified Sites" },
+        //        new SelectListItem { Value = "18", Text = "Mental Diseases & Disorders" },
+        //        new SelectListItem { Value = "19", Text = "Alcohol/Drug Use & Alcohol/Drug Induced Organic Mental Disorders" },
+
+        //        new SelectListItem { Value = "20", Text = "Injuries, Poisonings & Toxic Effects of Drugs" },
+        //        new SelectListItem { Value = "21", Text = "Burns" },
+        //        new SelectListItem { Value = "22", Text = "Factors Influencing Health Status & Other Contacts with Health Services" },
+        //        new SelectListItem { Value = "23", Text = "Multiple Significant Trauma" },
+        //        new SelectListItem { Value = "24", Text = "Human Immunodeficiency Virus Infections" },
+        //        new SelectListItem { Value = "25", Text = "Other" },
+
+        //        new SelectListItem { Value = "26", Text = "Allegy and Immunology" },
+        //        new SelectListItem { Value = "27", Text = "Anesthesiology" },
+        //        new SelectListItem { Value = "28", Text = "Colon and Rectal Surgery" },
+        //        new SelectListItem { Value = "29", Text = "Dermatology" },
+
+        //        new SelectListItem { Value = "30", Text = "Emergency Medicine" },
+        //        new SelectListItem { Value = "31", Text = "Family Medicine" },
+        //        new SelectListItem { Value = "32", Text = "Internal Medicine" },
+        //        new SelectListItem { Value = "33", Text = "Medical Genetics" },
+        //        new SelectListItem { Value = "34", Text = "Neurology" },
+        //        new SelectListItem { Value = "35", Text = "Neurosurgery" },
+        //        new SelectListItem { Value = "36", Text = "Nuclear Medicine" },
+        //        new SelectListItem { Value = "37", Text = "Obstetrics and Gynecology" },
+        //        new SelectListItem { Value = "38", Text = "Ophthalmology" },
+        //        new SelectListItem { Value = "39", Text = "OrthopedicSurgery" },
+
+        //        new SelectListItem { Value = "40", Text = "Otolaryngology" },
+        //        new SelectListItem { Value = "41", Text = "Anatomic Pathology and Clinical Pathology" },
+        //        new SelectListItem { Value = "42", Text = "Pediatrics" },
+        //        new SelectListItem { Value = "43", Text = "Physical Medicine and Rehibilitation" },
+        //        new SelectListItem { Value = "44", Text = "Plastic Surgery" },
+        //        new SelectListItem { Value = "45", Text = "Public Health and General Preventive" },
+        //        new SelectListItem { Value = "46", Text = "Psychiatry" },
+        //        new SelectListItem { Value = "47", Text = "Radiology" },
+        //        new SelectListItem { Value = "48", Text = "Hospice and Palliative Medicine" },
+        //        new SelectListItem { Value = "49", Text = "Medical Nuclear Physics" },
+
+        //        new SelectListItem { Value = "50", Text = "Surgery" },
+        //        new SelectListItem { Value = "51", Text = "Vascular Surgery" },
+        //        new SelectListItem { Value = "52", Text = "Thoracic Surgery" },
+        //        new SelectListItem { Value = "53", Text = "Urology" },
+        //        new SelectListItem { Value = "54", Text = "Others" },
+
+
+        //        new SelectListItem { Value = "55", Text = "General Surgery" },
+        //        new SelectListItem { Value = "56", Text = "Thoracic Surgery" },
+        //        new SelectListItem { Value = "57", Text = "Colon and Rectal Surgery" },
+        //        new SelectListItem { Value = "58", Text = "Obstetrics and Gynecology" },
+        //        new SelectListItem { Value = "59", Text = "Gynecologic Oncology" },
+
+        //        new SelectListItem { Value = "60", Text = "Neurological Surgery" },
+        //        new SelectListItem { Value = "61", Text = "Ophthalmic Surgery" },
+        //        new SelectListItem { Value = "62", Text = "Oral and Maxillofacial Surgery" },
+        //        new SelectListItem { Value = "63", Text = "Orthopaedic Surgery" },
+        //        new SelectListItem { Value = "64", Text = "Otolaryngology" },
+        //        new SelectListItem { Value = "65", Text = "Pediatric Surgery" },
+        //        new SelectListItem { Value = "66", Text = "Plastic and Maxillofacial Surgery" },
+        //        new SelectListItem { Value = "67", Text = "Urology" },
+        //        new SelectListItem { Value = "68", Text = "Vascular Surgery" },
+        //        new SelectListItem { Value = "69", Text = "Others" }
+        //};
+        await PopulateLists();
+
+        this.StateHasChanged();
+        await JSRuntime.InvokeAsync<string>("blazorExtensions.toggleModal", "mPostModal");
+    }
+    private async Task AddPost()
+    {
+
+        @*var usr = await UserManager.GetUserAsync(user);
+
+		Case validatedCase = new Case();
+		validatedCase.DateCreated = DateTime.Now;
+		validatedCase.DateLastUpdated = validatedCase.DateCreated;
+		validatedCase.Description = pCase.Description;
+		validatedCase.Topic = pCase.Topic;
+		validatedCase.PosterID = usr.PublicId;
+		validatedCase.PosterName = usr.FirstName + " " + usr.LastName;
+		validatedCase.PosterSpecialty = ParseMedicalSpecialty((MedicalSpecialtyType)usr.MedicalSpecialty);
+		validatedCase.Race = Int32.Parse(bRace);
+		validatedCase.Gender = Int32.Parse(bGender);
+		validatedCase.Ethnicity = Int32.Parse(bEthnicity);
+		validatedCase.MedicalCategory = Int32.Parse(bSubCategory);
+		validatedCase.ResponseNeeded = priorityRadio.Priority;
+		validatedCase.PatientAge = pCase.PatientAge;
+		validatedCase.CurrentStageOfDisease = pCase.CurrentStageOfDisease;
+		validatedCase.CurrentTreatmentAdministered = pCase.CurrentTreatmentAdministered;
+		validatedCase.TreatmentOutcomes = pCase.TreatmentOutcomes;
+		validatedCase.LabValues = pCase.LabValues;
+		validatedCase.Status = true;
+
+		await hService.AddCase(validatedCase);
+
+		await GetSearchResults(CurrentPage);
+
+		await JSRuntime.InvokeAsync<string>("blazorExtensions.toggleModal", "mPostModal");
+		this.StateHasChanged();*@
+    }
+    private async Task EditPost()
+    {
+
+        @*pCase.PosterName = usr.FirstName + " " + usr.LastName;
+		pCase.PosterSpecialty = ParseMedicalSpecialty((MedicalSpecialtyType)usr.MedicalSpecialty);
+		pCase.Race = Int32.Parse(bRace);
+		pCase.Gender = Int32.Parse(bGender);
+		pCase.Ethnicity = Int32.Parse(bEthnicity);
+		pCase.MedicalCategory = Int32.Parse(bSubCategory);
+		pCase.ResponseNeeded = priorityRadio.Priority;
+
+
+		await hService.EditCase(pCase);
+
+		await GetSearchResults(CurrentPage);
+
+
+		this.StateHasChanged();
+		// for implementation using postModal
+		//await JSRuntime.InvokeAsync<string>("blazorExtensions.toggleModal", "mPostModal");
+		// for implementation using viewModal
+		await JSRuntime.InvokeAsync<string>("blazorExtensions.toggleModal", "viewPostModal");*@
+
+    }
+    private async Task OpenViewModal(int i)
+    {
+        if (Version2)
+        {
+            NavigationManager.NavigateTo("/viewcase/" + i);
+        }
+        else
+        {
+            viewMode = true;
+
+            var tCase = cases.FirstOrDefault(p => p.ID == i);
+            if (tCase == null)
+            {
+                // didn't find it, should flag for error
+                return;
+            }
+            await PopulateModel(tCase);
+            pCase.Comments = await hService.GetCommentsNoTracking(i);
+            // get comments
+
+            // implementation to do edit using postModal
+            //if(tCase.PosterID == usr.PublicId)
+            //{
+            //    // creator go to edit mode
+            //    mIsCreate = false;
+            //    mTitle = "Edit Case";
+            //    PopulateLists();
+            //    this.StateHasChanged();
+            //    await JSRuntime.InvokeAsync<string>("blazorExtensions.toggleModal", "mPostModal");
+            //}
+            //else
+            //{
+            // others just view and comment
+            this.StateHasChanged();
+            await JSRuntime.InvokeAsync<string>("blazorExtensions.toggleModal", "viewPostModal");
+            //}
+        }
+
+
+    }
+
+    // implementation to do edit using viewModal
+    private async Task switchEditMode()
+    {
+        // creator go to edit mode
+        PopulateLists();
+
+        viewMode = false;
+        this.StateHasChanged();
+    }
+    private async Task CloseCase()
+    {
+
+        //debug = "Case Closed";
+
+        await hService.CloseCase(pCase.ID);
+        await GetSearchResults(CurrentPage);
+        this.StateHasChanged();
+
+    }
+    private async Task toggerVersion()
+    {
+        Version2 = !Version2;
+        if (Version2)
+        {
+            verStr = "Page (New)";
+        }
+        else
+        {
+            verStr = "Popup (Old)";
+        }
+    }
+    private string verStr { get; set; } = "Page (New)";
+
+    //private async Task OpenDeleteModal(int i)
+    //{
+    //    postForAction = i;
+    //    await JSRuntime.InvokeAsync<string>("blazorExtensions.toggleModal", "deletePostModal");
+    //}
+    //private async Task DeletePost()
+    //{
+    //    if (delModel?.confirmStr == "confirm")
+    //    {
+    //        await sService.RemoveBlog(postForAction);
+    //        postForAction = -1;
+    //    }
+
+    //    Count = await sService.GetBlogCount();
+    //    blogList = await sService.GetBlogsNoComments(CurrentPage, PageSize);
+    //    await JSRuntime.InvokeAsync<string>("blazorExtensions.toggleModal", "deletePostModal");
+    //    this.StateHasChanged();
+    //}
+
+
+    #region PopulateData
+    // POPULATE MODELS
+
+    private async Task PopulateModel(Case tCase)
+    {
+        pCase = new ParsedCase();
+        pCase.ID = tCase.ID;
+
+        // TODO: fill the rest
+        pCase.DateCreated = tCase.DateCreated;
+        pCase.DateLastUpdated = tCase.DateLastUpdated;
+        pCase.Description = tCase.Description;
+        pCase.Topic = tCase.Topic;
+        pCase.PosterID = tCase.PosterID;
+        pCase.PosterName = tCase.PosterName;
+        pCase.Race = tCase.Race;
+        pCase.Gender = tCase.Gender;
+        pCase.Ethnicity = tCase.Ethnicity;
+        pCase.ResponseNeeded = tCase.ResponseNeeded;
+        pCase.MedicalCategory = tCase.MedicalCategory;
+        pCase.PosterSpecialty = tCase.PosterSpecialty;
+
+        pCase.PatientAge = tCase.PatientAge;
+        pCase.CurrentStageOfDisease = tCase.CurrentStageOfDisease;
+        pCase.CurrentTreatmentAdministered = tCase.CurrentTreatmentAdministered;
+        pCase.TreatmentOutcomes = tCase.TreatmentOutcomes;
+        pCase.LabValues = tCase.LabValues;
+        pCase.ParsedCategory = ParseCategoryFromSub(tCase.MedicalCategory);
+        pCase.ParsedSubCategory = ParseSubCategory(tCase.MedicalCategory);
+        pCase.ParsedGender = ParseGender(tCase.Gender);
+        pCase.ParsedEthnicity = ParseEthnicity(tCase.Ethnicity);
+        pCase.Priority = ParsePriority(tCase.ResponseNeeded);
+        pCase.ParsedRace = ParseRace(tCase.Race);
+        pCase.Status = tCase.Status;
+        pCase.ParsedStatus = ParseStatus(tCase.Status);
+
+        priorityRadio = new PriorityModel();
+        priorityRadio.Priority = tCase.ResponseNeeded;
+        bCategory = ParseCategoryValueFromSub(tCase.MedicalCategory);
+        bSubCategory = tCase.MedicalCategory.ToString();
+        await SwitchSubCategory(bCategory);
+        bGender = tCase.Gender.ToString();
+        bEthnicity = tCase.Ethnicity.ToString();
+        bRace = tCase.Race.ToString();
+
+    }
+    private async Task UpdatePriority(ChangeEventArgs e)
+    {
+        filters.Priority = e.Value.ToString();
+    }
+    private async Task UpdateSubCategoryFilter(ChangeEventArgs e)
+    {
+        var selectedCategory = e.Value.ToString();
+        filters.SubCategory = "-1";
+        switch (selectedCategory)
+        {
+            case "0":
+                SubCategoryFilterList = new List<SelectListItem> {
+                new SelectListItem { Value = "-1", Text = "No Filters" },
+            new SelectListItem { Value = "0", Text = "Diseases & Disorders of the Nervous System" },
+            new SelectListItem { Value = "1", Text = "Diseases & Disorders of the Eye" },
+            new SelectListItem { Value = "2", Text = "Diseases & Disorders of the Ear, Nose, Mouth & Throat" },
+            new SelectListItem { Value = "3", Text = "Diseases & Disorders of the Respiratory System" },
+            new SelectListItem { Value = "4", Text = "Diseases & Disorders of the Circulatory System" },
+            new SelectListItem { Value = "5", Text = "Diseases & Disorders of the Digestive System" },
+            new SelectListItem { Value = "6", Text = "Diseases & Disorders of the Hepatobiliary System & Pancreas" },
+            new SelectListItem { Value = "7", Text = "Diseases & Disorders of the Musculoskeletal System & Connective Tissue" },
+            new SelectListItem { Value = "8", Text = "Diseases & Disorders of the Skin, Subcutaneous Tissue & Breast" },
+            new SelectListItem { Value = "9", Text = "Endocrine, Nutritional & Metabolic Diseases & Disorders" },
+
+            new SelectListItem { Value = "10", Text = "Diseases & Disorders of the Kidney & Urinary Tract" },
+            new SelectListItem { Value = "11", Text = "Diseases & Disorders of the Male Reproductive System" },
+            new SelectListItem { Value = "12", Text = "Diseases & Disorders of the Female Reproductive System" },
+            new SelectListItem { Value = "13", Text = "Pregnancy, Childbirth & the Puerperium" },
+            new SelectListItem { Value = "14", Text = "Newborns & Other Neonates with Conditions Originating in Perinatal Period" },
+            new SelectListItem { Value = "15", Text = "Diseases & Disorders of the Blood, Blood Forming Organs, Immunologic Disorders" },
+            new SelectListItem { Value = "16", Text = "Myeloproliferative Diseases & Disorders, Poorly Differentiated Neoplasms" },
+            new SelectListItem { Value = "17", Text = "Infectious & Parasitic Diseases, Systemic or Unspecified Sites" },
+            new SelectListItem { Value = "18", Text = "Mental Diseases & Disorders" },
+            new SelectListItem { Value = "19", Text = "Alcohol/Drug Use & Alcohol/Drug Induced Organic Mental Disorders" },
+
+            new SelectListItem { Value = "20", Text = "Injuries, Poisonings & Toxic Effects of Drugs" },
+            new SelectListItem { Value = "21", Text = "Burns" },
+            new SelectListItem { Value = "22", Text = "Factors Influencing Health Status & Other Contacts with Health Services" },
+            new SelectListItem { Value = "23", Text = "Multiple Significant Trauma" },
+            new SelectListItem { Value = "24", Text = "Human Immunodeficiency Virus Infections" },
+            new SelectListItem { Value = "25", Text = "Others" },
+
+    };
+                break;
+            case "1":
+                SubCategoryFilterList = new List<SelectListItem> {
+
+                new SelectListItem { Value = "-1", Text = "No Filters" },
+            new SelectListItem { Value = "26", Text = "Allegy and Immunology" },
+            new SelectListItem { Value = "27", Text = "Anesthesiology" },
+            new SelectListItem { Value = "28", Text = "Colon and Rectal Surgery" },
+            new SelectListItem { Value = "29", Text = "Dermatology" },
+
+            new SelectListItem { Value = "30", Text = "Emergency Medicine" },
+            new SelectListItem { Value = "31", Text = "Family Medicine" },
+            new SelectListItem { Value = "32", Text = "Internal Medicine" },
+            new SelectListItem { Value = "33", Text = "Medical Genetics" },
+            new SelectListItem { Value = "34", Text = "Neurology" },
+            new SelectListItem { Value = "35", Text = "Neurosurgery" },
+            new SelectListItem { Value = "36", Text = "Nuclear Medicine" },
+            new SelectListItem { Value = "37", Text = "Obstetrics and Gynecology" },
+            new SelectListItem { Value = "38", Text = "Ophthalmology" },
+            new SelectListItem { Value = "39", Text = "OrthopedicSurgery" },
+
+            new SelectListItem { Value = "40", Text = "Otolaryngology" },
+            new SelectListItem { Value = "41", Text = "Anatomic Pathology and Clinical Pathology" },
+            new SelectListItem { Value = "42", Text = "Pediatrics" },
+            new SelectListItem { Value = "43", Text = "Physical Medicine and Rehibilitation" },
+            new SelectListItem { Value = "44", Text = "Plastic Surgery" },
+            new SelectListItem { Value = "45", Text = "Public Health and General Preventive" },
+            new SelectListItem { Value = "46", Text = "Psychiatry" },
+            new SelectListItem { Value = "47", Text = "Radiology" },
+            new SelectListItem { Value = "48", Text = "Hospice and Palliative Medicine" },
+            new SelectListItem { Value = "49", Text = "Medical Nuclear Physics" },
+
+            new SelectListItem { Value = "50", Text = "Surgery" },
+            new SelectListItem { Value = "51", Text = "Vascular Surgery" },
+            new SelectListItem { Value = "52", Text = "Thoracic Surgery" },
+            new SelectListItem { Value = "53", Text = "Urology" },
+            new SelectListItem { Value = "54", Text = "Others" },
+
+
+    };
+                break;
+            case "2":
+                SubCategoryFilterList = new List<SelectListItem> {
+
+                new SelectListItem { Value = "-1", Text = "No Filters" },
+            new SelectListItem { Value = "55", Text = "General Surgery" },
+            new SelectListItem { Value = "56", Text = "Thoracic Surgery" },
+            new SelectListItem { Value = "57", Text = "Colon and Rectal Surgery" },
+            new SelectListItem { Value = "58", Text = "Obstetrics and Gynecology" },
+            new SelectListItem { Value = "59", Text = "Gynecologic Oncology" },
+
+            new SelectListItem { Value = "60", Text = "Neurological Surgery" },
+            new SelectListItem { Value = "61", Text = "Ophthalmic Surgery" },
+            new SelectListItem { Value = "62", Text = "Oral and Maxillofacial Surgery" },
+            new SelectListItem { Value = "63", Text = "Orthopaedic Surgery" },
+            new SelectListItem { Value = "64", Text = "Otolaryngology" },
+            new SelectListItem { Value = "65", Text = "Pediatric Surgery" },
+            new SelectListItem { Value = "66", Text = "Plastic and Maxillofacial Surgery" },
+            new SelectListItem { Value = "67", Text = "Urology" },
+            new SelectListItem { Value = "68", Text = "Vascular Surgery" },
+            new SelectListItem { Value = "69", Text = "Others" }
+            };
+                break;
+            default:
+
+                SubCategoryFilterList = new List<SelectListItem> {
+                new SelectListItem { Value = "-1", Text = "No Filters" }
+            };
+                break;
+        }
+    }
+
+    private async Task UpdateSubCategory(ChangeEventArgs e)
+    {
+        var selectedCategory = e.Value.ToString();
+
+        await SwitchSubCategory(selectedCategory);
+    }
+
+    private async Task SwitchSubCategory(string selectedCategory)
+    {
+        switch (selectedCategory)
+        {
+            case "0":
+                SubCategoryList = new List<SelectListItem> {
+            new SelectListItem { Value = "0", Text = "Diseases & Disorders of the Nervous System" },
+            new SelectListItem { Value = "1", Text = "Diseases & Disorders of the Eye" },
+            new SelectListItem { Value = "2", Text = "Diseases & Disorders of the Ear, Nose, Mouth & Throat" },
+            new SelectListItem { Value = "3", Text = "Diseases & Disorders of the Respiratory System" },
+            new SelectListItem { Value = "4", Text = "Diseases & Disorders of the Circulatory System" },
+            new SelectListItem { Value = "5", Text = "Diseases & Disorders of the Digestive System" },
+            new SelectListItem { Value = "6", Text = "Diseases & Disorders of the Hepatobiliary System & Pancreas" },
+            new SelectListItem { Value = "7", Text = "Diseases & Disorders of the Musculoskeletal System & Connective Tissue" },
+            new SelectListItem { Value = "8", Text = "Diseases & Disorders of the Skin, Subcutaneous Tissue & Breast" },
+            new SelectListItem { Value = "9", Text = "Endocrine, Nutritional & Metabolic Diseases & Disorders" },
+
+            new SelectListItem { Value = "10", Text = "Diseases & Disorders of the Kidney & Urinary Tract" },
+            new SelectListItem { Value = "11", Text = "Diseases & Disorders of the Male Reproductive System" },
+            new SelectListItem { Value = "12", Text = "Diseases & Disorders of the Female Reproductive System" },
+            new SelectListItem { Value = "13", Text = "Pregnancy, Childbirth & the Puerperium" },
+            new SelectListItem { Value = "14", Text = "Newborns & Other Neonates with Conditions Originating in Perinatal Period" },
+            new SelectListItem { Value = "15", Text = "Diseases & Disorders of the Blood, Blood Forming Organs, Immunologic Disorders" },
+            new SelectListItem { Value = "16", Text = "Myeloproliferative Diseases & Disorders, Poorly Differentiated Neoplasms" },
+            new SelectListItem { Value = "17", Text = "Infectious & Parasitic Diseases, Systemic or Unspecified Sites" },
+            new SelectListItem { Value = "18", Text = "Mental Diseases & Disorders" },
+            new SelectListItem { Value = "19", Text = "Alcohol/Drug Use & Alcohol/Drug Induced Organic Mental Disorders" },
+
+            new SelectListItem { Value = "20", Text = "Injuries, Poisonings & Toxic Effects of Drugs" },
+            new SelectListItem { Value = "21", Text = "Burns" },
+            new SelectListItem { Value = "22", Text = "Factors Influencing Health Status & Other Contacts with Health Services" },
+            new SelectListItem { Value = "23", Text = "Multiple Significant Trauma" },
+            new SelectListItem { Value = "24", Text = "Human Immunodeficiency Virus Infections" },
+            new SelectListItem { Value = "25", Text = "Others" },
+
+    };
+                break;
+            case "1":
+                SubCategoryList = new List<SelectListItem> {
+
+
+            new SelectListItem { Value = "26", Text = "Allegy and Immunology" },
+            new SelectListItem { Value = "27", Text = "Anesthesiology" },
+            new SelectListItem { Value = "28", Text = "Colon and Rectal Surgery" },
+            new SelectListItem { Value = "29", Text = "Dermatology" },
+
+            new SelectListItem { Value = "30", Text = "Emergency Medicine" },
+            new SelectListItem { Value = "31", Text = "Family Medicine" },
+            new SelectListItem { Value = "32", Text = "Internal Medicine" },
+            new SelectListItem { Value = "33", Text = "Medical Genetics" },
+            new SelectListItem { Value = "34", Text = "Neurology" },
+            new SelectListItem { Value = "35", Text = "Neurosurgery" },
+            new SelectListItem { Value = "36", Text = "Nuclear Medicine" },
+            new SelectListItem { Value = "37", Text = "Obstetrics and Gynecology" },
+            new SelectListItem { Value = "38", Text = "Ophthalmology" },
+            new SelectListItem { Value = "39", Text = "OrthopedicSurgery" },
+
+            new SelectListItem { Value = "40", Text = "Otolaryngology" },
+            new SelectListItem { Value = "41", Text = "Anatomic Pathology and Clinical Pathology" },
+            new SelectListItem { Value = "42", Text = "Pediatrics" },
+            new SelectListItem { Value = "43", Text = "Physical Medicine and Rehibilitation" },
+            new SelectListItem { Value = "44", Text = "Plastic Surgery" },
+            new SelectListItem { Value = "45", Text = "Public Health and General Preventive" },
+            new SelectListItem { Value = "46", Text = "Psychiatry" },
+            new SelectListItem { Value = "47", Text = "Radiology" },
+            new SelectListItem { Value = "48", Text = "Hospice and Palliative Medicine" },
+            new SelectListItem { Value = "49", Text = "Medical Nuclear Physics" },
+
+            new SelectListItem { Value = "50", Text = "Surgery" },
+            new SelectListItem { Value = "51", Text = "Vascular Surgery" },
+            new SelectListItem { Value = "52", Text = "Thoracic Surgery" },
+            new SelectListItem { Value = "53", Text = "Urology" },
+            new SelectListItem { Value = "54", Text = "Others" },
+
+
+    };
+                break;
+            default:
+                SubCategoryList = new List<SelectListItem> {
+
+
+            new SelectListItem { Value = "55", Text = "General Surgery" },
+            new SelectListItem { Value = "56", Text = "Thoracic Surgery" },
+            new SelectListItem { Value = "57", Text = "Colon and Rectal Surgery" },
+            new SelectListItem { Value = "58", Text = "Obstetrics and Gynecology" },
+            new SelectListItem { Value = "59", Text = "Gynecologic Oncology" },
+
+            new SelectListItem { Value = "60", Text = "Neurological Surgery" },
+            new SelectListItem { Value = "61", Text = "Ophthalmic Surgery" },
+            new SelectListItem { Value = "62", Text = "Oral and Maxillofacial Surgery" },
+            new SelectListItem { Value = "63", Text = "Orthopaedic Surgery" },
+            new SelectListItem { Value = "64", Text = "Otolaryngology" },
+            new SelectListItem { Value = "65", Text = "Pediatric Surgery" },
+            new SelectListItem { Value = "66", Text = "Plastic and Maxillofacial Surgery" },
+            new SelectListItem { Value = "67", Text = "Urology" },
+            new SelectListItem { Value = "68", Text = "Vascular Surgery" },
+            new SelectListItem { Value = "69", Text = "Others" }
+    };
+                break;
+        }
+    }
+
+    private async Task PopulateLists()
+    {
+        //SubCategoryList = new List<SelectListItem> {
+        //        new SelectListItem { Value = "0", Text = "Diseases & Disorders of the Nervous System" },
+        //        new SelectListItem { Value = "1", Text = "Diseases & Disorders of the Eye" },
+        //        new SelectListItem { Value = "2", Text = "Diseases & Disorders of the Ear, Nose, Mouth & Throat" },
+        //        new SelectListItem { Value = "3", Text = "Diseases & Disorders of the Respiratory System" },
+        //        new SelectListItem { Value = "4", Text = "Diseases & Disorders of the Circulatory System" },
+        //        new SelectListItem { Value = "5", Text = "Diseases & Disorders of the Digestive System" },
+        //        new SelectListItem { Value = "6", Text = "Diseases & Disorders of the Hepatobiliary System & Pancreas" },
+        //        new SelectListItem { Value = "7", Text = "Diseases & Disorders of the Musculoskeletal System & Connective Tissue" },
+        //        new SelectListItem { Value = "8", Text = "Diseases & Disorders of the Skin, Subcutaneous Tissue & Breast" },
+        //        new SelectListItem { Value = "9", Text = "Endocrine, Nutritional & Metabolic Diseases & Disorders" },
+
+        //        new SelectListItem { Value = "10", Text = "Diseases & Disorders of the Kidney & Urinary Tract" },
+        //        new SelectListItem { Value = "11", Text = "Diseases & Disorders of the Male Reproductive System" },
+        //        new SelectListItem { Value = "12", Text = "Diseases & Disorders of the Female Reproductive System" },
+        //        new SelectListItem { Value = "13", Text = "Pregnancy, Childbirth & the Puerperium" },
+        //        new SelectListItem { Value = "14", Text = "Newborns & Other Neonates with Conditions Originating in Perinatal Period" },
+        //        new SelectListItem { Value = "15", Text = "Diseases & Disorders of the Blood, Blood Forming Organs, Immunologic Disorders" },
+        //        new SelectListItem { Value = "16", Text = "Myeloproliferative Diseases & Disorders, Poorly Differentiated Neoplasms" },
+        //        new SelectListItem { Value = "17", Text = "Infectious & Parasitic Diseases, Systemic or Unspecified Sites" },
+        //        new SelectListItem { Value = "18", Text = "Mental Diseases & Disorders" },
+        //        new SelectListItem { Value = "19", Text = "Alcohol/Drug Use & Alcohol/Drug Induced Organic Mental Disorders" },
+
+        //        new SelectListItem { Value = "20", Text = "Injuries, Poisonings & Toxic Effects of Drugs" },
+        //        new SelectListItem { Value = "21", Text = "Burns" },
+        //        new SelectListItem { Value = "22", Text = "Factors Influencing Health Status & Other Contacts with Health Services" },
+        //        new SelectListItem { Value = "23", Text = "Multiple Significant Trauma" },
+        //        new SelectListItem { Value = "24", Text = "Human Immunodeficiency Virus Infections" },
+        //        new SelectListItem { Value = "25", Text = "Other" },
+
+        //};
+
+        await SwitchSubCategory(ParseCategoryValueFromSub(pCase.MedicalCategory));
+        GenderList = new List<SelectListItem> {
+            new SelectListItem { Value = "0", Text = "Male" },
+            new SelectListItem { Value = "1", Text = "Female" },
+            new SelectListItem { Value = "2", Text = "Neutral" }
+
+    };
+
+        RaceList = new List<SelectListItem> {
+            new SelectListItem { Value = "0", Text = "American Indian or Alaska Native" },
+            new SelectListItem { Value = "1", Text = "Asian" },
+            new SelectListItem { Value = "2", Text = "Black or African American" },
+            new SelectListItem { Value = "3", Text = "Native Hawaiian or Other Pacific Islander" },
+            new SelectListItem { Value = "4", Text = "White" },
+
+            new SelectListItem { Value = "5", Text = "Declined" },
+            new SelectListItem { Value = "6", Text = "Unknown" },
+            new SelectListItem { Value = "7", Text = "Other Race" }
+
+        };
+
+        EthnicityList = new List<SelectListItem> {
+            new SelectListItem { Value = "0", Text = "Hispanic or Latino" },
+            new SelectListItem { Value = "1", Text = "Not Hispanic or Latino" },
+            new SelectListItem { Value = "2", Text = "Declined" },
+            new SelectListItem { Value = "3", Text = "Unknown" }
+
+        };
+    }
+    #endregion
+
+    // PARSE CODE
+    #region ParseCode
+    private string ParseMedicalSpecialty(MedicalSpecialtyType MedicalSpecialty)
+    {
+
+        string medicalSpecialty = "";
+        switch (MedicalSpecialty)
+        {
+            case MedicalSpecialtyType.Anesthesiology:
+                medicalSpecialty = "Anesthesiology";
+                break;
+            case MedicalSpecialtyType.AnatomicPathologyAndClinicalPathology:
+                medicalSpecialty = "Anatomic Pathology And Clinical Pathology";
+                break;
+            case MedicalSpecialtyType.ColonAndRectalSurgery:
+                medicalSpecialty = "Colon And Rectal Surgery";
+                break;
+            case MedicalSpecialtyType.Dermatology:
+                medicalSpecialty = "Dermatology";
+                break;
+            case MedicalSpecialtyType.EmergencyMedicine:
+                medicalSpecialty = "Emergency Medicine";
+                break;
+            case MedicalSpecialtyType.FamilyMedicine:
+                medicalSpecialty = "Family Medicine";
+                break;
+            case MedicalSpecialtyType.HospiceAndPalliativeMedicine:
+                medicalSpecialty = "Hospice And Palliative Medicine";
+                break;
+            case MedicalSpecialtyType.InternalMedicine:
+                medicalSpecialty = "Internal Medicine";
+                break;
+            case MedicalSpecialtyType.MedicalGenetics:
+                medicalSpecialty = "Medical Genetics";
+                break;
+            case MedicalSpecialtyType.MedicalNuclearPhysics:
+                medicalSpecialty = "Medical Nuclear Physics";
+                break;
+            case MedicalSpecialtyType.Neurology:
+                medicalSpecialty = "Neurology";
+                break;
+            case MedicalSpecialtyType.Neurosurgery:
+                medicalSpecialty = "Neurosurgery";
+                break;
+            case MedicalSpecialtyType.NuclearMedicine:
+                medicalSpecialty = "NuclearMedicine";
+                break;
+            case MedicalSpecialtyType.ObstetricsAndGynecology:
+                medicalSpecialty = "Obstetrics And Gynecology";
+                break;
+            case MedicalSpecialtyType.Ophthalmology:
+                medicalSpecialty = "Ophthalmology";
+                break;
+            case MedicalSpecialtyType.OrthopedicSurgery:
+                medicalSpecialty = "Orthopedic Surgery";
+                break;
+            case MedicalSpecialtyType.Otolaryngology:
+                medicalSpecialty = "Otolaryngology";
+                break;
+            case MedicalSpecialtyType.Pediatrics:
+                medicalSpecialty = "Pediatrics";
+                break;
+            case MedicalSpecialtyType.PhysicalMedicineAndRehibilitation:
+                medicalSpecialty = "Physical Medicine And Rehibilitation";
+                break;
+            case MedicalSpecialtyType.PlasticSurgery:
+                medicalSpecialty = "Plastic Surgery";
+                break;
+            case MedicalSpecialtyType.Psychiatry:
+                medicalSpecialty = "Psychiatry";
+                break;
+            case MedicalSpecialtyType.PublicHealthAndGeneralPreventive:
+                medicalSpecialty = "Public Health And General Preventive";
+                break;
+            case MedicalSpecialtyType.Radiology:
+                medicalSpecialty = "Radiology";
+                break;
+            case MedicalSpecialtyType.Surgery:
+                medicalSpecialty = "Surgery";
+                break;
+            case MedicalSpecialtyType.ThoracicSurgery:
+                medicalSpecialty = "Thoracic Surgery";
+                break;
+            case MedicalSpecialtyType.Urology:
+                medicalSpecialty = "Urology";
+                break;
+            case MedicalSpecialtyType.VascularSurgery:
+                medicalSpecialty = "Vascular Surgery";
+                break;
+            default:
+                break;
+        }
+        return medicalSpecialty;
+    }
+    private string ParseCategory(int category)
+    {
+        string rValue = "";
+        switch (category)
+        {
+            case 1:
+                rValue = "Medicine";
+                break;
+            case 2:
+                rValue = "Surgery";
+                break;
+            default:
+                rValue = "Diagnostics";
+                break;
+        }
+        return rValue;
+    }
+    private string ParseCategoryFromSub(int subCategory)
+    {
+        string rValue = "";
+
+
+        if (subCategory < 26)
+        {
+            rValue = "Diagnostics";
+        }
+        else if (subCategory < 55)
+        {
+            rValue = "Medicine";
+        }
+        else
+        {
+            rValue = "Surgery";
+        }
+        return rValue;
+    }
+    private string ParseCategoryValueFromSub(int subCategory)
+    {
+        string rValue = "";
+
+
+        if (subCategory < 26)
+        {
+            rValue = "0";
+        }
+        else if (subCategory < 55)
+        {
+            rValue = "1";
+        }
+        else
+        {
+            rValue = "2";
+        }
+        return rValue;
+    }
+    private string ParseSubCategory(int subCategory)
+    {
+
+        string rValue = "";
+        switch (subCategory)
+        {
+            case 0:
+                rValue = "Diseases & Disorders of the Nervous System";
+                break;
+            case 1:
+                rValue = "Diseases & Disorders of the Eye";
+                break;
+            case 2:
+                rValue = "Diseases & Disorders of the Ear, Nose, Mouth & Throat";
+                break;
+            case 3:
+                rValue = "Diseases & Disorders of the Respiratory System";
+                break;
+            case 4:
+                rValue = "Diseases & Disorders of the Circulatory System";
+                break;
+            case 5:
+                rValue = "Diseases & Disorders of the Digestive System";
+                break;
+            case 6:
+                rValue = "Diseases & Disorders of the Hepatobiliary System & Pancreas";
+                break;
+            case 7:
+                rValue = "Diseases & Disorders of the Musculoskeletal System & Connective Tissue";
+                break;
+            case 8:
+                rValue = "Diseases & Disorders of the Skin, Subcutaneous Tissue & Breast";
+                break;
+            case 9:
+                rValue = "Endocrine, Nutritional & Metabolic Diseases & Disorders";
+                break;
+
+            case 10:
+                rValue = "Diseases & Disorders of the Kidney & Urinary Tract";
+                break;
+            case 11:
+                rValue = "Diseases & Disorders of the Male Reproductive System";
+                break;
+            case 12:
+                rValue = "Diseases & Disorders of the Female Reproductive System";
+                break;
+            case 13:
+                rValue = "Pregnancy, Childbirth & the Puerperium";
+                break;
+            case 14:
+                rValue = "Newborns & Other Neonates with Conditions Originating in Perinatal Period";
+                break;
+            case 15:
+                rValue = "Diseases & Disorders of the Blood, Blood Forming Organs, Immunologic Disorders";
+                break;
+            case 16:
+                rValue = "Myeloproliferative Diseases & Disorders, Poorly Differentiated Neoplasms";
+                break;
+            case 17:
+                rValue = "Infectious & Parasitic Diseases, Systemic or Unspecified Sites";
+                break;
+            case 18:
+                rValue = "Mental Diseases & Disorders";
+                break;
+            case 19:
+                rValue = "Alcohol/Drug Use & Alcohol/Drug Induced Organic Mental Disorders";
+                break;
+
+            case 20:
+                rValue = "Injuries, Poisonings & Toxic Effects of Drugs";
+                break;
+            case 21:
+                rValue = "Burns";
+                break;
+            case 22:
+                rValue = "Factors Influencing Health Status & Other Contacts with Health Services";
+                break;
+            case 23:
+                rValue = "Multiple Significant Trauma";
+                break;
+            case 24:
+                rValue = "Human Immunodeficiency Virus Infections";
+                break;
+            case 25:
+                rValue = "Others";
+                break;
+            case 26:
+                rValue = "Allegy and Immunology";
+                break;
+            case 27:
+                rValue = "Anesthesiology";
+                break;
+            case 28:
+                rValue = "Colon and Rectal Surgery";
+                break;
+            case 29:
+                rValue = "Dermatology";
+                break;
+
+            case 30:
+                rValue = "Emergency Medicine";
+                break;
+            case 31:
+                rValue = "Family Medicine";
+                break;
+            case 32:
+                rValue = "Internal Medicine";
+                break;
+            case 33:
+                rValue = "Medical Genetics";
+                break;
+            case 34:
+                rValue = "Neurology";
+                break;
+            case 35:
+                rValue = "Neurosurgery";
+                break;
+            case 36:
+                rValue = "Nuclear Medicine";
+                break;
+            case 37:
+                rValue = "Obstetrics and Gynecology";
+                break;
+            case 38:
+                rValue = "Ophthalmology";
+                break;
+            case 39:
+                rValue = "OrthopedicSurgery";
+                break;
+
+            case 40:
+                rValue = "Otolaryngology";
+                break;
+            case 41:
+                rValue = "Anatomic Pathology and Clinical Pathology";
+                break;
+            case 42:
+                rValue = "Pediatrics";
+                break;
+            case 43:
+                rValue = "Physical Medicine and Rehibilitation";
+                break;
+            case 44:
+                rValue = "Plastic Surgery";
+                break;
+            case 45:
+                rValue = "Public Health and General Preventive";
+                break;
+            case 46:
+                rValue = "Psychiatry";
+                break;
+            case 47:
+                rValue = "Radiology";
+                break;
+            case 48:
+                rValue = "Hospice and Palliative Medicine";
+                break;
+            case 49:
+                rValue = "Medical Nuclear Physics";
+                break;
+
+            case 50:
+                rValue = "Surgery";
+                break;
+            case 51:
+                rValue = "Vascular Surgery";
+                break;
+            case 52:
+                rValue = "Thoracic Surgery";
+                break;
+            case 53:
+                rValue = "Urology";
+                break;
+            case 54:
+                rValue = "Others";
+                break;
+            case 55:
+                rValue = "General Surgery";
+                break;
+            case 56:
+                rValue = "Thoracic Surgery";
+                break;
+            case 57:
+                rValue = "Colon and Rectal Surgery";
+                break;
+            case 58:
+                rValue = "Obstetrics and Gynecology";
+                break;
+            case 59:
+                rValue = "Gynecologic Oncology";
+                break;
+
+            case 60:
+                rValue = "Neurological Surgery";
+                break;
+            case 61:
+                rValue = "Ophthalmic Surgery";
+                break;
+            case 62:
+                rValue = "Oral and Maxillofacial Surgery";
+                break;
+            case 63:
+                rValue = "Orthopaedic Surgery";
+                break;
+            case 64:
+                rValue = "Otolaryngology";
+                break;
+            case 65:
+                rValue = "Pediatric Surgery";
+                break;
+            case 66:
+                rValue = "Plastic and Maxillofacial Surgery";
+                break;
+            case 67:
+                rValue = "Urology";
+                break;
+            case 68:
+                rValue = "Vascular Surgery";
+                break;
+            case 69:
+                rValue = "Others";
+                break;
+
+            default:
+                // shouldn't get here
+                rValue = "";
+                break;
+        }
+
+
+        return rValue;
+    }
+    private string ParseRace(int race)
+    {
+        string rValue = "";
+        switch (race)
+        {
+            case 1:
+                rValue = "Asian";
+                break;
+            case 2:
+                rValue = "Black or African American";
+                break;
+            case 3:
+                rValue = "Native Hawaiian or Other Pacific Islander";
+                break;
+            case 4:
+                rValue = "White";
+                break;
+            case 5:
+                rValue = "Declined";
+                break;
+            case 6:
+                rValue = "Unknown";
+                break;
+            case 7:
+                rValue = "Other Race";
+                break;
+            default:
+                rValue = "American Indian or Alaska Native";
+                break;
+        }
+
+
+        return rValue;
+    }
+    private string ParseEthnicity(int ethnicity)
+    {
+        string rValue = "";
+        switch (ethnicity)
+        {
+            case 1:
+                rValue = "Not Hispanic or Latino";
+                break;
+            case 2:
+                rValue = "Declined";
+                break;
+            case 3:
+                rValue = "Unknown";
+                break;
+            default:
+                rValue = "Hispanic or Latino";
+                break;
+        }
+
+
+        return rValue;
+    }
+    private string ParseGender(int gender)
+    {
+        string rValue = "";
+        switch (gender)
+        {
+            case 1:
+                rValue = "Female";
+                break;
+            case 2:
+                rValue = "Neutral";
+                break;
+            default:
+                rValue = "Male";
+                break;
+        }
+
+
+        return rValue;
+    }
+    private string ParsePriority(int priority)
+    {
+        string rValue = "";
+        switch (priority)
+        {
+            case 1:
+                rValue = "Over Coffee";
+                break;
+            /*case 2:
+                rValue = "Low";
+                break;*/
+            default:
+                rValue = "Stat";
+                break;
+        }
+
+
+        return rValue;
+    }
+    private int PriorityToInt(CaseResponseLevelType priority)
+    {
+        int rValue = 0;
+        switch (priority)
+        {
+            case CaseResponseLevelType.MID:
+                rValue = 1;
+                break;
+            case CaseResponseLevelType.LOW:
+                rValue = 2;
+                break;
+            default:
+                rValue = 0;
+                break;
+        }
+        return rValue;
+    }
+    private string ParseStatus(bool tStatus)
+    {
+        if (tStatus)
+        {
+            return "Open";
+        }
+        else
+        {
+            return "Closed";
+        }
+    }
+    #endregion
+
+}
