@@ -1,6 +1,7 @@
 ﻿@using Hippra.Extensions
 @using Hippra.Models.SQL
 @using Hippra.Services
+@inject IJSRuntime JSRuntime
 @inject HippraService hService
 <div class="dashboard-right">
     <div class="main-header">
@@ -66,8 +67,8 @@
                                 <div class="article-author">
                                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt="">
                                     <div class="article-author-info">
-                                        <h6>Emma Rye</h6>
-                                        <p>Disease Speacialist</p>
+                                        <h6>@c.PosterName</h6>
+                                        <p>@c.PosterSpecialty</p>
                                     </div>
                                 </div>
                                 <div class="article-bot-actions">
@@ -84,7 +85,7 @@
                 }
 
             }
-   
+
 
         </div>
     </section>
@@ -118,6 +119,15 @@
     {
         await GetSearchResults();
     }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     //if (firstRender)
+    //     //{
+    //     await JSRuntime.InvokeVoidAsync("handlePageScrollable");
+    //     await JSRuntime.InvokeVoidAsync("InitCasePage");
+    //     //}
+    // }
 
     private async Task GetSearchResults()
     {
@@ -167,7 +177,10 @@
                 DateCreated = i.DateCreated,
                 Priority = ParsePriority(i.ResponseNeeded),
                 ParsedCategory = ParseCategoryFromSub(i.MedicalCategory),
-                ParsedSubCategory = ParseSubCategory(i.MedicalCategory)
+                ParsedSubCategory = ParseSubCategory(i.MedicalCategory),
+                PosterID = i.PosterID,
+                PosterName = i.PosterName,
+                PosterSpecialty = i.PosterSpecialty
             }).ToList();
 
 

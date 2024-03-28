@@ -1,4 +1,4 @@
-﻿@page "/viewcase1/{caseId:int}"
+﻿@page "/viewcase/{caseId:int}"
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authorization
@@ -18,169 +18,286 @@
 @using Hippra.Pages.MCase
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Http
-@using Hippra.Pages.Common 
+@using static Hippra.Components.Cases
+@using static Hippra.Components.NewComments
 @inject IHttpContextAccessor httpContextAccessor
 @inject IJSRuntime JSRuntime
 @*@inject SignInManager<AppUser> SignInManager
 @inject UserManager<AppUser> UserManager*@
-@inject Microsoft.AspNetCore.Components.NavigationManager  NavigationManager
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @inject ProfileService pService
-@inject HippraService hService 
+@inject HippraService hService
 @inject IAuthorizationService AuthorizationService
 
-<AuthorizeView>
-    <Authorized Context="DetailCaseContext">
-        <FTSubHeaderBar Title="Back"
-                        HasBackBtn="true" returnUrl="@returnUrl">
-        </FTSubHeaderBar>
-
-        <div class="ft-main-px">
-            <div class="card">
-                <div class="card-body">
-                    <div class="">
-
-
-                        <div class="row">
-                            <div class="col">
-                                <div class="lead">Case Summary</div>
-                            </div>
-                            <div class="col text-right">
-                                @if (pCase.PosterID == userId)
-                                {
-                                    <button type="button" class="btn btn-secondary" @onclick="@EditMode">Edit Case</button>
-                                }
-                            </div>
-                        </div>
-                        <div class="py-5 row justify-content-center">
-                            <div class="col-md-2">
-
-                            </div>
-                            <div class="col-md-8">
-
-                                <h4 class="" id="vmTitle">@pCase.Topic</h4>
-                                <div class="" id="vmCategory"><small>@pCase.ParsedCategory · <span class="text-black-50">@pCase.ParsedSubCategory</span></small></div>
-
-                                <hr />
-                                <div class=""> Description: @((MarkupString) @pCase.Description)</div>
-                            </div>
-                            <div class="col-md-2">
-
-                            </div>
-                        </div>
-                        <hr />
-                        <div class="lead">Patient Information</div>
-                        <div class="py-5 row justify-content-center">
-                            <div class="col-md-2">
-
-                            </div>
-                            <div class="col-md-8" id="vmContent">
-                                <div class="">Age: @pCase.PatientAge</div>
-                                <div class="">Gender: @pCase.ParsedGender</div>
-                                <div class="">Race: @pCase.ParsedRace</div>
-                                <div class="">Ethnicity: @pCase.ParsedEthnicity</div>
-                                <br />
-                                <div class="">Lab Values: @pCase.LabValues</div>
-                                <div class="">Current Stage of Disease: @pCase.CurrentStageOfDisease</div>
-                                <div class="">Current Treatment Administered: @pCase.CurrentTreatmentAdministered </div>
-                                <div class="">Treatment Outcomes: @pCase.TreatmentOutcomes</div>
-                            </div>
-                            <div class="col-md-2">
-
-                            </div>
-                        </div>
-                        <div class="lead">Case Information</div>
-                        <div class="py-5 row justify-content-center">
-                            <div class="col-md-2">
-
-                            </div>
-                            <div class="col-md-8">
-                                <div class=""><strong>Created By:</strong> <a href="/PersonalPage/@pCase.PosterID"> @pCase.PosterName <span class="text-black-50"> (@pCase.PosterSpecialty) </span></a></div>
-                                <div><strong>Case Status:</strong> @pCase.ParsedStatus</div>
-                                <div><strong>Priority:</strong> @pCase.Priority</div>
-                                <div><strong>Date Created:</strong> @pCase.DateCreated.ToShortDateString() </div>
-                                <div><strong>Last Updated:</strong> @pCase.DateLastUpdated.ToShortDateString()</div>
-                            </div>
-                            <div class="col-md-2">
-
-                            </div>
-                        </div>
-                        <div class="lead">Tags</div>
-                        <div class="py-5 row ">
-                            <div class="col-md-2">
-                               
-                            </div>
-                            
-                            <div class="col-md-8">
-                                @if (pCase.Tags != null)
-                                {
-                                    foreach (var tag in pCase.Tags)
-                                    {
-                                        <div class="around-tag-button">
-                                            <button class="tag-button" @onclick="(e => { searchCasesContainTag(tag.Tag); })">
-                                                @tag.Tag
-                                            </button>
-                                        </div>
-                                    }
-                                }
-                            </div>
-                        </div>
-                            @if (!string.IsNullOrWhiteSpace(@pCase.imgUrl))
+<div class="case-layout">
+    <div class="case-top">
+        <div class="case-top-action">
+            <button>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.136 16.364L5.77208 10L12.136 3.63604" stroke="#1DA39D" stroke-width="1.7" stroke-linecap="round"></path>
+                </svg>
+                <span>Back</span>
+            </button>
+        </div>
+    </div>
+    <section class="case-content no-pad">
+        <div class="case-content-heading">
+            <h3>@pCase.Topic</h3>
+            <h4>A Case Report</h4>
+        </div>
+        <div class="case-content-meta">
+            <div class="case-profile">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt="">
+                <div class="case-profile-info">
+                    <h4>@pCase.PosterName</h4>
+                    <p>@pCase.PosterSpecialty</p>
+                </div>
+            </div>
+            <div class="case-content-date">
+                <p>Created: @pCase.DateCreated.ToShortDateString()</p>
+                <p>Last Updated: @pCase.DateLastUpdated.ToShortDateString()</p>
+            </div>
+            <div class="case-content-info">
+                <p>Case Status: @pCase.ParsedStatus</p>
+                <p>Priority: @pCase.Priority</p>
+            </div>
+            <div class="case-content-actions">
+                <button class="article-action-btn">
+                    <img src="./img/icons/share-green-lg.svg" alt="">
+                </button>
+                <button class="article-action-btn">
+                    <img src="./img/icons/bookmark-green.svg" alt="">
+                </button>
+                <button class="article-action-btn">
+                    <img src="./img/icons/message-green.svg" alt="">
+                </button>
+                <button class="article-action-btn">
+                    <img src="./img/icons/three-dots-green.svg" alt="">
+                </button>
+            </div>
+        </div>
+        <div class="case-main-content">
+            <div class="case-main-left">
+                <div class="case-patient">
+                    <div class="case-patient-info">
+                        <h4>Patient Information:</h4>
+                        <ul>
+                            <li>
+                                <span>Age:</span> @pCase.PatientAge
+                            </li>
+                            <li>
+                                <span>Gender:</span> @pCase.ParsedGender
+                            </li>
+                            <li>
+                                <span>Race:</span> @pCase.ParsedRace
+                            </li>
+                            <li>
+                                <span>Ethnicity:</span> @pCase.ParsedEthnicity
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="case-patient-lab">
+                        <h6>Lab Values: </h6>
+                        <p>
+                            @pCase.LabValues
+                        </p>
+                    </div>
+                    <div class="case-patient-tags">
+                        <h6>Tags: </h6>
+                        <ul>
+                            @if (pCase.Tags != null)
                             {
-                                <div class="lead">Images</div>
-                                @foreach (string url in imgUrls)
+                                @foreach (var tag in @pCase.Tags)
                                 {
-                                    <div class="py-5 row justify-content-center">
-                                        <div class="col-md-2">
+                                    <li><a href="">@tag.Tag</a></li>
+                                }
+                            }
+                            <li><a href="">Diseases &amp; Disorders of the Blood</a></li>
 
-                                    </div>
-                                    <div class="col-md-8">
-                                        <label class="label-img">
-                                            <input type="checkbox">
-                                            <img id="caseImg" src="@url" width="10%" height="auto" />
-                                        </label>
-                                    </div>
-                                    <div class="col-md-2">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="case-main-right">
+                <div class="case-informations">
+                    <div class="case-info-title">
+                        <h4>Case Overview</h4>
+                        <hr>
+                    </div>
+                    <div class="case-info-desc">
+                        <p>
+                            @((MarkupString)@pCase.Description)
+                        </p>
+                    </div>
+                </div>
+                <div class="case-informations">
+                    <div class="case-info-title">
+                        <h4>Current Stage of Disease</h4>
+                        <hr>
+                    </div>
+                    <div class="case-info-desc">
+                        <p>
+                            @pCase.CurrentStageOfDisease
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Case Tabs Here -->
+    <section class="case-tabs">
+        <div class="case-tab-top">
+            <div class="case-tab-left">
+                <button class="case-tab-btn @(activeTab==1?"active":"")" data-target="tab-case-one" @onclick="()=>ToggleTab(1)">
+                    Current Treatment Administered
+                </button>
+            </div>
+            <div class="case-tab-right">
+                <button class="case-tab-btn @(activeTab==2?"active":"")" data-target="tab-case-two" @onclick="()=>ToggleTab(2)">
+                    Treatment Outcomes
+                </button>
+            </div>
+        </div>
+        <!-- Current Treatment Administered Content -->
+        <div class="case-tab-content tab-case-one@(activeTab==1?"active":"")">
+            <p>
+                @pCase.CurrentTreatmentAdministered
+            </p>
+        </div>
+        <!--  Treatment Outcomes Content -->
+        <div class="case-tab-content tab-case-two @(activeTab==2?"active":"")">
+            <p>
+                @pCase.TreatmentOutcomes
+            </p>
 
-                                    </div>
+        </div>
+    </section>
+    @if (dataReady)
+    {
+        <NewComments postId="@pCase.ID" CommentList="@pCase.Comments" isOpened="true" />
+    }
+</div>
+
+<div class="ft-main-px">
+    <div class="card">
+        <div class="card-body">
+            <div class="">
+
+
+                <div class="row">
+                    <div class="col">
+                        <div class="lead">Case Summary</div>
+                    </div>
+                    <div class="col text-right">
+                        @if (pCase.PosterID == userId)
+                        {
+                            <button type="button" class="btn btn-secondary" @onclick="@EditMode">Edit Case</button>
+                        }
+                    </div>
+                </div>
+                <div class="py-5 row justify-content-center">
+                    <div class="col-md-2">
+                    </div>
+                    <div class="col-md-8">
+
+                        <h4 class="" id="vmTitle">@pCase.Topic</h4>
+                        <div class="" id="vmCategory"><small>@pCase.ParsedCategory · <span class="text-black-50">@pCase.ParsedSubCategory</span></small></div>
+
+                        <hr />
+                        <div class=""> Description: @((MarkupString)@pCase.Description)</div>
+                    </div>
+                    <div class="col-md-2">
+                    </div>
+                </div>
+                <hr />
+                <div class="lead">Patient Information</div>
+                <div class="py-5 row justify-content-center">
+                    <div class="col-md-2">
+                    </div>
+                    <div class="col-md-8" id="vmContent">
+                        <div class="">Age: @pCase.PatientAge</div>
+                        <div class="">Gender: @pCase.ParsedGender</div>
+                        <div class="">Race: @pCase.ParsedRace</div>
+                        <div class="">Ethnicity: @pCase.ParsedEthnicity</div>
+                        <br />
+                        <div class="">Lab Values: @pCase.LabValues</div>
+                        <div class="">Current Stage of Disease: @pCase.CurrentStageOfDisease</div>
+                        <div class="">Current Treatment Administered: @pCase.CurrentTreatmentAdministered </div>
+                        <div class="">Treatment Outcomes: @pCase.TreatmentOutcomes</div>
+                    </div>
+                    <div class="col-md-2">
+                    </div>
+                </div>
+                <div class="lead">Case Information</div>
+                <div class="py-5 row justify-content-center">
+                    <div class="col-md-2">
+                    </div>
+                    <div class="col-md-8">
+                        <div class=""><strong>Created By:</strong> <a href="/PersonalPage/@pCase.PosterID"> @pCase.PosterName <span class="text-black-50"> (@pCase.PosterSpecialty) </span></a></div>
+                        <div><strong>Case Status:</strong> @pCase.ParsedStatus</div>
+                        <div><strong>Priority:</strong> @pCase.Priority</div>
+                        <div><strong>Date Created:</strong> @pCase.DateCreated.ToShortDateString() </div>
+                        <div><strong>Last Updated:</strong> @pCase.DateLastUpdated.ToShortDateString()</div>
+                    </div>
+                    <div class="col-md-2">
+                    </div>
+                </div>
+                <div class="lead">Tags</div>
+                <div class="py-5 row ">
+                    <div class="col-md-2">
+                    </div>
+
+                    <div class="col-md-8">
+                        @if (pCase.Tags != null)
+                        {
+                            @foreach (var tag in pCase.Tags)
+                            {
+                                <div class="around-tag-button">
+                                    <button class="tag-button" @onclick="(e => { searchCasesContainTag(tag.Tag); })">
+                                        @tag.Tag
+                                    </button>
                                 </div>
                             }
                         }
-
-
-                        <div class="pb-5 row justify-content-center">
-                            <div class="col-md-8" id="vmf">
-                                @if(dataReady){
-                                    <Comments postId="@pCase.ID" CommentList="@pCase.Comments" isOpened="true" />
-                                }
-                                
+                    </div>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(@pCase.imgUrl))
+                {
+                    <div class="lead">Images</div>
+                    @foreach (string url in imgUrls)
+                    {
+                        <div class="py-5 row justify-content-center">
+                            <div class="col-md-2">
+                            </div>
+                            <div class="col-md-8">
+                                <label class="label-img">
+                                    <input type="checkbox">
+                                    <img id="caseImg" src="@url" width="10%" height="auto" />
+                                </label>
+                            </div>
+                            <div class="col-md-2">
                             </div>
                         </div>
+                    }
+                }
+
+
+                <div class="pb-5 row justify-content-center">
+                    <div class="col-md-8" id="vmf">
+                   @*      @if (dataReady)
+                        {
+                            <Comments postId="@pCase.ID" CommentList="@pCase.Comments" isOpened="true" />
+                        } *@
 
                     </div>
+                </div>
 
-                </div>
-            </div>
-        </div>
-    </Authorized>
-    <NotAuthorized>
-        <div class="ft-main-px">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="offset-md-3 col-md-6 offset-md-3 text-center">
-                            <br /><br />
-                            <div class="mb-3 ms-fontWeight-semibold ms-fontSize-24 ">Need To Sign In!</div>
-                            <br /><br />
-                        </div>
-                    </div>
-                </div>
             </div>
 
         </div>
+    </div>
+</div>
 
-
-    </NotAuthorized>
-</AuthorizeView>
 
 
 @code {
@@ -207,18 +324,18 @@
     }
 
     private ParsedCase pCase { get; set; } = new ParsedCase();
-    public class ParsedCase : Case
-    {
-        public string Priority { get; set; } = "";
-        public string ParsedCategory { get; set; } = "";
-        public string ParsedSubCategory { get; set; } = "";
-        public string ParsedGender { get; set; } = "";
-        public string ParsedRace { get; set; } = "";
-        public string ParsedEthnicity { get; set; } = "";
-        public string ParsedStatus { get; set; } = "";
+    // public class ParsedCase : Case
+    // {
+    //     public string Priority { get; set; } = "";
+    //     public string ParsedCategory { get; set; } = "";
+    //     public string ParsedSubCategory { get; set; } = "";
+    //     public string ParsedGender { get; set; } = "";
+    //     public string ParsedRace { get; set; } = "";
+    //     public string ParsedEthnicity { get; set; } = "";
+    //     public string ParsedStatus { get; set; } = "";
 
 
-    }
+    // }
     private List<SelectListItem> specialtyList { get; set; }
 
     //private List<SelectListItem> CategoryList { get; set; } = new List<SelectListItem>();
@@ -250,6 +367,23 @@
     private bool dataReady = false;
     private int userId = -1;
 
+
+    private int activeTab = 1;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //if (firstRender)
+        //{
+        //   await JSRuntime.InvokeVoidAsync("handlePageScrollable");
+        // await JSRuntime.InvokeVoidAsync("InitCasePage");
+        //}
+    }
+
+    private async Task ToggleTab(int tab)
+    {
+        this.activeTab = tab;
+        StateHasChanged();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         authState = await authenticationStateTask;
@@ -258,11 +392,11 @@
         if (user.Identity.IsAuthenticated)
         {
             @*userInfo = await UserManager.GetUserAsync(user);*@
-             try
+            try
             {
-              
-                userId = Int32.Parse( user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value );
-           
+
+                userId = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
+
             }
             catch (FormatException e)
             {
@@ -298,13 +432,13 @@
     }
 
     private async Task viewPage(int id)
-	{
-		NavigationManager.NavigateTo("/PersonalPage/" + id);
-	}
+    {
+        NavigationManager.NavigateTo("/PersonalPage/" + id);
+    }
 
     private async Task EditMode()
     {
-        NavigationManager.NavigateTo("/editcase/"+ caseId);
+        NavigationManager.NavigateTo("/editcase/" + caseId);
     }
 
 
@@ -356,7 +490,7 @@
     }
     private async Task searchCasesContainTag(string tag)
     {
-        NavigationManager.NavigateTo("/tagsearch/" + caseId + "/" +tag);
+        NavigationManager.NavigateTo("/tagsearch/" + caseId + "/" + tag);
     }
     private async Task UpdateSubCategoryFilter(ChangeEventArgs e)
     {

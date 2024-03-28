@@ -98,29 +98,7 @@ handleFilterCheckBoxes(
     document.querySelectorAll('[data-type="ask4"].filter-checkbox-search')
 );
 
-// Handle Scrollble
-const body = document.querySelector("body");
 
-if (body.classList.contains("single")) {
-    body.style.overflow = "hidden";
-}
-
-const handleScrollable = () => {
-    const scrollableSections = document.querySelectorAll(".inside-scroll");
-
-    scrollableSections.forEach((scrollableSection) => {
-        const rect = scrollableSection.getBoundingClientRect();
-        const distanceFromTopToDashboard = rect.top + window.scrollY;
-
-        scrollableSection.style.maxHeight =
-            window.innerHeight - distanceFromTopToDashboard + "px";
-        scrollableSection.style.paddingBottom = "20px";
-    });
-};
-
-handleScrollable();
-
-window.addEventListener("resize", handleScrollable);
 
 // Handle Outside Clicks
 const handleDocumentClick = (event) => {
@@ -153,3 +131,58 @@ const handleDocumentClick = (event) => {
 //searchFilter.addEventListener("click", toggleSearchFilter);
 //sidebarBot.addEventListener("click", toggleSidebar);
 //document.addEventListener("click", handleDocumentClick);
+
+// Handle Scrollble
+const body = document.querySelector("body");
+
+if (body.classList.contains("single")) {
+    body.style.overflow = "hidden";
+}
+
+const handleScrollable = () => {
+    const scrollableSections = document.querySelectorAll(".inside-scroll");
+
+    scrollableSections.forEach((scrollableSection) => {
+        const rect = scrollableSection.getBoundingClientRect();
+        const distanceFromTopToDashboard = rect.top + window.scrollY;
+
+        scrollableSection.style.maxHeight =
+            window.innerHeight - distanceFromTopToDashboard + "px";
+        scrollableSection.style.paddingBottom = "20px";
+    });
+};
+
+ function handlePageScrollable() {
+    handleScrollable();
+
+    window.addEventListener("resize", handleScrollable);
+}
+
+// Handle Case Page Tabs
+
+const caseTabButtons = document.querySelectorAll(".case-tab-btn");
+const caseTabContents = document.querySelectorAll(".case-tab-content");
+
+function InitCasePage() {
+    caseTabButtons.forEach((item) => {
+        item.addEventListener("click", (e) => {
+            const contentTabName = e.target.getAttribute("data-target");
+
+            const upperDivWithCaseContent = item.closest(".case-layout.case-1");
+            if (upperDivWithCaseContent) {
+                mainLayout.classList.remove("orange");
+            }
+
+            caseTabButtons.forEach((item) => {
+                item.classList.remove("active");
+            });
+
+            caseTabContents.forEach((item) => {
+                item.classList.remove("active");
+            });
+
+            e.target.classList.add("active");
+            document.querySelector(`.${contentTabName}`).classList.add("active");
+        });
+    });
+}

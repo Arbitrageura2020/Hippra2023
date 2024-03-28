@@ -23,163 +23,31 @@
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="comment-form-box">
-                 <InputText type="text" placeholder="Write a Comment" @bind-Value="@newComment.Comment"></InputText>
+                <InputText type="text" placeholder="Write a Comment" @bind-Value="@newComment.Comment"></InputText>
                 <button type="submit">Comment</button>
             </div>
 
         </EditForm>
     </div>
     <div class="case-comments">
-        @foreach (var c in CommentList)
+        @if (CommentList != null)
         {
-            <div class="case-comment-item">
-                <div class="comment-author">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt="">
+            @foreach (var c in CommentList)
+            {
+                <div class="case-comment-item">
+                    <div class="comment-author">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt="">
+                    </div>
+                    <div class="comment-info">
+                        <h6>@c.LastUpdatedDate</h6>
+                        <p> @c.Comment</p>
+                    </div>
                 </div>
-                <div class="comment-info">
-                    <h6>@c.LastUpdatedDate</h6>
-                    <p> @c.Comment</p>
-                </div>
-            </div>
+            }
         }
 
     </div>
 </section>
-
-<div class="m-2">
-    @if (CommentList == null || CommentList.Count == 0)
-    {
-        <div class="d-block text-black-50 text-right mb-2">
-            0 Comments
-        </div>
-    }
-    else
-    {
-        if (isOpened)
-        {
-            <div class="d-block text-black-50 text-right ">
-                @CommentList.Count Comments
-            </div>
-            <hr />
-            @foreach (var c in CommentList)
-            {
-                if (c.ID != EditThis)
-                {
-                    <div class="row">
-                        <div class="col vote-bar">
-                            <div class="row-md-1 wrap-button-up">
-                                <button class="btn vote-button-up bg-light" @onclick="(e => { UpdateComment(c, -3); })"><span class="fa fa-caret-square-o-up"></span></button>
-                                <div class="up-content"><p>This answer is useful.</p></div>
-                            </div>
-                            <div class="row-md-1" style="color:red">
-                                @c.VoteUp
-                            </div>
-                            <div class="row-md-1" style="color:black">
-                                @c.VoteDown
-                            </div>
-                            <div class="row-md-1 wrap-button-down">
-                                <button class="btn vote-button-down bg-light" @onclick="(e => { UpdateComment(c, -4); })"><span class="fa fa-caret-square-o-down"></span></button>
-                                <div class="down-content">This answer is not useful.</div>
-                            </div>
-                        </div>
-                        <div class="col justify-content-start" style="margin-bottom:90px;">
-                            <div class="p-4 mb-4 bg-light rounded">
-                                <div style="margin-bottom: 10px;">
-                                    <button class="circle-pic-personal circle-badge" style="background-image:url('@c.ProfileUrl') ;background-size: 100%;" @onclick="(e => { viewPage(c.PosterId); })"></button>
-                                    <strong class="comment-pic-item"> @c.PosterName </strong> <span class="text-black-50 comment-pic-item">( @c.posterSpeciality )</span>
-                                </div>
-                                <div class="px-4">
-                                    @c.Comment
-                                </div>
-                                <div class="px-4">
-                                    @if (!string.IsNullOrWhiteSpace(c.imgUrl))
-                                    {
-                                        <label class="label-img">
-                                            <input type="checkbox">
-                                            <img id="caseImg" src="@c.imgUrl" width="20%" height="20%" />
-                                        </label>
-                                    }
-                                </div>
-                                <div class="text-right text-black-50">
-                                    <small>@c.LastUpdatedDate</small>
-                                </div>
-                            </div>
-
-                            <div>
-                                @if (dataReady && c.PosterId == userId)
-                                {
-                                    <button class="comment-button" @onclick="(e => { EditComment(c.ID); })">Edit</button>
-                                    <button class="comment-button" @onclick="(e => { DeleteComment(c); })">Delete</button>
-                                }
-                            </div>
-
-                        </div>
-                    </div>
-
-                }
-                else
-                {
-                    <div class="p-2 mb-2 bg-warning rounded">
-
-                        <div style="color: Black">New Comment:</div>
-                        <div>
-                            <EditForm Model="@newComment" OnValidSubmit="(e => { UpdateComment(c,-2); })">
-                                <DataAnnotationsValidator />
-                                <ValidationSummary />
-                                <div class="input-group mb-3">
-                                    <InputText class="form-control" id="" required placeholder="Write a Comment" @bind-Value="@c.Comment" aria-label="Comment" aria-describedby="Edit a Comment" />
-                                    <div class="input-group-append">
-                                        <button id="comment-button" type="submit" class="btn btn-primary">Save</button>
-                                    </div>
-                                </div>
-                                <div class="px-4">
-                                    @if (!string.IsNullOrWhiteSpace(c.imgUrl))
-                                    {
-                                        <label class="label-img">
-                                            <input type="checkbox">
-                                            <img id="caseImg" src="@c.imgUrl" width="20%" height="20%" />
-                                        </label>
-                                        <div class="btn btn-outline-danger" @onclick="(e => { DeleteFile(c); })">
-                                            delete
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
-
-                                    }
-                                </div>
-
-                            </EditForm>
-                        </div>
-                    </div>
-                }
-            }
-        }
-        else
-        {
-            <div class="d-block text-right text-black-50 mb-2" @onclick="OpenComment">
-                @CommentList.Count Comments
-            </div>
-        }
-    }
-    <div>
-        <EditForm Model="@newComment" OnValidSubmit="@AddComment">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <div class="input-group mb-3">
-                <InputText class="form-control" id="" required placeholder="Write a Comment" @bind-Value="@newComment.Comment" aria-label="Comment" aria-describedby="Write a Comment" />
-                <div class="input-group-append">
-                    <button id="comment-button" type="submit" class="btn btn-primary">Comment</button>
-                </div>
-            </div>
-            <div class="border">
-                <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
-            </div>
-
-        </EditForm>
-    </div>
-</div>
 
 @code {
     [Parameter]
@@ -551,19 +419,21 @@
     }
     private async Task getProfilePic()
     {
-        foreach (var c in CommentList)
+        if (CommentList != null)
         {
-            profile = new Profile();
-            profile = await pService.GetProfile(c.PosterId);
-            if (profile.ProfileUrl != null)
+            foreach (var c in CommentList)
             {
-                c.ProfileUrl = profile.ProfileUrl;
-            }
-            else
-            {
-                c.ProfileUrl = "/img/hippra/blank-profile.png";
+                profile = new Profile();
+                profile = await pService.GetProfile(c.PosterId);
+                if (profile.ProfileUrl != null)
+                {
+                    c.ProfileUrl = profile.ProfileUrl;
+                }
+                else
+                {
+                    c.ProfileUrl = "/img/hippra/blank-profile.png";
+                }
             }
         }
-
     }
 }
