@@ -1,5 +1,5 @@
-﻿@page "/"
-
+﻿@page "/dashboardindexnotused"
+@layout MainLayout
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authorization
@@ -23,22 +23,901 @@
 @inject IJSRuntime JSRuntime
 @*@inject SignInManager<AppUser> SignInManager
 	@inject UserManager<AppUser> UserManager*@
-@inject NavigationManager NavigationManager
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @inject ProfileService pService
 @inject HippraService hService
 @inject IAuthorizationService AuthorizationService
+@attribute [Authorize]
+<h1>Dashboard</h1>
+
+<FTSubHeaderBar Title="" HasSeparator="false">
+
+    <div class="btn-group-toggle" data-toggle="buttons">
+        <label class="btn  btn-outline-dark @cssAllActive" @onclick="(e=>ShowAllCases())">
+            <input type="radio" name="options" id="option1" autocomplete="off" checked> All Cases
+        </label>
+        <label class="btn  btn-outline-dark @cssMyActive" @onclick="(e=>ShowMyCases())">
+            <input type="radio" name="options" id="option2" autocomplete="off"> My Cases
+        </label>
+    </div>
+
+@*     <div class="flex-grow-1">  </div>
+    <div>
+        @if (Version2)
+        {
+            <button type="button" class="btn my-1 btn-outline-dark" data-backdrop="static" @onclick="(e=>NavToCreateCase())">
+                <i class="fas fa-plus"></i> Create Case
+            </button>
+        }
+        else
+        {
+            <button type="button" class="btn my-1 btn-outline-dark" data-backdrop="static" @onclick="(e=>OpenCreateModal())">
+                <i class="fas fa-plus"></i> Create Case
+            </button>
+        }
 
 
-<AuthorizeView>
-    <Authorized Context="HomeContext">
-        @* 	<DashboardIndex></DashboardIndex> *@
+    </div> *@
 
-    </Authorized>
-    <NotAuthorized>
-        @* <Landing></Landing> *@
+</FTSubHeaderBar>
 
-    </NotAuthorized>
-</AuthorizeView>
+<Cases/>
+<div class="ft-main-px">
+
+    <div class="card">
+        <div class="card-body">
+            @*<div class="btn btn-primary" @onclick="toggerVersion">Toggle UI Version: @verStr</div>*@
+
+
+            @*<div>
+            count: @Count
+            </div>
+            <div>
+            currentPage: @CurrentPage
+            </div>
+            <div>
+            @debug
+            </div>
+            <div class="d-block text-center">
+            <div class="row">
+
+            </div>
+            </div>
+            *@
+            @*<div class="alert alert-primary" role="alert">
+            This is a dev demo build!
+            </div>*@
+
+
+            <br />
+            <div class="d-block text-center">
+                <div class="row">
+                    <div class="offset-md-2 col-md-8 offset-md-2 text-left">
+                        @if (actionOptions == 1)
+                        {
+                            <div class="mb-3 display-4 ">My Cases</div>
+                        }
+                        else
+                        {
+                            <div class="mb-3 display-4 ">All Cases</div>
+                        }
+                        <br />
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <div>
+                                    <EditForm Model="@searchString" OnValidSubmit="@searchHandler">
+                                        <div class="input-group">
+                                            <InputText class="form-control" style="height:40px" placeholder="Search Topic" @bind-Value="@searchString" />
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="submit">Search</button>
+                                                <button type="button" class="btn btn-outline-info" @onclick="@toggleFilters"><i class="ms-Icon ms-Icon--Filter" aria-hidden="true"></i></button>
+                                            </div>
+
+                                        </div>
+                                    </EditForm>
+
+                                </div>
+                                @if (showFilters)
+                                {
+                                    <div class="card-footer text-muted text-left">
+                                        <div class="px-4">
+                                            <EditForm Model="@filters" OnValidSubmit="@searchHandler">
+                                                <div class="row d-flex align-items-center">
+                                                    <div class="flex-grow-1 ">
+                                                        <div class="form-check">
+                                                            <InputCheckbox class="form-check-input" type="checkbox" id="showClosed" @bind-Value="filters.showClosed" />
+                                                            <label class="form-check-label" for="showClosed">
+                                                                Show Closed Cases
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <InputCheckbox class="form-check-input" type="checkbox" id="showTagOnly" @bind-Value="filters.showTagOnly" />
+                                                            <label class="form-check-label" for="showTagOnly">
+                                                                Show Result Contain Tag
+                                                            </label>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <label for="CategoryFilter">Category</label>
+                                                                <select id="CategoryFilter" @onchange=@UpdateSubCategoryFilter>
+                                                                    <option value="-1">All Categories</option>
+                                                                    <option value="0">Diagnostics</option>
+                                                                    <option value="1">Medicine</option>
+                                                                    <option value="2">Surgery</option>
+                                                                </select>
+                                                                <InputSelect id="SubCategoryFilter" @bind-Value="@filters.SubCategory">
+                                                                    @foreach (var h in SubCategoryFilterList)
+                                                                    {
+                                                                        <option value="@h.Value">@h.Text</option>
+                                                                    }
+                                                                    /**/
+                                                                    /**/
+                                                                </InputSelect>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <label for="PriorityFilter">Priority</label>
+                                                                <select id="PriorityFilter" @onchange="@UpdatePriority">
+                                                                    <option value="-1">All</option>
+                                                                    <option value="0">Stat</option>
+                                                                    <option value="1">Over Coffee</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <button class="btn btn-outline-secondary" type="submit">Filter</button>
+                                                    </div>
+                                                </div>
+
+
+                                            </EditForm>
+                                        </div>
+
+                                    </div>
+                                }
+
+
+                            </div>
+
+                        </div>
+                        <br />
+                        <hr />
+                        <br />
+                        <div class="mb-3">
+
+                            @if (IsLoading)
+                            {
+                                <p><em>Searching...</em></p>
+                            }
+                            else
+                            {
+                                @if (Count > 0)
+                                {
+
+                                    foreach (var c in SearchResults)
+                                    {
+                                        <a class="hover-class" href=@($"/viewcase/{c.ID}")>
+                                            <div id="search-result" class="border border-dark rounded p-4 mb-2 hover-class">
+                                                <div class="row">
+                                                    <div class="col-md-9 align-self-center">
+                                                        <h4 class="">@c.Topic</h4>
+                                                        <div class=""><strong></strong>@c.ParsedCategory · @c.ParsedSubCategory</div>
+
+                                                        <hr />
+                                                    </div>
+                                                    <div class="col-md-3 text-right">
+
+                                                        <div class="">Priority: @c.Priority</div>
+                                                        <div class="">@c.DateCreated</div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        @*<div class=""><strong>Category: </strong> @c.ParsedCategory · @c.ParsedSubCategory</div>*@
+                                                        <div class=""><strong>Description:</strong> @c.Description.Left(200)</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </a>
+
+                                    }
+                                }
+                                else
+                                {
+                                    <div>No Case Found. Try Modify Search Criteria or Filter.</div>
+                                }
+
+                            }
+                        </div>
+                        @if (Count > PageSize)
+                        {
+                            <div class="mb-3">
+                                <br />
+                                <hr />
+                                <br />
+                                <FTPagination paginationData="paginationData" ChangePage="ChangePage" />
+                                <br />
+                            </div>
+
+                        }
+
+                        <br />
+                    </div>
+                </div>
+                <br /><br />
+            </div>
+            <br />
+            <br />
+        </div>
+    </div>
+
+
+</div>
+
+
+<!-- Modal -->
+<div id="mPostModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pTitle">@mTitle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            @*<EditBar />*@
+
+
+            @if (@mIsCreate)
+            {
+                <EditForm Model="@pCase" OnValidSubmit="@AddPost">
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div>
+                            <p><small>Please fill in all the case requirements listed below and provide complete details like case summary, patient information, diagnosis/treatment considered, outcomes, etc. to aid the physicians in the Hippra network to give proper/adquate advice.</small></p>
+
+                        </div>
+                        <div class="form-group">
+                            <InputText class="form-control" required placeholder="Topic" @bind-Value="@pCase.Topic" />
+                        </div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" required placeholder="Description" @bind-Value="@pCase.Description" row="12" />
+                        </div>
+
+
+                        <hr />
+                        <div class="form-group">
+                            <div>Priority</div>
+                            <InputRadioGroup Name="rate" @bind-Value="priorityRadio.Priority">
+                                Priority
+                                <br>
+                                <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
+                                <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
+                            </InputRadioGroup>
+
+                            @*<label>
+                        <InputRadio name="rate" SelectedValue="0" @bind-Value="@priorityRadio.Priority" />
+                        High
+                        </label>
+                        <label>
+                        <InputRadio name="rate" SelectedValue="1" @bind-Value="@priorityRadio.Priority" />
+                        Medium
+                        </label>
+                        <label>
+                        <InputRadio name="rate" SelectedValue="2" @bind-Value="@priorityRadio.Priority" />
+                        Low
+                        </label>*@
+                        </div>
+                        <div class="form-group">
+                            <div>Patient Age</div>
+                            <InputNumber class="form-control" required placeholder="Age" @bind-Value="@pCase.PatientAge" />
+                        </div>
+
+                        @*add other fields*@
+                        <div class=" mb-3">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="Category">Category</label>
+                                    @*<InputSelect id="Category" @bind-Value="@bCategory" onchange=@UpdateSubCategory>
+                                @foreach (var g in CategoryList)
+                                {
+                                <option value="@g.Value">@g.Text</option>
+                                }
+                                </InputSelect>*@
+                                    <select id="Category" @onchange=@UpdateSubCategory>
+                                        <option value="0" selected>Diagnostics</option>
+                                        <option value="1">Medicine</option>
+                                        <option value="2">Surgery</option>
+                                    </select>
+
+                                </div>
+                                <div class="col">
+                                    <label for="SubCategory">Sub-Category</label>
+                                    <InputSelect id="SubCategory" @bind-Value="@bSubCategory">
+                                        @foreach (var h in SubCategoryList)
+                                        {
+                                            <option value="@h.Value">@h.Text</option>
+                                        }
+                                        /**/
+
+
+                                    </InputSelect>
+                                </div>
+                            </div>
+
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+                        <div class=" mb-3">
+                            <label for="Gender">Gender</label>
+                            <InputSelect id="Gender" @bind-Value="@bGender">
+                                @foreach (var i in GenderList)
+                                {
+                                    <option value="@i.Value">@i.Text</option>
+                                }
+                                /**/
+
+                            </InputSelect>
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+                        <div class=" mb-3">
+                            <label for="Race">Race</label>
+                            <InputSelect id="Race" @bind-Value="@bRace">
+                                @foreach (var j in RaceList)
+                                {
+                                    <option value="@j.Value">@j.Text</option>
+                                }
+                                /**/
+
+
+                            </InputSelect>
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+                        <div class=" mb-3">
+                            <label for="Ethnicity">Ethnicity</label>
+                            <InputSelect id="Ethnicity" @bind-Value="@bEthnicity">
+                                @foreach (var k in EthnicityList)
+                                {
+                                    <option value="@k.Value">@k.Text</option>
+                                }
+                                /**/
+
+                            </InputSelect>
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Lab Values" @bind-Value="@pCase.LabValues" row="12" />
+                        </div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Current Stage of Disease" @bind-Value="@pCase.CurrentStageOfDisease" row="12" />
+                        </div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Current Treatment Administered" @bind-Value="@pCase.CurrentTreatmentAdministered" row="12" />
+                        </div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Treatment Outcomes" @bind-Value="@pCase.TreatmentOutcomes" row="12" />
+                        </div>
+                        <div>
+                            Add Images Here:
+                            <ImgUpload></ImgUpload>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="create-button" type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </EditForm>
+            }
+            else
+            {
+                <EditForm Model="@pCase" OnValidSubmit="@EditPost">
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div>
+                            <p><small>Please fill in all the case requirements listed below and provide complete details like case summary, patient information, diagnosis/treatment considered, outcomes, etc. to aid the physicians in the Hippra network to give proper/adquate advice.</small></p>
+
+                        </div>
+                        <div class="form-group">
+                            <InputText class="form-control" required placeholder="Topic" @bind-Value="@pCase.Topic" />
+                        </div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" required placeholder="Description" @bind-Value="@pCase.Description" row="12" />
+                        </div>
+
+
+                        <hr />
+                        <div class="form-group">
+                            <div>Priority</div>
+                            <InputRadioGroup Name="rate" @bind-Value="priorityRadio.Priority">
+                                Priority
+                                <br>
+                                <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
+                                <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
+                            </InputRadioGroup>
+                            @*<label>
+                        <InputRadio name="rate" SelectedValue="0" @bind-Value="@priorityRadio.Priority" />
+                        High
+                        </label>
+                        <label>
+                        <InputRadio name="rate" SelectedValue="1" @bind-Value="@priorityRadio.Priority" />
+                        Medium
+                        </label>
+                        <label>
+                        <InputRadio name="rate" SelectedValue="2" @bind-Value="@priorityRadio.Priority" />
+                        Low
+                        </label>*@
+                        </div>
+                        <div class="form-group">
+                            <div>Patient Age</div>
+                            <InputNumber class="form-control" required placeholder="Age" @bind-Value="@pCase.PatientAge" />
+                        </div>
+
+                        @*add other fields*@
+                        <div class=" mb-3">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="Category">Category</label>
+                                    @*<InputSelect id="Category" @bind-Value="@bCategory" onchange=@UpdateSubCategory>
+                                @foreach (var g in CategoryList)
+                                {
+                                <option value="@g.Value">@g.Text</option>
+                                }
+                                </InputSelect>*@
+                                    @if (ParseCategoryValueFromSub(pCase.MedicalCategory) == "0")
+                                    {
+                                        <select id="Category" @onchange=@UpdateSubCategory>
+                                            <option value="0" selected>Diagnostics</option>
+                                            <option value="1">Medicine</option>
+                                            <option value="2">Surgery</option>
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        if (ParseCategoryValueFromSub(pCase.MedicalCategory) == "1")
+                                        {
+                                            <select id="Category" @onchange=@UpdateSubCategory>
+                                                <option value="0">Diagnostics</option>
+                                                <option value="1" selected>Medicine</option>
+                                                <option value="2">Surgery</option>
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <select id="Category" @onchange=@UpdateSubCategory>
+                                                <option value="0" selected>Diagnostics</option>
+                                                <option value="1">Medicine</option>
+                                                <option value="2" selected>Surgery</option>
+                                            </select>
+                                        }
+                                    }
+
+                                </div>
+                                <div class="col">
+                                    <label for="SubCategory">Sub-Category</label>
+                                    <InputSelect id="SubCategory" @bind-Value="@bSubCategory">
+                                        @foreach (var h in SubCategoryList)
+                                        {
+                                            <option value="@h.Value">@h.Text</option>
+                                        }
+                                        /**/
+
+
+                                    </InputSelect>
+                                </div>
+                            </div>
+
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+                        <div class=" mb-3">
+                            <label for="Gender">Gender</label>
+                            <InputSelect id="Gender" @bind-Value="@bGender">
+                                @foreach (var i in GenderList)
+                                {
+                                    <option value="@i.Value">@i.Text</option>
+                                }
+                                /**/
+
+                            </InputSelect>
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+                        <div class=" mb-3">
+                            <label for="Race">Race</label>
+                            <InputSelect id="Race" @bind-Value="@bRace">
+                                @foreach (var j in RaceList)
+                                {
+                                    <option value="@j.Value">@j.Text</option>
+                                }
+                                /**/
+
+
+                            </InputSelect>
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+                        <div class=" mb-3">
+                            <label for="Ethnicity">Ethnicity</label>
+                            <InputSelect id="Ethnicity" @bind-Value="@bEthnicity">
+                                @foreach (var k in EthnicityList)
+                                {
+                                    <option value="@k.Value">@k.Text</option>
+                                }
+                                /**/
+
+                            </InputSelect>
+                            <div class="small text-muted">
+                                You can change this later
+                            </div>
+                        </div>
+
+                        <div>Lab Values</div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Lab Values" @bind-Value="@pCase.LabValues" row="12" />
+                        </div>
+                        <div>Current Stage of Disease</div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Current Stage of Disease" @bind-Value="@pCase.CurrentStageOfDisease" row="12" />
+                        </div>
+                        <div>Current Treatment Administered</div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Current Treatment Administered" @bind-Value="@pCase.CurrentTreatmentAdministered" row="12" />
+                        </div>
+                        <div>Treatment Outcomes</div>
+                        <div class="form-group">
+                            <InputTextArea class="form-control" placeholder="Treatment Outcomes" @bind-Value="@pCase.TreatmentOutcomes" row="12" />
+                        </div>
+                        <div>
+                            @if (userId == pCase.PosterID)
+                            {
+                                <div class="modal-footer">
+
+                                    @if (pCase.Status)
+                                    {
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Close Case</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Reopen Case</button>
+                                    }
+
+
+                                </div>
+                            }
+                        </div>
+                        <div>
+                            Add Images Here:
+                            <ImgUpload></ImgUpload>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="create-button" type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </EditForm>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+@if (pCase.ID != 0)
+{
+    <div id="viewPostModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pTitle">Case Details </h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                @if (viewMode)
+                {
+                    <div class="modal-body">
+
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="lead">Case Summary</div>
+                            </div>
+                            <div class="col text-right">
+                                @if (pCase.PosterID == userId)
+                                {
+                                    <button type="button" class="btn btn-secondary" @onclick="@switchEditMode">Edit Case</button>
+                                }
+                            </div>
+                        </div>
+                        <div class="py-5 row justify-content-center">
+                            <div class="col-md-2">
+                            </div>
+                            <div class="col-md-8">
+
+                                <h4 class="" id="vmTitle">@pCase.Topic</h4>
+                                <div class="" id="vmCategory"><small>@pCase.ParsedCategory · <span class="text-black-50">@pCase.ParsedSubCategory</span></small></div>
+
+                                <hr />
+                                <div class=""> Description: @((MarkupString)@pCase.Description)</div>
+                            </div>
+                            <div class="col-md-2">
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="lead">Patient Information</div>
+                        <div class="py-5 row justify-content-center">
+                            <div class="col-md-2">
+                            </div>
+                            <div class="col-md-8" id="vmContent">
+                                <div class="">Age: @pCase.PatientAge</div>
+                                <div class="">Gender: @pCase.ParsedGender</div>
+                                <div class="">Race: @pCase.ParsedRace</div>
+                                <div class="">Ethnicity: @pCase.ParsedEthnicity</div>
+                                <br />
+                                <div class="">Lab Values: @pCase.LabValues</div>
+                                <div class="">Current Stage of Disease: @pCase.CurrentStageOfDisease</div>
+                                <div class="">Current Treatment Administered: @pCase.CurrentTreatmentAdministered </div>
+                                <div class="">Treatment Outcomes: @pCase.TreatmentOutcomes</div>
+                            </div>
+                            <div class="col-md-2">
+                            </div>
+                        </div>
+                        <div class="lead">Case Information</div>
+                        <div class="py-5 row justify-content-center">
+                            <div class="col-md-2">
+                            </div>
+                            <div class="col-md-8">
+                                <div class=""><strong>Created By:</strong> @pCase.PosterName <span class="text-black-50"> (@pCase.PosterSpecialty) </span></div>
+                                <div><strong>Case Status:</strong> @pCase.ParsedStatus</div>
+                                <div><strong>Priority:</strong> @pCase.Priority</div>
+                                <div><strong>Date Created:</strong> @pCase.DateCreated.ToShortDateString() </div>
+                                <div><strong>Last Updated:</strong> @pCase.DateLastUpdated.ToShortDateString()</div>
+                            </div>
+                            <div class="col-md-2">
+                            </div>
+                        </div>
+
+                        <div class="pb-5 row justify-content-center">
+                            <div class="col-md-8" id="vmf">
+                                <FTComments postId="@pCase.ID" CommentList="@pCase.Comments" isOpened="true" />
+                            </div>
+                        </div>
+
+                    </div>
+                }
+                else
+                {
+                    <EditForm Model="@pCase" OnValidSubmit="@EditPost">
+                        <div class="modal-body">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+                            <div>
+                                <p><small>Please fill in all the case requirements listed below and provide complete details like case summary, patient information, diagnosis/treatment considered, outcomes, etc. to aid the physicians in the Hippra network to give proper/adquate advice.</small></p>
+
+                            </div>
+                            <div class="form-group">
+
+
+
+                                <InputText class="form-control" required placeholder="Topic" @bind-Value="@pCase.Topic" />
+                            </div>
+                            <div class="form-group">
+                                <InputTextArea class="form-control" required placeholder="Description" @bind-Value="@pCase.Description" row="12" />
+                            </div>
+
+
+                            <hr />
+                            <div class="form-group">
+                                <div>Priority</div>
+                                <InputRadioGroup Name="rate" @bind-Value="priorityRadio.Priority">
+                                    Priority
+                                    <br>
+                                    <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
+                                    <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                    @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
+                                </InputRadioGroup>
+                                @*<label>
+                        <InputRadio name="rate" SelectedValue="0" @bind-Value="@priorityRadio.Priority" />
+                        High
+                        </label>
+                        <label>
+                        <InputRadio name="rate" SelectedValue="1" @bind-Value="@priorityRadio.Priority" />
+                        Medium
+                        </label>
+                        <label>
+                        <InputRadio name="rate" SelectedValue="2" @bind-Value="@priorityRadio.Priority" />
+                        Low
+                        </label>*@
+                            </div>
+                            <div class="form-group">
+                                <div>Patient Age</div>
+                                <InputNumber class="form-control" required placeholder="Age" @bind-Value="@pCase.PatientAge" />
+                            </div>
+
+                            @*add other fields*@
+                            <div class=" mb-3">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="Category">Category</label>
+                                        @*<InputSelect id="Category" @bind-Value="@bCategory" onchange=@UpdateSubCategory>
+                                @foreach (var g in CategoryList)
+                                {
+                                <option value="@g.Value">@g.Text</option>
+                                }
+                                </InputSelect>*@
+                                        @if (ParseCategoryValueFromSub(pCase.MedicalCategory) == "0")
+                                        {
+                                            <select id="Category" @onchange=@UpdateSubCategory>
+                                                <option value="0" selected>Diagnostics</option>
+                                                <option value="1">Medicine</option>
+                                                <option value="2">Surgery</option>
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            if (ParseCategoryValueFromSub(pCase.MedicalCategory) == "1")
+                                            {
+                                                <select id="Category" @onchange=@UpdateSubCategory>
+                                                    <option value="0">Diagnostics</option>
+                                                    <option value="1" selected>Medicine</option>
+                                                    <option value="2">Surgery</option>
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <select id="Category" @onchange=@UpdateSubCategory>
+                                                    <option value="0" selected>Diagnostics</option>
+                                                    <option value="1">Medicine</option>
+                                                    <option value="2" selected>Surgery</option>
+                                                </select>
+                                            }
+                                        }
+
+                                    </div>
+                                    <div class="col">
+                                        <label for="SubCategory">Sub-Category</label>
+                                        <InputSelect id="SubCategory" @bind-Value="@bSubCategory">
+                                            @foreach (var h in SubCategoryList)
+                                            {
+                                                <option value="@h.Value">@h.Text</option>
+                                            }
+                                            /**/
+                                            /**/
+
+
+                                        </InputSelect>
+                                    </div>
+                                </div>
+
+                                <div class="small text-muted">
+                                    You can change this later
+                                </div>
+                            </div>
+                            <div class=" mb-3">
+                                <label for="Gender">Gender</label>
+                                <InputSelect id="Gender" @bind-Value="@bGender">
+                                    @foreach (var i in GenderList)
+                                    {
+                                        <option value="@i.Value">@i.Text</option>
+                                    }
+                                    /**/
+                                    /**/
+
+                                </InputSelect>
+                                <div class="small text-muted">
+                                    You can change this later
+                                </div>
+                            </div>
+                            <div class=" mb-3">
+                                <label for="Race">Race</label>
+                                <InputSelect id="Race" @bind-Value="@bRace">
+                                    @foreach (var j in RaceList)
+                                    {
+                                        <option value="@j.Value">@j.Text</option>
+                                    }
+                                    /**/
+                                    /**/
+
+
+                                </InputSelect>
+                                <div class="small text-muted">
+                                    You can change this later
+                                </div>
+                            </div>
+                            <div class=" mb-3">
+                                <label for="Ethnicity">Ethnicity</label>
+                                <InputSelect id="Ethnicity" @bind-Value="@bEthnicity">
+                                    @foreach (var k in EthnicityList)
+                                    {
+                                        <option value="@k.Value">@k.Text</option>
+                                    }
+                                    /**/
+                                    /**/
+
+                                </InputSelect>
+                                <div class="small text-muted">
+                                    You can change this later
+                                </div>
+                            </div>
+
+                            <div>Lab Values</div>
+                            <div class="form-group">
+                                <InputTextArea class="form-control" placeholder="Lab Values" @bind-Value="@pCase.LabValues" row="12" />
+                            </div>
+                            <div>Current Stage of Disease</div>
+                            <div class="form-group">
+                                <InputTextArea class="form-control" placeholder="Current Stage of Disease" @bind-Value="@pCase.CurrentStageOfDisease" row="12" />
+                            </div>
+                            <div>Current Treatment Administered</div>
+                            <div class="form-group">
+                                <InputTextArea class="form-control" placeholder="Current Treatment Administered" @bind-Value="@pCase.CurrentTreatmentAdministered" row="12" />
+                            </div>
+                            <div>Treatment Outcomes</div>
+                            <div class="form-group">
+                                <InputTextArea class="form-control" placeholder="Treatment Outcomes" @bind-Value="@pCase.TreatmentOutcomes" row="12" />
+                            </div>
+                            <div>
+                                @if (userId == pCase.PosterID)
+                                {
+                                    <div class="modal-footer">
+
+                                        @if (pCase.Status)
+                                        {
+                                            <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Close Case</button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Reopen Case</button>
+                                        }
+
+
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button id="create-button" type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </EditForm>
+                }
+
+
+
+
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+
 
 
 @code {
@@ -172,27 +1051,22 @@
             fullName = user.Claims.FirstOrDefault(s => s.Type == "FirstName")?.Value + " " + user.Claims.FirstOrDefault(s => s.Type == "LastName")?.Value;
 
 
-            // await GetSearchResults(CurrentPage);
+            await GetSearchResults(CurrentPage);
 
-            // if (Count > PageSize)
-            // {
-            //     for (int i = 1; i <= TotalPages; i++)
-            //     {
-            //         paginationData.Add(new FTPaginationModel()
-            //             {
-            //                 id = i
-            //             });
-            //     }
-            //     var pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
-            //     pg.isActive = true;
-            // }
-
-            NavigationManager.NavigateTo("dashboardindex");
-
+            if (Count > PageSize)
+            {
+                for (int i = 1; i <= TotalPages; i++)
+                {
+                    paginationData.Add(new FTPaginationModel()
+                        {
+                            id = i
+                        });
+                }
+                var pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
+                pg.isActive = true;
+            }
 
         }
-        else
-            NavigationManager.NavigateTo("landing");
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

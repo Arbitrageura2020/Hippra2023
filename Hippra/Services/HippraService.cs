@@ -42,8 +42,8 @@ namespace Hippra.Services
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             ApplicationDbContext context,
-            IOptions<AppSettings> settings, 
-            IDbContextFactory<ApplicationDbContext>  dbFactory)
+            IOptions<AppSettings> settings,
+            IDbContextFactory<ApplicationDbContext> dbFactory)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -65,8 +65,20 @@ namespace Hippra.Services
         {
             using var _context = DbFactory.CreateDbContext();
 
-            return _context.Cases.AsNoTracking().Where(s=>s.PosterID == profileId).Count();
+            return _context.Cases.AsNoTracking().Where(s => s.PosterID == profileId).Count();
         }
+
+        public async Task<SearchResultModel> GetAllCases()
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            List<Case> cases = await _context.Cases.Include(c => c.Comments).OrderByDescending(s => s.DateCreated).AsNoTracking().ToListAsync();
+            SearchResultModel result = new SearchResultModel();
+            result.TotalCount = cases.Count;
+            result.Cases = cases;
+            return result;
+        }
+
         public async Task<List<Case>> GetCases(int CurrentPage, int PageSize, int id)
         {
             using var _context = DbFactory.CreateDbContext();
@@ -105,7 +117,7 @@ namespace Hippra.Services
                             {
                                 if (id == -1)
                                 {
-                                    foreach(var Id in caseIDs)
+                                    foreach (var Id in caseIDs)
                                     {
                                         tempCase = await GetCase(Id);
                                         if (!cases.Contains(tempCase))
@@ -126,9 +138,9 @@ namespace Hippra.Services
                                                 cases.Add(tempCase);
                                             }
                                         }
-                                        
+
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.PosterID == id).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.Topic.Contains(searchString) && s.PosterID == id);
                                 }
@@ -206,7 +218,7 @@ namespace Hippra.Services
                                             }
                                         }
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.Status).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.Topic.Contains(searchString) && s.Status);
                                 }
@@ -223,7 +235,7 @@ namespace Hippra.Services
                                             }
                                         }
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.Status && s.PosterID == id).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.Topic.Contains(searchString) && s.Status && s.PosterID == id);
                                 }
@@ -320,7 +332,7 @@ namespace Hippra.Services
                                             }
                                         }
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.PosterID == id && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.Topic.Contains(searchString) && s.PosterID == id);
                                 }
@@ -399,7 +411,7 @@ namespace Hippra.Services
                                             }
                                         }
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.Status && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.Topic.Contains(searchString) && s.Status);
                                 }
@@ -416,7 +428,7 @@ namespace Hippra.Services
                                             }
                                         }
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.Status && s.PosterID == id && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.Topic.Contains(searchString) && s.Status && s.PosterID == id);
                                 }
@@ -473,7 +485,7 @@ namespace Hippra.Services
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.Status && u.PosterID == id);
                                 }
                             }
-                        } 
+                        }
                     }
                 }
             }
@@ -516,7 +528,7 @@ namespace Hippra.Services
                                             }
                                         }
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.PosterID == id).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.PosterID == id);
                                 }
@@ -594,7 +606,7 @@ namespace Hippra.Services
                                             }
                                         }
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.Status).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.Status);
                                 }
@@ -611,7 +623,7 @@ namespace Hippra.Services
                                             }
                                         }
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.Status && s.PosterID == id).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.Status && s.PosterID == id);
                                 }
@@ -692,7 +704,7 @@ namespace Hippra.Services
                                             }
                                         }
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString));
                                 }
@@ -709,7 +721,7 @@ namespace Hippra.Services
                                             }
                                         }
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.PosterID == id && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.PosterID == id);
                                 }
@@ -766,7 +778,7 @@ namespace Hippra.Services
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.MedicalCategory == SubCategory && u.PosterID == id);
                                 }
                             }
-                        } 
+                        }
                     }
                     else
                     {
@@ -787,7 +799,7 @@ namespace Hippra.Services
                                             }
                                         }
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.Status).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.Status);
                                 }
@@ -804,7 +816,7 @@ namespace Hippra.Services
                                             }
                                         }
                                     }
-                                    
+
                                     //cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.Status && s.PosterID == id).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     //count = await _context.Cases.AsNoTracking().CountAsync(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.Status && s.PosterID == id);
                                 }
@@ -861,7 +873,7 @@ namespace Hippra.Services
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.MedicalCategory == SubCategory && u.Status && u.PosterID == id);
                                 }
                             }
-                        }  
+                        }
                     }
                 }
             }
@@ -990,7 +1002,7 @@ namespace Hippra.Services
                 Case.DateClosed = DateTime.Now;
                 Case.Status = false;
             }
-           
+
             Case.DateLastUpdated = DateTime.Now;
 
             Case.Topic = EditedCase.Topic;
@@ -1027,7 +1039,7 @@ namespace Hippra.Services
 
             return true;
         }
-        
+
         public async Task<bool> CloseCase(int CaseId)
         {
             using var _context = DbFactory.CreateDbContext();
@@ -1120,13 +1132,13 @@ namespace Hippra.Services
             List<int> result = new List<int>();
             if (CaseTag != null)
             {
-                
+
                 foreach (var item in CaseTag)
                 {
                     result.Add(item.CaseID);
                 }
             }
-            
+
             return result;
         }
         // comments
@@ -1134,7 +1146,7 @@ namespace Hippra.Services
         {
             using var _context = DbFactory.CreateDbContext();
 
-            return await _context.CaseComments.Where(c => c.CaseID== caseId).ToListAsync();
+            return await _context.CaseComments.Where(c => c.CaseID == caseId).ToListAsync();
         }
         public async Task<List<CaseComment>> GetCommentsNoTracking(int caseId)
         {
@@ -1166,10 +1178,10 @@ namespace Hippra.Services
                 _context.CaseComments.Add(CaseComment);
                 await _context.SaveChangesAsync();
             }
-           
+
             return true;
         }
-        public async Task<bool> EditComment(CaseComment EditedCaseComment,int type)
+        public async Task<bool> EditComment(CaseComment EditedCaseComment, int type)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -1186,7 +1198,7 @@ namespace Hippra.Services
             {
                 CaseComment.LastUpdatedDate = DateTime.Now;
             }
-            else if(type == -3)
+            else if (type == -3)
             {
                 CaseComment.VoteUp = EditedCaseComment.VoteUp;
             }
@@ -1275,7 +1287,7 @@ namespace Hippra.Services
             using var _context = DbFactory.CreateDbContext();
 
             var vote = await _context.Votes.FirstOrDefaultAsync(v => v.PosterID == postId && v.VoterID == voterId && v.CID == cID);
-            if(vote != null)
+            if (vote != null)
             {
                 return true;
             }
@@ -1348,9 +1360,9 @@ namespace Hippra.Services
             using var _context = DbFactory.CreateDbContext();
 
             var conn = await _context.Connections.FirstOrDefaultAsync(c => (c.UserID == my_Id && c.FriendID == f_Id) || (c.UserID == f_Id && c.FriendID == my_Id));
-            if(conn != null)
+            if (conn != null)
             {
-                if(conn.Status == -1)
+                if (conn.Status == -1)
                 {
                     return "P";
                 }
@@ -1377,11 +1389,11 @@ namespace Hippra.Services
             using var _context = DbFactory.CreateDbContext();
 
             Connection conn = await _context.Connections.FirstOrDefaultAsync(c => c.UserID == userId && c.FriendID == fID);
-            if(conn != null)
+            if (conn != null)
             {
-               _context.Connections.Remove(conn);
-               await _context.SaveChangesAsync();
-               return true;
+                _context.Connections.Remove(conn);
+                await _context.SaveChangesAsync();
+                return true;
             }
             return false;
         }
@@ -1435,7 +1447,7 @@ namespace Hippra.Services
             {
                 return false;
             }
-            
+
             notif.IsRead = 2;
             try
             {
@@ -1519,7 +1531,7 @@ namespace Hippra.Services
         }
         public async Task<bool> ImageUploadFunc(Stream file, string name)
         {
-           string filename = await ImageHelper.UploadImageToStorage(file, name).ConfigureAwait(true);
+            string filename = await ImageHelper.UploadImageToStorage(file, name).ConfigureAwait(true);
             return true;
         }
 

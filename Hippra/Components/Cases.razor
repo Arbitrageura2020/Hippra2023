@@ -1,0 +1,525 @@
+﻿@using Hippra.Extensions
+@using Hippra.Models.SQL
+@using Hippra.Services
+@inject HippraService hService
+<div class="dashboard-right">
+    <div class="main-header">
+        <div class="heading">
+            <h3>CLINICAL KNOWLEDGE SHARING</h3>
+        </div>
+
+        <div class="heading-actions">
+            <h4>Sort By View:</h4>
+            <!-- Recent checkbox and label -->
+            <div class="heading-action-item">
+                <input class="filter-checkbox dashboard" type="checkbox" id="dashboard-recent" checked="">
+                <label for="dashboard-recent" class="checkbox-tab">Recent</label>
+            </div>
+            <!-- Trending checkbox and label -->
+            <div class="heading-action-item">
+                <input class="filter-checkbox dashboard" type="checkbox" id="dashboard-trending">
+                <label for="dashboard-trending" class="checkbox-tab">Trending</label>
+            </div>
+        </div>
+
+    </div>
+    <section class="dashboard-content">
+        <div class="main-articles inside-scroll" style="max-height: 449.6px; padding-bottom: 20px;">
+            <!-- Clinical Knowledge Loop Here -->
+            @if (IsLoading)
+            {
+                <p><em>Searching...</em></p>
+            }
+            else
+            {
+                @if (Count > 0)
+                {
+
+                    foreach (var c in SearchResults)
+                    {
+                        <div class="main-article-item">
+                            <div class="article-date">
+                                <p>@c.DateLastUpdated.ToShortDateString()</p>
+                            </div>
+                            <div class="article-top">
+                                <div class="article-caption">
+                                    <a href=@($"/viewcase/{c.ID}")>@c.Topic</a>
+                                </div>
+                                <div class="article-actions">
+                                    <button class="article-action-btn">
+                                        <img src="./img/icons/message-green.svg" alt="">
+                                    </button>
+                                    <button class="article-action-btn">
+                                        <img src="./img/icons/bookmark-green.svg" alt="">
+                                    </button>
+                                    <button class="article-action-btn">
+                                        <img src="./img/icons/three-dots-green.svg" alt="">
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="article-content">
+                                <p>
+                                    @c.Description.Left(200) ...
+                                </p>
+                            </div>
+                            <div class="article-bot">
+                                <div class="article-author">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt="">
+                                    <div class="article-author-info">
+                                        <h6>Emma Rye</h6>
+                                        <p>Disease Speacialist</p>
+                                    </div>
+                                </div>
+                                <div class="article-bot-actions">
+                                    <a href=@($"/viewcase/{c.ID}")><img src="./img/icons/arrow-right-green.svg" alt=""></a>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                }
+                else
+                {
+                    <div>No Case Found. Try Modify Search Criteria or Filter.</div>
+                }
+
+            }
+   
+
+        </div>
+    </section>
+</div>
+@code {
+    private bool IsLoading = false;
+    private string searchString { get; set; } = "";
+    private List<ParsedCase> SearchResults { get; set; } = new List<ParsedCase>();
+    private List<Case> cases { get; set; } = new List<Case>();
+
+    public int CurrentPage { get; set; } = 1;
+    public int Count { get; set; }
+    public int PageSize { get; set; } = 10;
+    public int TotalPages => (int)Math.Ceiling(decimal.Divide(Count, PageSize));
+
+    public class ParsedCase : Case
+    {
+        public string Priority { get; set; } = "";
+        public string ParsedCategory { get; set; } = "";
+        public string ParsedSubCategory { get; set; } = "";
+        public string ParsedGender { get; set; } = "";
+        public string ParsedRace { get; set; } = "";
+        public string ParsedEthnicity { get; set; } = "";
+        public string ParsedStatus { get; set; } = "";
+
+
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetSearchResults();
+    }
+
+    private async Task GetSearchResults()
+    {
+        SearchResults = new List<ParsedCase>();
+        cases = new List<Case>();
+
+        // int tSubCategory = -1;
+        // int tPriority = -1;
+        // if (!string.IsNullOrEmpty(filters.SubCategory))
+        // {
+        //     tSubCategory = Int32.Parse(filters.SubCategory);
+        // }
+        // if (!string.IsNullOrEmpty(filters.Priority))
+        // {
+        //     tPriority = Int32.Parse(filters.Priority);
+        // }
+
+        // List<int> caseListContainTag = new List<int>();
+        // if (filters.showTagOnly)
+        // {
+        //     caseListContainTag = await hService.GetCasesIdByTag(searchString);
+        // }
+
+        // if (actionOptions == 0)
+        // {
+        var searchResults = await hService.GetAllCases();
+        cases = searchResults.Cases;
+        Count = searchResults.TotalCount;
+        //cases = await hService.GetCasesNoTracking(searchString, filters.showClosed, tSubCategory, targetPage, PageSize, -1);
+        //Count = await hService.GetCaseCount();
+        // }
+        // else
+        // {
+        //     var searchResults = await hService.GetCasesNoTracking(searchString, filters.showClosed, filters.showTagOnly, tSubCategory, tPriority, targetPage, PageSize, userId, caseListContainTag);
+        //     cases = searchResults.Cases;
+        //     Count = searchResults.TotalCount;
+        //     //cases = await hService.GetCasesNoTracking(searchString, filters.showClosed, tSubCategory, targetPage, PageSize, usr.PublicId);
+        //     //Count = await hService.GetMyCaseCount(usr.PublicId);
+        // }
+
+
+        SearchResults = cases.Select(i => new ParsedCase()
+            {
+                ID = i.ID,
+                Topic = i.Topic,
+                Description = i.Description,
+                DateCreated = i.DateCreated,
+                Priority = ParsePriority(i.ResponseNeeded),
+                ParsedCategory = ParseCategoryFromSub(i.MedicalCategory),
+                ParsedSubCategory = ParseSubCategory(i.MedicalCategory)
+            }).ToList();
+
+
+
+    }
+
+    private string ParseCategory(int category)
+    {
+        string rValue = "";
+        switch (category)
+        {
+            case 1:
+                rValue = "Medicine";
+                break;
+            case 2:
+                rValue = "Surgery";
+                break;
+            default:
+                rValue = "Diagnostics";
+                break;
+        }
+        return rValue;
+    }
+    private string ParseCategoryFromSub(int subCategory)
+    {
+        string rValue = "";
+
+
+        if (subCategory < 26)
+        {
+            rValue = "Diagnostics";
+        }
+        else if (subCategory < 55)
+        {
+            rValue = "Medicine";
+        }
+        else
+        {
+            rValue = "Surgery";
+        }
+        return rValue;
+    }
+    private string ParseCategoryValueFromSub(int subCategory)
+    {
+        string rValue = "";
+
+
+        if (subCategory < 26)
+        {
+            rValue = "0";
+        }
+        else if (subCategory < 55)
+        {
+            rValue = "1";
+        }
+        else
+        {
+            rValue = "2";
+        }
+        return rValue;
+    }
+    private string ParseSubCategory(int subCategory)
+    {
+
+        string rValue = "";
+        switch (subCategory)
+        {
+            case 0:
+                rValue = "Diseases & Disorders of the Nervous System";
+                break;
+            case 1:
+                rValue = "Diseases & Disorders of the Eye";
+                break;
+            case 2:
+                rValue = "Diseases & Disorders of the Ear, Nose, Mouth & Throat";
+                break;
+            case 3:
+                rValue = "Diseases & Disorders of the Respiratory System";
+                break;
+            case 4:
+                rValue = "Diseases & Disorders of the Circulatory System";
+                break;
+            case 5:
+                rValue = "Diseases & Disorders of the Digestive System";
+                break;
+            case 6:
+                rValue = "Diseases & Disorders of the Hepatobiliary System & Pancreas";
+                break;
+            case 7:
+                rValue = "Diseases & Disorders of the Musculoskeletal System & Connective Tissue";
+                break;
+            case 8:
+                rValue = "Diseases & Disorders of the Skin, Subcutaneous Tissue & Breast";
+                break;
+            case 9:
+                rValue = "Endocrine, Nutritional & Metabolic Diseases & Disorders";
+                break;
+
+            case 10:
+                rValue = "Diseases & Disorders of the Kidney & Urinary Tract";
+                break;
+            case 11:
+                rValue = "Diseases & Disorders of the Male Reproductive System";
+                break;
+            case 12:
+                rValue = "Diseases & Disorders of the Female Reproductive System";
+                break;
+            case 13:
+                rValue = "Pregnancy, Childbirth & the Puerperium";
+                break;
+            case 14:
+                rValue = "Newborns & Other Neonates with Conditions Originating in Perinatal Period";
+                break;
+            case 15:
+                rValue = "Diseases & Disorders of the Blood, Blood Forming Organs, Immunologic Disorders";
+                break;
+            case 16:
+                rValue = "Myeloproliferative Diseases & Disorders, Poorly Differentiated Neoplasms";
+                break;
+            case 17:
+                rValue = "Infectious & Parasitic Diseases, Systemic or Unspecified Sites";
+                break;
+            case 18:
+                rValue = "Mental Diseases & Disorders";
+                break;
+            case 19:
+                rValue = "Alcohol/Drug Use & Alcohol/Drug Induced Organic Mental Disorders";
+                break;
+
+            case 20:
+                rValue = "Injuries, Poisonings & Toxic Effects of Drugs";
+                break;
+            case 21:
+                rValue = "Burns";
+                break;
+            case 22:
+                rValue = "Factors Influencing Health Status & Other Contacts with Health Services";
+                break;
+            case 23:
+                rValue = "Multiple Significant Trauma";
+                break;
+            case 24:
+                rValue = "Human Immunodeficiency Virus Infections";
+                break;
+            case 25:
+                rValue = "Others";
+                break;
+            case 26:
+                rValue = "Allegy and Immunology";
+                break;
+            case 27:
+                rValue = "Anesthesiology";
+                break;
+            case 28:
+                rValue = "Colon and Rectal Surgery";
+                break;
+            case 29:
+                rValue = "Dermatology";
+                break;
+
+            case 30:
+                rValue = "Emergency Medicine";
+                break;
+            case 31:
+                rValue = "Family Medicine";
+                break;
+            case 32:
+                rValue = "Internal Medicine";
+                break;
+            case 33:
+                rValue = "Medical Genetics";
+                break;
+            case 34:
+                rValue = "Neurology";
+                break;
+            case 35:
+                rValue = "Neurosurgery";
+                break;
+            case 36:
+                rValue = "Nuclear Medicine";
+                break;
+            case 37:
+                rValue = "Obstetrics and Gynecology";
+                break;
+            case 38:
+                rValue = "Ophthalmology";
+                break;
+            case 39:
+                rValue = "OrthopedicSurgery";
+                break;
+
+            case 40:
+                rValue = "Otolaryngology";
+                break;
+            case 41:
+                rValue = "Anatomic Pathology and Clinical Pathology";
+                break;
+            case 42:
+                rValue = "Pediatrics";
+                break;
+            case 43:
+                rValue = "Physical Medicine and Rehibilitation";
+                break;
+            case 44:
+                rValue = "Plastic Surgery";
+                break;
+            case 45:
+                rValue = "Public Health and General Preventive";
+                break;
+            case 46:
+                rValue = "Psychiatry";
+                break;
+            case 47:
+                rValue = "Radiology";
+                break;
+            case 48:
+                rValue = "Hospice and Palliative Medicine";
+                break;
+            case 49:
+                rValue = "Medical Nuclear Physics";
+                break;
+
+            case 50:
+                rValue = "Surgery";
+                break;
+            case 51:
+                rValue = "Vascular Surgery";
+                break;
+            case 52:
+                rValue = "Thoracic Surgery";
+                break;
+            case 53:
+                rValue = "Urology";
+                break;
+            case 54:
+                rValue = "Others";
+                break;
+            case 55:
+                rValue = "General Surgery";
+                break;
+            case 56:
+                rValue = "Thoracic Surgery";
+                break;
+            case 57:
+                rValue = "Colon and Rectal Surgery";
+                break;
+            case 58:
+                rValue = "Obstetrics and Gynecology";
+                break;
+            case 59:
+                rValue = "Gynecologic Oncology";
+                break;
+
+            case 60:
+                rValue = "Neurological Surgery";
+                break;
+            case 61:
+                rValue = "Ophthalmic Surgery";
+                break;
+            case 62:
+                rValue = "Oral and Maxillofacial Surgery";
+                break;
+            case 63:
+                rValue = "Orthopaedic Surgery";
+                break;
+            case 64:
+                rValue = "Otolaryngology";
+                break;
+            case 65:
+                rValue = "Pediatric Surgery";
+                break;
+            case 66:
+                rValue = "Plastic and Maxillofacial Surgery";
+                break;
+            case 67:
+                rValue = "Urology";
+                break;
+            case 68:
+                rValue = "Vascular Surgery";
+                break;
+            case 69:
+                rValue = "Others";
+                break;
+
+            default:
+                // shouldn't get here
+                rValue = "";
+                break;
+        }
+
+
+        return rValue;
+    }
+
+    private string ParseEthnicity(int ethnicity)
+    {
+        string rValue = "";
+        switch (ethnicity)
+        {
+            case 1:
+                rValue = "Not Hispanic or Latino";
+                break;
+            case 2:
+                rValue = "Declined";
+                break;
+            case 3:
+                rValue = "Unknown";
+                break;
+            default:
+                rValue = "Hispanic or Latino";
+                break;
+        }
+
+
+        return rValue;
+    }
+    private string ParseGender(int gender)
+    {
+        string rValue = "";
+        switch (gender)
+        {
+            case 1:
+                rValue = "Female";
+                break;
+            case 2:
+                rValue = "Neutral";
+                break;
+            default:
+                rValue = "Male";
+                break;
+        }
+
+
+        return rValue;
+    }
+    private string ParsePriority(int priority)
+    {
+        string rValue = "";
+        switch (priority)
+        {
+            case 1:
+                rValue = "Over Coffee";
+                break;
+            /*case 2:
+                rValue = "Low";
+                break;*/
+            default:
+                rValue = "Stat";
+                break;
+        }
+
+
+        return rValue;
+    }
+}
