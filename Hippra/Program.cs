@@ -3,26 +3,113 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Hippra;
+using Hippra.Data;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Hippra.Models.SQL;
+using Microsoft.AspNetCore.Identity;
+using FTEmailService;
+using Hippra.Areas.Identity;
+using Hippra.Services.Email;
+using Hippra.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Hippra
+var builder = WebApplication.CreateBuilder(args);
+var Configuration = builder.Configuration;
+// Add services to the container.
+
+   
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+});
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+{
+    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+});
+
+
+builder.Services.AddTransient<ApplicationDbContext>(p =>
+        p.GetRequiredService<IDbContextFactory<ApplicationDbContext>>()
+        .CreateDbContext());
+
+//services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.User.RequireUniqueEmail = true;
+})
+    .AddDefaultTokenProviders()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<AppUser>, AdditionalUserClaimsPrincipalFactory>();
+
+builder.Services.AddAutoMapper(typeof(Startup));
+
+
+builder.Services.AddRazorPages();
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = $"/Identity/Account/Login";
+    options.LogoutPath = $"/Identity/Account/Logout";
+    options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+});
+var emailAccount = Configuration["FTEmailAccount"];
+var emailCred = Configuration["FTEmailCred"];
+builder.Services.AddTransient<FTEmailService.IEmailSender, EmailService>(
+      (provider) =>
+      {
+          var eAccount = emailAccount;
+          var eCred = emailCred;
+          return new EmailService(eAccount, eCred, "Hippra Admin", "Hippra@outlook.com");
+      });
+
+builder.Services.AddTransient<ProfileService>();
+// means run this service in background
+builder.Services.AddTransient<HippraService>();
+builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AppUser>>();
+builder.Services.AddScoped<IEmailService, SendgridEmailService>(client =>
+{
+    var appKey = Configuration["SendgridAppKey"];
+    return new SendgridEmailService(appKey);
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseCookiePolicy();
+app.UseRouting();
+
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseAntiforgery();
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapRazorPages();
+});
+
+app.Run();
