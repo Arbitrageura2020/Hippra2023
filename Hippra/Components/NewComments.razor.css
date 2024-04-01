@@ -124,3 +124,13 @@
         padding-right: 25px;
     }
 }
+
+
+.main-layout.orange .comment-form-box button {
+    background-color: var(--orange);
+}
+
+.main-layout.orange .comment-form-box input:focus-visible {
+    border-color: var(--orange);
+}
+}

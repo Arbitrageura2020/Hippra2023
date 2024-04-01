@@ -402,123 +402,7 @@
     display: block;
 }
 
-/* Case Comment */
-.case-comment {
-    position: relative;
-    padding-right: 55px;
-    padding-left: 55px;
-    margin-bottom: 20px;
-}
 
-.comment-form-box {
-    position: relative;
-}
-
-.case-comment-form {
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 30px;
-}
-
-.comment-form-box input {
-    width: 100%;
-    overflow: hidden;
-}
-
-.comment-form-box button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 16px 25px;
-    border: none;
-    border-radius: 20px;
-    background-color: #39aea9;
-    color: #ffffff;
-    font-family: Roboto;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 2px solid transparent;
-}
-
-.comment-form-box input {
-    width: 100%;
-    border-radius: 20px;
-    background-color: #f1f2f6;
-    padding: 15px;
-    border: 2px solid transparent;
-    outline: none;
-    transition-property: all;
-    transition-timing-function: ease-in-out;
-    transition-duration: 150ms;
-}
-
-    .comment-form-box input::placeholder {
-        color: #636468;
-        font-family: Roboto;
-        font-size: 18px;
-        font-style: normal;
-        font-weight: 500;
-        line-height: normal;
-    }
-
-    .comment-form-box input:focus-visible {
-        border-color: #39aea9;
-    }
-
-.case-comments {
-    position: relative;
-}
-
-.case-comment-item {
-    position: relative;
-    display: flex;
-    padding: 15px 20px 15px 20px;
-    align-items: center;
-    border-radius: 12px;
-    border: 1px solid #e0e4ec;
-    background: #ffffff;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.15);
-}
-
-    .case-comment-item:not(:last-child) {
-        margin-bottom: 20px;
-    }
-
-.comment-info {
-    position: relative;
-    flex: 1;
-    margin-left: 10px;
-}
-
-    .comment-info h6 {
-        color: #939393;
-        font-family: "roboto";
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-        text-transform: capitalize;
-        margin-bottom: 5px;
-    }
-
-    .comment-info p {
-        color: #949494;
-        font-family: "roboto";
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-        text-transform: capitalize;
-    }
-
-.comment-author {
-    position: relative;
-    width: 45px;
-    border-radius: 50%;
-    overflow: hidden;
-}
 
 /********************* Orange Theme *********************/
 
@@ -559,13 +443,7 @@
         color: #ffffff;
     }
 
-.main-layout.orange .comment-form-box button {
-    background-color: var(--orange);
-}
 
-.main-layout.orange .comment-form-box input:focus-visible {
-    border-color: var(--orange);
-}
 
 .main-layout.orange .case-tab-right::after {
     background-color: var(--orange);

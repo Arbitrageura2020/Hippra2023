@@ -174,131 +174,9 @@
     </section>
     @if (dataReady)
     {
-        <NewComments postId="@pCase.ID" CommentList="@pCase.Comments" isOpened="true" />
+        <NewComments caseId="@pCase.ID" isOpened="true" />
     }
 </div>
-
-<div class="ft-main-px">
-    <div class="card">
-        <div class="card-body">
-            <div class="">
-
-
-                <div class="row">
-                    <div class="col">
-                        <div class="lead">Case Summary</div>
-                    </div>
-                    <div class="col text-right">
-                        @if (pCase.PosterID == userId)
-                        {
-                            <button type="button" class="btn btn-secondary" @onclick="@EditMode">Edit Case</button>
-                        }
-                    </div>
-                </div>
-                <div class="py-5 row justify-content-center">
-                    <div class="col-md-2">
-                    </div>
-                    <div class="col-md-8">
-
-                        <h4 class="" id="vmTitle">@pCase.Topic</h4>
-                        <div class="" id="vmCategory"><small>@pCase.ParsedCategory · <span class="text-black-50">@pCase.ParsedSubCategory</span></small></div>
-
-                        <hr />
-                        <div class=""> Description: @((MarkupString)@pCase.Description)</div>
-                    </div>
-                    <div class="col-md-2">
-                    </div>
-                </div>
-                <hr />
-                <div class="lead">Patient Information</div>
-                <div class="py-5 row justify-content-center">
-                    <div class="col-md-2">
-                    </div>
-                    <div class="col-md-8" id="vmContent">
-                        <div class="">Age: @pCase.PatientAge</div>
-                        <div class="">Gender: @pCase.ParsedGender</div>
-                        <div class="">Race: @pCase.ParsedRace</div>
-                        <div class="">Ethnicity: @pCase.ParsedEthnicity</div>
-                        <br />
-                        <div class="">Lab Values: @pCase.LabValues</div>
-                        <div class="">Current Stage of Disease: @pCase.CurrentStageOfDisease</div>
-                        <div class="">Current Treatment Administered: @pCase.CurrentTreatmentAdministered </div>
-                        <div class="">Treatment Outcomes: @pCase.TreatmentOutcomes</div>
-                    </div>
-                    <div class="col-md-2">
-                    </div>
-                </div>
-                <div class="lead">Case Information</div>
-                <div class="py-5 row justify-content-center">
-                    <div class="col-md-2">
-                    </div>
-                    <div class="col-md-8">
-                        <div class=""><strong>Created By:</strong> <a href="/PersonalPage/@pCase.PosterID"> @pCase.PosterName <span class="text-black-50"> (@pCase.PosterSpecialty) </span></a></div>
-                        <div><strong>Case Status:</strong> @pCase.ParsedStatus</div>
-                        <div><strong>Priority:</strong> @pCase.Priority</div>
-                        <div><strong>Date Created:</strong> @pCase.DateCreated.ToShortDateString() </div>
-                        <div><strong>Last Updated:</strong> @pCase.DateLastUpdated.ToShortDateString()</div>
-                    </div>
-                    <div class="col-md-2">
-                    </div>
-                </div>
-                <div class="lead">Tags</div>
-                <div class="py-5 row ">
-                    <div class="col-md-2">
-                    </div>
-
-                    <div class="col-md-8">
-                        @if (pCase.Tags != null)
-                        {
-                            @foreach (var tag in pCase.Tags)
-                            {
-                                <div class="around-tag-button">
-                                    <button class="tag-button" @onclick="(e => { searchCasesContainTag(tag.Tag); })">
-                                        @tag.Tag
-                                    </button>
-                                </div>
-                            }
-                        }
-                    </div>
-                </div>
-                @if (!string.IsNullOrWhiteSpace(@pCase.imgUrl))
-                {
-                    <div class="lead">Images</div>
-                    @foreach (string url in imgUrls)
-                    {
-                        <div class="py-5 row justify-content-center">
-                            <div class="col-md-2">
-                            </div>
-                            <div class="col-md-8">
-                                <label class="label-img">
-                                    <input type="checkbox">
-                                    <img id="caseImg" src="@url" width="10%" height="auto" />
-                                </label>
-                            </div>
-                            <div class="col-md-2">
-                            </div>
-                        </div>
-                    }
-                }
-
-
-                <div class="pb-5 row justify-content-center">
-                    <div class="col-md-8" id="vmf">
-                        @*      @if (dataReady)
-                        {
-                        <Comments postId="@pCase.ID" CommentList="@pCase.Comments" isOpened="true" />
-                        } *@
-
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-</div>
-
-
 
 @code {
     [Parameter]
@@ -779,98 +657,98 @@
 
     // PARSE CODE
     #region ParseCode
-    private string ParseMedicalSpecialty(MedicalSpecialtyType MedicalSpecialty)
-    {
+    // private string ParseMedicalSpecialty(MedicalSpecialtyType MedicalSpecialty)
+    // {
 
-        string medicalSpecialty = "";
-        switch (MedicalSpecialty)
-        {
-            case MedicalSpecialtyType.Anesthesiology:
-                medicalSpecialty = "Anesthesiology";
-                break;
-            case MedicalSpecialtyType.AnatomicPathologyAndClinicalPathology:
-                medicalSpecialty = "Anatomic Pathology And Clinical Pathology";
-                break;
-            case MedicalSpecialtyType.ColonAndRectalSurgery:
-                medicalSpecialty = "Colon And Rectal Surgery";
-                break;
-            case MedicalSpecialtyType.Dermatology:
-                medicalSpecialty = "Dermatology";
-                break;
-            case MedicalSpecialtyType.EmergencyMedicine:
-                medicalSpecialty = "Emergency Medicine";
-                break;
-            case MedicalSpecialtyType.FamilyMedicine:
-                medicalSpecialty = "Family Medicine";
-                break;
-            case MedicalSpecialtyType.HospiceAndPalliativeMedicine:
-                medicalSpecialty = "Hospice And Palliative Medicine";
-                break;
-            case MedicalSpecialtyType.InternalMedicine:
-                medicalSpecialty = "Internal Medicine";
-                break;
-            case MedicalSpecialtyType.MedicalGenetics:
-                medicalSpecialty = "Medical Genetics";
-                break;
-            case MedicalSpecialtyType.MedicalNuclearPhysics:
-                medicalSpecialty = "Medical Nuclear Physics";
-                break;
-            case MedicalSpecialtyType.Neurology:
-                medicalSpecialty = "Neurology";
-                break;
-            case MedicalSpecialtyType.Neurosurgery:
-                medicalSpecialty = "Neurosurgery";
-                break;
-            case MedicalSpecialtyType.NuclearMedicine:
-                medicalSpecialty = "NuclearMedicine";
-                break;
-            case MedicalSpecialtyType.ObstetricsAndGynecology:
-                medicalSpecialty = "Obstetrics And Gynecology";
-                break;
-            case MedicalSpecialtyType.Ophthalmology:
-                medicalSpecialty = "Ophthalmology";
-                break;
-            case MedicalSpecialtyType.OrthopedicSurgery:
-                medicalSpecialty = "Orthopedic Surgery";
-                break;
-            case MedicalSpecialtyType.Otolaryngology:
-                medicalSpecialty = "Otolaryngology";
-                break;
-            case MedicalSpecialtyType.Pediatrics:
-                medicalSpecialty = "Pediatrics";
-                break;
-            case MedicalSpecialtyType.PhysicalMedicineAndRehibilitation:
-                medicalSpecialty = "Physical Medicine And Rehibilitation";
-                break;
-            case MedicalSpecialtyType.PlasticSurgery:
-                medicalSpecialty = "Plastic Surgery";
-                break;
-            case MedicalSpecialtyType.Psychiatry:
-                medicalSpecialty = "Psychiatry";
-                break;
-            case MedicalSpecialtyType.PublicHealthAndGeneralPreventive:
-                medicalSpecialty = "Public Health And General Preventive";
-                break;
-            case MedicalSpecialtyType.Radiology:
-                medicalSpecialty = "Radiology";
-                break;
-            case MedicalSpecialtyType.Surgery:
-                medicalSpecialty = "Surgery";
-                break;
-            case MedicalSpecialtyType.ThoracicSurgery:
-                medicalSpecialty = "Thoracic Surgery";
-                break;
-            case MedicalSpecialtyType.Urology:
-                medicalSpecialty = "Urology";
-                break;
-            case MedicalSpecialtyType.VascularSurgery:
-                medicalSpecialty = "Vascular Surgery";
-                break;
-            default:
-                break;
-        }
-        return medicalSpecialty;
-    }
+    //     string medicalSpecialty = "";
+    //     switch (MedicalSpecialty)
+    //     {
+    //         case MedicalSpecialtyType.Anesthesiology:
+    //             medicalSpecialty = "Anesthesiology";
+    //             break;
+    //         case MedicalSpecialtyType.AnatomicPathologyAndClinicalPathology:
+    //             medicalSpecialty = "Anatomic Pathology And Clinical Pathology";
+    //             break;
+    //         case MedicalSpecialtyType.ColonAndRectalSurgery:
+    //             medicalSpecialty = "Colon And Rectal Surgery";
+    //             break;
+    //         case MedicalSpecialtyType.Dermatology:
+    //             medicalSpecialty = "Dermatology";
+    //             break;
+    //         case MedicalSpecialtyType.EmergencyMedicine:
+    //             medicalSpecialty = "Emergency Medicine";
+    //             break;
+    //         case MedicalSpecialtyType.FamilyMedicine:
+    //             medicalSpecialty = "Family Medicine";
+    //             break;
+    //         case MedicalSpecialtyType.HospiceAndPalliativeMedicine:
+    //             medicalSpecialty = "Hospice And Palliative Medicine";
+    //             break;
+    //         case MedicalSpecialtyType.InternalMedicine:
+    //             medicalSpecialty = "Internal Medicine";
+    //             break;
+    //         case MedicalSpecialtyType.MedicalGenetics:
+    //             medicalSpecialty = "Medical Genetics";
+    //             break;
+    //         case MedicalSpecialtyType.MedicalNuclearPhysics:
+    //             medicalSpecialty = "Medical Nuclear Physics";
+    //             break;
+    //         case MedicalSpecialtyType.Neurology:
+    //             medicalSpecialty = "Neurology";
+    //             break;
+    //         case MedicalSpecialtyType.Neurosurgery:
+    //             medicalSpecialty = "Neurosurgery";
+    //             break;
+    //         case MedicalSpecialtyType.NuclearMedicine:
+    //             medicalSpecialty = "NuclearMedicine";
+    //             break;
+    //         case MedicalSpecialtyType.ObstetricsAndGynecology:
+    //             medicalSpecialty = "Obstetrics And Gynecology";
+    //             break;
+    //         case MedicalSpecialtyType.Ophthalmology:
+    //             medicalSpecialty = "Ophthalmology";
+    //             break;
+    //         case MedicalSpecialtyType.OrthopedicSurgery:
+    //             medicalSpecialty = "Orthopedic Surgery";
+    //             break;
+    //         case MedicalSpecialtyType.Otolaryngology:
+    //             medicalSpecialty = "Otolaryngology";
+    //             break;
+    //         case MedicalSpecialtyType.Pediatrics:
+    //             medicalSpecialty = "Pediatrics";
+    //             break;
+    //         case MedicalSpecialtyType.PhysicalMedicineAndRehibilitation:
+    //             medicalSpecialty = "Physical Medicine And Rehibilitation";
+    //             break;
+    //         case MedicalSpecialtyType.PlasticSurgery:
+    //             medicalSpecialty = "Plastic Surgery";
+    //             break;
+    //         case MedicalSpecialtyType.Psychiatry:
+    //             medicalSpecialty = "Psychiatry";
+    //             break;
+    //         case MedicalSpecialtyType.PublicHealthAndGeneralPreventive:
+    //             medicalSpecialty = "Public Health And General Preventive";
+    //             break;
+    //         case MedicalSpecialtyType.Radiology:
+    //             medicalSpecialty = "Radiology";
+    //             break;
+    //         case MedicalSpecialtyType.Surgery:
+    //             medicalSpecialty = "Surgery";
+    //             break;
+    //         case MedicalSpecialtyType.ThoracicSurgery:
+    //             medicalSpecialty = "Thoracic Surgery";
+    //             break;
+    //         case MedicalSpecialtyType.Urology:
+    //             medicalSpecialty = "Urology";
+    //             break;
+    //         case MedicalSpecialtyType.VascularSurgery:
+    //             medicalSpecialty = "Vascular Surgery";
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    //     return medicalSpecialty;
+    // }
     private string ParseCategory(int category)
     {
         string rValue = "";

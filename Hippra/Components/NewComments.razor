@@ -19,18 +19,18 @@
 
 <section class="case-comment">
     <div class="case-comment-form">
-        <EditForm Model="@newComment" OnValidSubmit="@AddComment">
+        <EditForm Model="@newComment" OnValidSubmit="@AddComment" FormName="AddCommentForm">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="comment-form-box">
-                <InputText type="text" placeholder="Write a Comment" @bind-Value="@newComment.Comment"></InputText>
+                <input type="text" placeholder="Write a Comment" @bind="@newComment.Comment" required></input>
                 <button type="submit">Comment</button>
             </div>
 
         </EditForm>
     </div>
     <div class="case-comments">
-        @if (CommentList != null)
+        @if (dataReady && CommentList != null)
         {
             @foreach (var c in CommentList)
             {
@@ -51,14 +51,14 @@
 
 @code {
     [Parameter]
-    public int postId { get; set; }
+    public int caseId { get; set; }
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private AuthenticationState authState { get; set; }
     private ClaimsPrincipal user { get; set; }
     @*private AppUser usr { get; set; }*@
-    [Parameter]
+
     public List<CaseComment> CommentList { get; set; }
     [Parameter]
     public bool isOpened { get; set; }
@@ -78,11 +78,6 @@
     private string posterSpeciality = "";
     private string fullName = "";
 
-    public async Task EditComment(int ID)
-    {
-        EditThis = ID;
-        this.StateHasChanged();
-    }
     public async Task DeleteComment(CaseComment c)
     {
 
@@ -103,7 +98,7 @@
 				isSubmitted = true;
 				}*@
         }
-        CommentList = await hService.GetCommentsNoTracking(postId);
+        CommentList = await hService.GetCommentsNoTracking(caseId);
         await getProfilePic();
         await addToHistory("deleted a comment on", c);
         await addNotification();
@@ -118,15 +113,14 @@
 
         authState = await authenticationStateTask;
         user = authState.User;
-        caseInfo = await hService.GetCase(postId);
+        // caseInfo = await hService.GetCase(postId);
+        CommentList = await hService.GetCommentsNoTracking(caseId);
+
 
         if (user.Identity.IsAuthenticated)
         {
-            @*usr = await UserManager.GetUserAsync(user);*@
-
             try
             {
-
                 userId = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
                 posterSpeciality = ParseMedicalSpecialty((MedicalSpecialtyType)Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "MedicalSpecialty")?.Value));
             }
@@ -140,15 +134,10 @@
         }
         await getProfilePic();
         dataReady = true;
-        OpenComment();
-    }
-
-    private async Task OpenComment()
-    {
-        isOpened = true;
-        isSubmitted = false;
         this.StateHasChanged();
     }
+
+
     private async Task AddComment()
     {
         isSubmitted = false;
@@ -165,7 +154,7 @@
             addComment.PostedDate = DateTime.Now;
             addComment.LastUpdatedDate = newComment.PostedDate;
             addComment.posterSpeciality = posterSpeciality;//ParseMedicalSpecialty((MedicalSpecialtyType)usr.MedicalSpecialty);
-            addComment.CaseID = postId;
+            addComment.CaseID = caseId;
             addComment.ID = 0;
             addComment.Comment = newComment.Comment;
             if (profile.ProfileUrl != null)
@@ -187,7 +176,7 @@
             @*}*@
         }
         newComment.Comment = "";
-        CommentList = await hService.GetCommentsNoTracking(postId);
+        CommentList = await hService.GetCommentsNoTracking(caseId);
         await getProfilePic();
         imgUrl = "";
         newComment.imgUrl = "";
@@ -196,87 +185,13 @@
         await addNotification();
         this.StateHasChanged();
     }
-    private async Task UpdateComment(CaseComment c, int updateType)
-    {
-        isSubmitted = false;
-        authState = await authenticationStateTask;
-        user = authState.User;
-        CaseComment addComment = new CaseComment();
-        if (user.Identity.IsAuthenticated)
-        {
-            @*usr = await UserManager.GetUserAsync(user);*@
-            @*if (usr != null)
-			{*@
-            addComment.ID = c.ID;
-            addComment.Comment = c.Comment;
-            addComment.ProfileUrl = c.ProfileUrl;
-            if (!string.IsNullOrWhiteSpace(imgUrl))
-            {
-                addComment.imgUrl = imgUrl;
-            }
-            else if (!string.IsNullOrWhiteSpace(c.imgUrl))
-            {
-                addComment.imgUrl = c.imgUrl;
-            }
-            if (updateType == -2)
-            {
-                addComment.PostedDate = c.PostedDate;
-                addComment.LastUpdatedDate = newComment.PostedDate;
-                addComment.CaseID = postId;
-                addComment.VoteUp = c.VoteUp;
-                addComment.VoteDown = c.VoteDown;
-                await addToHistory("updated a comment on", c);
-                await addNotification();
-                await hService.EditComment(addComment, updateType);
-            }
-            else if ((updateType == -3 || updateType == -4) && userId != c.PosterId)
-            {
-                bool isVoted = await hService.CheckVoter(c.PosterId, userId, c.ID);
-                if (!isVoted)
-                {
-                    if (updateType == -3)
-                    {
-                        addComment.VoteUp = c.VoteUp + 1;
-                        await addToHistory("added an up vote on", c);
-                        await addNotification();
-                    }
-                    else
-                    {
-                        addComment.VoteDown = c.VoteDown + 1;
-                        await addToHistory("added a down vote on", c);
-                        await addNotification();
-                    }
-                    Vote newVote = new Vote();
-                    newVote.ID = 0;
-                    newVote.CID = c.ID;
-                    newVote.VoteType = updateType;
-                    newVote.PosterID = c.PosterId;
-                    newVote.VoterID = userId;
-                    newVote.VoteDate = DateTime.Now;
-                    await hService.AddVote(newVote);
-                    await hService.EditComment(addComment, updateType);
-                }
-
-            }
-            isSubmitted = true;
-            @*}*@
-        }
-        EditThis = -1;
-        newComment.Comment = "";
-        CommentList = await hService.GetCommentsNoTracking(postId);
-        await getProfilePic();
-        imgUrl = "";
-        newComment.imgUrl = "";
-        newComment.ProfileUrl = "";
-        isOpened = true;
-        this.StateHasChanged();
-    }
+   
     private async Task addToHistory(string historyType, CaseComment c)
     {
         //history stuffs
         PostHistory newHistory = new PostHistory();
         newHistory.ID = 0;
-        newHistory.PostID = postId;
+        newHistory.PostID = caseId;
         newHistory.UserID = c.PosterId;
         newHistory.CreationDate = DateTime.Now;
         newHistory.PosterID = userId;
@@ -287,6 +202,7 @@
         newHistory.HistoryTypes = historyType;
         lastHistoryID = await hService.AddHistory(newHistory);
     }
+
     private async Task addNotification()
     {
         bool hasPoster = false;
@@ -325,6 +241,7 @@
     {
         NavigationManager.NavigateTo("/PersonalPage/" + id);
     }
+
     private string ParseMedicalSpecialty(MedicalSpecialtyType MedicalSpecialty)
     {
 
