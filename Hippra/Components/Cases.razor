@@ -1,4 +1,5 @@
 ﻿@using Hippra.Extensions
+@using Hippra.Models.DTO
 @using Hippra.Models.SQL
 @using Hippra.Services
 @inject IJSRuntime JSRuntime
@@ -100,20 +101,6 @@
     public int Count { get; set; }
     public int PageSize { get; set; } = 10;
     public int TotalPages => (int)Math.Ceiling(decimal.Divide(Count, PageSize));
-
-    public class ParsedCase : Case
-    {
-        public string Priority { get; set; } = "";
-        public string ParsedCategory { get; set; } = "";
-        public string ParsedSubCategory { get; set; } = "";
-        public string ParsedGender { get; set; } = "";
-        public string ParsedRace { get; set; } = "";
-        public string ParsedEthnicity { get; set; } = "";
-        public string ParsedStatus { get; set; } = "";
-
-
-    }
-
 
     protected override async Task OnInitializedAsync()
     {

@@ -1,5 +1,6 @@
 ﻿@page "/viewcase1/{caseId:int}"
 @using System.ComponentModel.DataAnnotations
+@using Hippra.Models.DTO
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -207,18 +208,7 @@
     }
 
     private ParsedCase pCase { get; set; } = new ParsedCase();
-    public class ParsedCase : Case
-    {
-        public string Priority { get; set; } = "";
-        public string ParsedCategory { get; set; } = "";
-        public string ParsedSubCategory { get; set; } = "";
-        public string ParsedGender { get; set; } = "";
-        public string ParsedRace { get; set; } = "";
-        public string ParsedEthnicity { get; set; } = "";
-        public string ParsedStatus { get; set; } = "";
 
-
-    }
     private List<SelectListItem> specialtyList { get; set; }
 
     //private List<SelectListItem> CategoryList { get; set; } = new List<SelectListItem>();
@@ -337,7 +327,7 @@
         pCase.LabValues = tCase.LabValues;
         pCase.ParsedCategory = ParseCategoryFromSub(tCase.MedicalCategory);
         pCase.ParsedSubCategory = ParseSubCategory(tCase.MedicalCategory);
-        pCase.ParsedGender = ParseGender(tCase.Gender);
+        pCase.ParsedGender = Enums.GetDisplayName(tCase.Gender);
         pCase.ParsedEthnicity = ParseEthnicity(tCase.Ethnicity);
         pCase.Priority = ParsePriority(tCase.ResponseNeeded);
         pCase.ParsedRace = ParseRace(tCase.Race);

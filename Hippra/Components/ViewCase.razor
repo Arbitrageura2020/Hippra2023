@@ -1,5 +1,6 @@
 ﻿@page "/viewcase/{caseId:int}"
 @using System.ComponentModel.DataAnnotations
+@using Hippra.Models.DTO
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -349,7 +350,7 @@
         pCase.LabValues = tCase.LabValues;
         pCase.ParsedCategory = ParseCategoryFromSub(tCase.MedicalCategory);
         pCase.ParsedSubCategory = ParseSubCategory(tCase.MedicalCategory);
-        pCase.ParsedGender = ParseGender(tCase.Gender);
+        pCase.ParsedGender = Enums.GetDisplayName(tCase.Gender);
         pCase.ParsedEthnicity = ParseEthnicity(tCase.Ethnicity);
         pCase.Priority = ParsePriority(tCase.ResponseNeeded);
         pCase.ParsedRace = ParseRace(tCase.Race);

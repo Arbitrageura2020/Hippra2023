@@ -1,6 +1,7 @@
 ﻿@page "/"
 
 @using System.ComponentModel.DataAnnotations
+@using Hippra.Models.DTO
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -86,19 +87,6 @@
 
     private List<ParsedCase> SearchResults { get; set; } = new List<ParsedCase>();
     private List<Case> cases { get; set; } = new List<Case>();
-
-    public class ParsedCase : Case
-    {
-        public string Priority { get; set; } = "";
-        public string ParsedCategory { get; set; } = "";
-        public string ParsedSubCategory { get; set; } = "";
-        public string ParsedGender { get; set; } = "";
-        public string ParsedRace { get; set; } = "";
-        public string ParsedEthnicity { get; set; } = "";
-        public string ParsedStatus { get; set; } = "";
-
-
-    }
 
     private int actionOptions { get; set; } = 0; // 0 = all, 1 = my posts
     private string mTitle { get; set; } = "Post New Case";
@@ -637,36 +625,7 @@
 
     private async Task PopulateModel(Case tCase)
     {
-        pCase = new ParsedCase();
-        pCase.ID = tCase.ID;
-
-        // TODO: fill the rest
-        pCase.DateCreated = tCase.DateCreated;
-        pCase.DateLastUpdated = tCase.DateLastUpdated;
-        pCase.Description = tCase.Description;
-        pCase.Topic = tCase.Topic;
-        pCase.PosterID = tCase.PosterID;
-        pCase.PosterName = tCase.PosterName;
-        pCase.Race = tCase.Race;
-        pCase.Gender = tCase.Gender;
-        pCase.Ethnicity = tCase.Ethnicity;
-        pCase.ResponseNeeded = tCase.ResponseNeeded;
-        pCase.MedicalCategory = tCase.MedicalCategory;
-        pCase.PosterSpecialty = tCase.PosterSpecialty;
-
-        pCase.PatientAge = tCase.PatientAge;
-        pCase.CurrentStageOfDisease = tCase.CurrentStageOfDisease;
-        pCase.CurrentTreatmentAdministered = tCase.CurrentTreatmentAdministered;
-        pCase.TreatmentOutcomes = tCase.TreatmentOutcomes;
-        pCase.LabValues = tCase.LabValues;
-        pCase.ParsedCategory = ParseCategoryFromSub(tCase.MedicalCategory);
-        pCase.ParsedSubCategory = ParseSubCategory(tCase.MedicalCategory);
-        pCase.ParsedGender = ParseGender(tCase.Gender);
-        pCase.ParsedEthnicity = ParseEthnicity(tCase.Ethnicity);
-        pCase.Priority = ParsePriority(tCase.ResponseNeeded);
-        pCase.ParsedRace = ParseRace(tCase.Race);
-        pCase.Status = tCase.Status;
-        pCase.ParsedStatus = ParseStatus(tCase.Status);
+        pCase = tCase.ToParsedCase();
 
         priorityRadio = new PriorityModel();
         priorityRadio.Priority = tCase.ResponseNeeded;

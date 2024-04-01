@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Identity;
 using Hippra.Models.SQL;
 
-namespace Hippra.Pages.FTDesign.Pages.Identity
+namespace Hippra.Pages.Identity
 {
     public class FTLogoffModel : PageModel
     {

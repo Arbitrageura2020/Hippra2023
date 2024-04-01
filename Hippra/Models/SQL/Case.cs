@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hippra.Models.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace Hippra.Models.SQL
 
         public int MedicalCategory { get; set; } // => should create enum for this
         public int PatientAge { get; set; }
-        public int Gender { get; set; } // 0 Male, 1, Female, 2 Neutral => should create enum for this
+        public GenderType Gender { get; set; } // 0 Male, 1, Female, 2 Neutral => should create enum for this
         public int Race { get; set; } // => should create enum for this
         public int Ethnicity { get; set; } // => should create enum for this
         public string LabValues { get; set; }

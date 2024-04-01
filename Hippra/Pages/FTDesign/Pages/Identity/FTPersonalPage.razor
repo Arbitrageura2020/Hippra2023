@@ -1,6 +1,7 @@
 ﻿@page "/PersonalPage/{userId:int?}"
 
 @using System.ComponentModel.DataAnnotations
+@using Hippra.Models.DTO
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -345,19 +346,6 @@
 	private string connectStatus = "";
 	private bool isFollowed = false;
 	private int lastHistoryID = -1;
-
-	public class ParsedCase : Case
-	{
-		public string Priority { get; set; } = "";
-		public string ParsedCategory { get; set; } = "";
-		public string ParsedSubCategory { get; set; } = "";
-		public string ParsedGender { get; set; } = "";
-		public string ParsedRace { get; set; } = "";
-		public string ParsedEthnicity { get; set; } = "";
-		public string ParsedStatus { get; set; } = "";
-
-
-	}
 
 	private int usrID { get; set; }
     private int posterSpeciality = 0;
