@@ -40,7 +40,7 @@ namespace Hippra.Extensions
             pCase.ParsedGender = Enums.GetDisplayName(tCase.Gender);
             pCase.ParsedEthnicity = ParseEthnicity(tCase.Ethnicity);
             pCase.Priority = ParsePriority(tCase.ResponseNeeded);
-            pCase.ParsedRace = ParseRace(tCase.Race);
+            pCase.ParsedRace = Enums.GetDisplayName(tCase.Race);
             pCase.Status = tCase.Status;
             pCase.ParsedStatus = ParseStatus(tCase.Status);
 

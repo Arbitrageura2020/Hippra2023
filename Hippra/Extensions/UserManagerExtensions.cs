@@ -68,7 +68,7 @@ namespace Hippra.Extensions
         public static async Task<int> GetLastPID(this UserManager<AppUser> um)
         {
             //var largest =  await um?.Users?.AsNoTracking().Select(x=>x);
-            var lastItem = await um?.Users.AsNoTracking().OrderByDescending(x=>x.PublicId).FirstOrDefaultAsync();
+            var lastItem = await um?.Users.AsNoTracking().OrderByDescending(x=>x.Id).FirstOrDefaultAsync();
 
             if (lastItem == null)
             {

@@ -142,13 +142,10 @@
                             <div class=" mb-3">
                                 <label for="Race">Race</label>
                                 <InputSelect id="Race" @bind-Value="@bRace">
-                                    @foreach (var j in RaceList)
+                                    @foreach (var i in Enum.GetValues(typeof(RaceType)))
                                     {
-                                        <option value="@j.Value">@j.Text</option>
+                                        <option value="@i">Enums.GetDisplayName(@i)</option>
                                     }
-
-
-
                                 </InputSelect>
                                 <div class="small text-muted">
                                     You can change this later
@@ -279,7 +276,6 @@
     //private List<SelectListItem> CategoryList { get; set; } = new List<SelectListItem>();
     private List<SelectListItem> SubCategoryList { get; set; } = new List<SelectListItem>();
 
-    private List<SelectListItem> RaceList { get; set; } = new List<SelectListItem>();
     private List<SelectListItem> EthnicityList { get; set; } = new List<SelectListItem>();
     private List<SelectListItem> SubCategoryFilterList { get; set; } = new List<SelectListItem>(){
     new SelectListItem { Value = "-1", Text = "No Filters" }
@@ -288,7 +284,7 @@
     private string bCategory { get; set; } = "0";
     private string bSubCategory { get; set; } = "0";
     private GenderType bGender { get; set; } = GenderType.MALE;
-    private string bRace { get; set; } = "6";
+    private RaceType bRace { get; set; } = RaceType.UNKNOWN;
     private string bEthnicity { get; set; } = "3";
     @*private AppUser usr { get; set; }*@
     private string debug { get; set; } = "";
@@ -488,7 +484,7 @@
             validatedCase.PosterID = userId;
             validatedCase.PosterName = fullName;
             validatedCase.PosterSpecialty = posterSpeciality;//ParseMedicalSpecialty((MedicalSpecialtyType)usr.MedicalSpecialty);
-            validatedCase.Race = Int32.Parse(bRace);
+            validatedCase.Race = bRace;
             validatedCase.Gender = bGender;
             validatedCase.Ethnicity = Int32.Parse(bEthnicity);
             validatedCase.MedicalCategory = Int32.Parse(bSubCategory);
@@ -804,19 +800,7 @@
 
         await SwitchSubCategory(ParseCategoryValueFromSub(pCase.MedicalCategory));
 
-        RaceList = new List<SelectListItem> {
-    new SelectListItem { Value = "0", Text = "American Indian or Alaska Native" },
-    new SelectListItem { Value = "1", Text = "Asian" },
-    new SelectListItem { Value = "2", Text = "Black or African American" },
-    new SelectListItem { Value = "3", Text = "Native Hawaiian or Other Pacific Islander" },
-    new SelectListItem { Value = "4", Text = "White" },
-
-    new SelectListItem { Value = "5", Text = "Declined" },
-    new SelectListItem { Value = "6", Text = "Unknown" },
-    new SelectListItem { Value = "7", Text = "Other Race" }
-
-    };
-
+     
         EthnicityList = new List<SelectListItem> {
     new SelectListItem { Value = "0", Text = "Hispanic or Latino" },
     new SelectListItem { Value = "1", Text = "Not Hispanic or Latino" },

@@ -30,7 +30,7 @@ namespace Hippra.Models.SQL
         public int MedicalCategory { get; set; } // => should create enum for this
         public int PatientAge { get; set; }
         public GenderType Gender { get; set; } // 0 Male, 1, Female, 2 Neutral => should create enum for this
-        public int Race { get; set; } // => should create enum for this
+        public RaceType Race { get; set; } // => should create enum for this
         public int Ethnicity { get; set; } // => should create enum for this
         public string LabValues { get; set; }
         public string CurrentStageOfDisease { get; set; }
