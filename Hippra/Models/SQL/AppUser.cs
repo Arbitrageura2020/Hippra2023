@@ -31,7 +31,7 @@ namespace Hippra.Models.SQL
         [Required]
         [PersonalData]
         [Display(Name = "Medical Specialty")]
-        public int MedicalSpecialty { get; set; }
+        public MedicalSpecialtyType MedicalSpecialty { get; set; }
 
         [Required]
         [PersonalData]

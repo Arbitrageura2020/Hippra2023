@@ -1,5 +1,6 @@
 ﻿@using Hippra.Extensions
 @using Hippra.Models.DTO
+@using Hippra.Models.Enums
 @using Hippra.Models.SQL
 @using Hippra.Services
 @inject IJSRuntime JSRuntime
@@ -30,7 +31,7 @@
             <!-- Clinical Knowledge Loop Here -->
             @if (IsLoading)
             {
-                <p><em>Searching...</em></p>
+                <p><em>Loading ...</em></p>
             }
             else
             {
@@ -105,7 +106,7 @@
     protected override async Task OnInitializedAsync()
     {
         await GetSearchResults();
-    }
+     }
 
     // protected override async Task OnAfterRenderAsync(bool firstRender)
     // {
@@ -115,6 +116,7 @@
     //     await JSRuntime.InvokeVoidAsync("InitCasePage");
     //     //}
     // }
+
 
     private async Task GetSearchResults()
     {
@@ -162,7 +164,7 @@
                 Topic = i.Topic,
                 Description = i.Description,
                 DateCreated = i.DateCreated,
-                Priority = ParsePriority(i.ResponseNeeded),
+                Priority = Enums.GetDisplayName(i.ResponseNeeded),
                 ParsedCategory = ParseCategoryFromSub(i.MedicalCategory),
                 ParsedSubCategory = ParseSubCategory(i.MedicalCategory),
                 PosterID = i.PosterID,
@@ -462,47 +464,8 @@
         return rValue;
     }
 
-    private string ParseEthnicity(int ethnicity)
-    {
-        string rValue = "";
-        switch (ethnicity)
-        {
-            case 1:
-                rValue = "Not Hispanic or Latino";
-                break;
-            case 2:
-                rValue = "Declined";
-                break;
-            case 3:
-                rValue = "Unknown";
-                break;
-            default:
-                rValue = "Hispanic or Latino";
-                break;
-        }
 
 
-        return rValue;
-    }
-    private string ParseGender(int gender)
-    {
-        string rValue = "";
-        switch (gender)
-        {
-            case 1:
-                rValue = "Female";
-                break;
-            case 2:
-                rValue = "Neutral";
-                break;
-            default:
-                rValue = "Male";
-                break;
-        }
-
-
-        return rValue;
-    }
     private string ParsePriority(int priority)
     {
         string rValue = "";

@@ -59,8 +59,8 @@
                                 <InputRadioGroup Name="rate" @bind-Value="Priority">
                                     Priority
                                     <br>
-                                    <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
-                                    <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                    <InputRadio Name="rate" Value="CaseResponseLevelType.STAT" />Stat
+                                    <InputRadio Name="rate" Value="CaseResponseLevelType.OC" />Over Coffee
                                     @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
                                 </InputRadioGroup>
 
@@ -335,7 +335,7 @@
     private string bSubCategory { get; set; } = "0";
     private string bGender { get; set; } = "0";
     private RaceType bRace { get; set; } = RaceType.UNKNOWN;
-    private string bEthnicity { get; set; } = "3";
+    private EthnicityType bEthnicity { get; set; } = EthnicityType.UNKNOWN;
     @*private AppUser usr { get; set; }*@
 
     private string debug { get; set; } = "";
@@ -353,10 +353,10 @@
     public class PriorityModel
     {
         [Range(0, 2)]
-        public int Priority { get; set; }
+        public CaseResponseLevelType Priority { get; set; }
     }
     [EnumDataType(typeof(CaseResponseLevelType))]
-    public CaseResponseLevelType Priority { get; set; } = CaseResponseLevelType.HIGH;
+    public CaseResponseLevelType Priority { get; set; } = CaseResponseLevelType.STAT;
 
     private string fileName;
     private string imgUrl;
@@ -571,10 +571,10 @@
             tCase.PosterSpecialty = posterSpeciality;//ParseMedicalSpecialty((MedicalSpecialtyType)usr.MedicalSpecialty);
             tCase.Race = bRace;
             //tCase.Gender = Int32.Parse(bGender);
-            tCase.Ethnicity = Int32.Parse(bEthnicity);
+            tCase.Ethnicity = bEthnicity;
             tCase.MedicalCategory = Int32.Parse(bSubCategory);
             @*tCase.ResponseNeeded = priorityRadio.Priority;*@
-            tCase.ResponseNeeded = PriorityToInt(Priority);
+            tCase.ResponseNeeded = Priority;
             tCase.imgUrl = imgUrl;
 
             // copy back to tCase
@@ -644,7 +644,7 @@
         bSubCategory = tCase.MedicalCategory.ToString();
         await SwitchSubCategory(bCategory);
         bGender = tCase.Gender.ToString();
-        bEthnicity = tCase.Ethnicity.ToString();
+        bEthnicity = tCase.Ethnicity;
         bRace = tCase.Race;
 
     }
@@ -1410,17 +1410,17 @@
     }
     private CaseResponseLevelType ParsePriority2(int priority)
     {
-        CaseResponseLevelType rValue = CaseResponseLevelType.HIGH;
+        CaseResponseLevelType rValue = CaseResponseLevelType.STAT;
         switch (priority)
         {
             case 1:
-                rValue = CaseResponseLevelType.MID;
+                rValue = CaseResponseLevelType.OC;
                 break;
             case 2:
                 rValue = CaseResponseLevelType.LOW;
                 break;
             default:
-                rValue = CaseResponseLevelType.HIGH;
+                rValue = CaseResponseLevelType.STAT;
                 break;
         }
 
@@ -1432,7 +1432,7 @@
         int rValue = 0;
         switch (priority)
         {
-            case CaseResponseLevelType.MID:
+            case CaseResponseLevelType.OC:
                 rValue = 1;
                 break;
             case CaseResponseLevelType.LOW:

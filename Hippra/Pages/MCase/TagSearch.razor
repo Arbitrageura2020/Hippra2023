@@ -287,8 +287,8 @@
                                     <InputRadioGroup Name="rate" @bind-Value="priorityRadio.Priority">
                                         Priority
                                         <br>
-                                        <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
-                                        <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                        <InputRadio Name="rate" Value="CaseResponseLevelType.STAT" />Stat
+                                        <InputRadio Name="rate" Value="CaseResponseLevelType.OC" />Over Coffee
                                         @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
                                     </InputRadioGroup>
 
@@ -438,8 +438,8 @@
                                     <InputRadioGroup Name="rate" @bind-Value="priorityRadio.Priority">
                                         Priority
                                         <br>
-                                        <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
-                                        <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                        <InputRadio Name="rate" Value="CaseResponseLevelType.STAT" />Stat
+                                        <InputRadio Name="rate" Value="CaseResponseLevelType.OC" />Over Coffee
                                         @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
                                     </InputRadioGroup>
                                     @*<label>
@@ -776,8 +776,8 @@
                                         <InputRadioGroup Name="rate" @bind-Value="priorityRadio.Priority">
                                             Priority
                                             <br>
-                                            <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
-                                            <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                            <InputRadio Name="rate" Value="CaseResponseLevelType.STAT" />Stat
+                                            <InputRadio Name="rate" Value="CaseResponseLevelType.OC" />Over Coffee
                                             @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
                                         </InputRadioGroup>
                                         @*<label>
@@ -1042,7 +1042,7 @@
     public class PriorityModel
     {
         [Range(0, 2)]
-        public int Priority { get; set; }
+        public CaseResponseLevelType Priority { get; set; }
     }
 
     private PhysicianProfileModel pProfile = new PhysicianProfileModel();
@@ -1143,7 +1143,7 @@
                 Topic = i.Topic,
                 Description = i.Description,
                 DateCreated = i.DateCreated,
-                Priority = ParsePriority(i.ResponseNeeded),
+                Priority = Enums.GetDisplayName(i.ResponseNeeded),
                 ParsedCategory = ParseCategoryFromSub(i.MedicalCategory),
                 ParsedSubCategory = ParseSubCategory(i.MedicalCategory)
             });
@@ -2274,7 +2274,7 @@
         int rValue = 0;
         switch (priority)
         {
-            case CaseResponseLevelType.MID:
+            case CaseResponseLevelType.OC:
                 rValue = 1;
                 break;
             case CaseResponseLevelType.LOW:

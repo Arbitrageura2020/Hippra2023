@@ -54,6 +54,15 @@ namespace Hippra.Services
             DbFactory = dbFactory;
         }
 
+        public bool AddMedicalCategory(IList<MedicalSubCategory> items)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            _context.MedicalSubCategories.AddRange(items);
+            _context.SaveChanges();
+            return true;
+        }
+
         public async Task<int> GetCaseCount()
         {
 
@@ -308,7 +317,7 @@ namespace Hippra.Services
                                     foreach (var Id in caseIDs)
                                     {
                                         tempCase = await GetCase(Id);
-                                        if (tempCase.ResponseNeeded == Priority)
+                                        if (tempCase.ResponseNeeded == (CaseResponseLevelType)Priority)
                                         {
                                             if (!cases.Contains(tempCase))
                                             {
@@ -324,7 +333,7 @@ namespace Hippra.Services
                                     foreach (var Id in caseIDs)
                                     {
                                         tempCase = await GetCase(Id);
-                                        if (tempCase.ResponseNeeded == Priority && tempCase.PosterID == id)
+                                        if (tempCase.ResponseNeeded ==(CaseResponseLevelType)Priority && tempCase.PosterID == id)
                                         {
                                             if (!cases.Contains(tempCase))
                                             {
@@ -351,12 +360,12 @@ namespace Hippra.Services
                             {
                                 if (id == -1)
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync();
                                 }
                                 else
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.PosterID == id && u.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.PosterID == id && u.ResponseNeeded == (CaseResponseLevelType) Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.PosterID == id);
                                 }
                             }
@@ -368,12 +377,12 @@ namespace Hippra.Services
                             {
                                 if (id == -1)
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(s => s.Topic.Contains(searchString));
                                 }
                                 else
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.PosterID == id && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.PosterID == id && s.ResponseNeeded ==(CaseResponseLevelType) Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(s => s.Topic.Contains(searchString) && s.PosterID == id);
                                 }
                             }
@@ -381,12 +390,12 @@ namespace Hippra.Services
                             {
                                 if (id == -1)
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.ResponseNeeded ==(CaseResponseLevelType) Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync();
                                 }
                                 else
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.PosterID == id && u.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.PosterID == id && u.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.PosterID == id);
                                 }
                             }
@@ -403,7 +412,7 @@ namespace Hippra.Services
                                     foreach (var Id in caseIDs)
                                     {
                                         tempCase = await GetCase(Id);
-                                        if (tempCase.ResponseNeeded == Priority && tempCase.Status)
+                                        if (tempCase.ResponseNeeded == (CaseResponseLevelType)Priority && tempCase.Status)
                                         {
                                             if (!cases.Contains(tempCase))
                                             {
@@ -420,7 +429,7 @@ namespace Hippra.Services
                                     foreach (var Id in caseIDs)
                                     {
                                         tempCase = await GetCase(Id);
-                                        if (tempCase.ResponseNeeded == Priority && tempCase.Status && tempCase.PosterID == id)
+                                        if (tempCase.ResponseNeeded == (CaseResponseLevelType)Priority && tempCase.Status && tempCase.PosterID == id)
                                         {
                                             if (!cases.Contains(tempCase))
                                             {
@@ -447,12 +456,12 @@ namespace Hippra.Services
                             {
                                 if (id == -1)
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.Status && u.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.Status && u.ResponseNeeded ==(CaseResponseLevelType) Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.Status);
                                 }
                                 else
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.Status && u.PosterID == id && u.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.Status && u.PosterID == id && u.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.Status && u.PosterID == id);
                                 }
                             }
@@ -463,12 +472,12 @@ namespace Hippra.Services
                             {
                                 if (id == -1)
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.Status && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.Status && s.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(s => s.Topic.Contains(searchString) && s.Status);
                                 }
                                 else
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.Status && s.PosterID == id && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.Status && s.PosterID == id && s.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(s => s.Topic.Contains(searchString) && s.Status && s.PosterID == id);
                                 }
                             }
@@ -476,12 +485,12 @@ namespace Hippra.Services
                             {
                                 if (id == -1)
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.Status && u.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.Status && u.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.Status);
                                 }
                                 else
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.Status && u.PosterID == id && u.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.Status && u.PosterID == id && u.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.Status && u.PosterID == id);
                                 }
                             }
@@ -696,7 +705,7 @@ namespace Hippra.Services
                                     foreach (var Id in caseIDs)
                                     {
                                         tempCase = await GetCase(Id);
-                                        if (tempCase.MedicalCategory == SubCategory && tempCase.ResponseNeeded == Priority)
+                                        if (tempCase.MedicalCategory == SubCategory && tempCase.ResponseNeeded == (CaseResponseLevelType)Priority)
                                         {
                                             if (!cases.Contains(tempCase))
                                             {
@@ -713,7 +722,7 @@ namespace Hippra.Services
                                     foreach (var Id in caseIDs)
                                     {
                                         tempCase = await GetCase(Id);
-                                        if (tempCase.MedicalCategory == SubCategory && tempCase.ResponseNeeded == Priority && tempCase.PosterID == id)
+                                        if (tempCase.MedicalCategory == SubCategory && tempCase.ResponseNeeded == (CaseResponseLevelType)Priority && tempCase.PosterID == id)
                                         {
                                             if (!cases.Contains(tempCase))
                                             {
@@ -740,12 +749,12 @@ namespace Hippra.Services
                             {
                                 if (id == -1)
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(s => s.MedicalCategory == SubCategory);
                                 }
                                 else
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.MedicalCategory == SubCategory && u.PosterID == id && u.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.MedicalCategory == SubCategory && u.PosterID == id && u.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.MedicalCategory == SubCategory && u.PosterID == id);
                                 }
                             }
@@ -756,12 +765,12 @@ namespace Hippra.Services
                             {
                                 if (id == -1)
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString));
                                 }
                                 else
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.PosterID == id && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.PosterID == id && s.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(s => s.MedicalCategory == SubCategory && s.Topic.Contains(searchString) && s.PosterID == id);
                                 }
                             }
@@ -769,12 +778,12 @@ namespace Hippra.Services
                             {
                                 if (id == -1)
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(s => s.MedicalCategory == SubCategory && s.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(s => s.MedicalCategory == SubCategory);
                                 }
                                 else
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.MedicalCategory == SubCategory && u.PosterID == id && u.ResponseNeeded == Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.MedicalCategory == SubCategory && u.PosterID == id && u.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.MedicalCategory == SubCategory && u.PosterID == id);
                                 }
                             }

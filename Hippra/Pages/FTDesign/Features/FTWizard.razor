@@ -301,7 +301,7 @@
     private bool submitBtnCss { get; set; } = true;
 
     private FTRegisterModel inputModel { get; set; }
-    private string bMedicalSpecialty { get; set; } = "0";
+    private MedicalSpecialtyType bMedicalSpecialty { get; set; } = MedicalSpecialtyType.Anesthesiology;
 
     private List<SelectListItem> specialtyList { get; set; }
 
@@ -434,7 +434,7 @@
 
         // fill bMedicalSpecialty back to inputModel
         inputModel.UserName = inputModel.Email;
-        inputModel.MedicalSpecialty = Int32.Parse(bMedicalSpecialty);
+        inputModel.MedicalSpecialty = bMedicalSpecialty;
 
         var result = await pService.RegisterAccount(inputModel, baseurl);
         if (result != -1)

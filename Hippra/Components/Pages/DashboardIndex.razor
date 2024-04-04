@@ -298,8 +298,8 @@
                             <InputRadioGroup Name="rate" @bind-Value="priorityRadio.Priority">
                                 Priority
                                 <br>
-                                <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
-                                <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                <InputRadio Name="rate" Value="CaseResponseLevelType.STAT" />Stat
+                                <InputRadio Name="rate" Value="CaseResponseLevelType.OC" />Over Coffee
                                 @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
                             </InputRadioGroup>
 
@@ -449,8 +449,8 @@
                             <InputRadioGroup Name="rate" @bind-Value="priorityRadio.Priority">
                                 Priority
                                 <br>
-                                <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
-                                <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                <InputRadio Name="rate" Value="CaseResponseLevelType.STAT" />Stat
+                                <InputRadio Name="rate" Value="CaseResponseLevelType.OC" />Over Coffee
                                 @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
                             </InputRadioGroup>
                             @*<label>
@@ -737,8 +737,8 @@
                                 <InputRadioGroup Name="rate" @bind-Value="priorityRadio.Priority">
                                     Priority
                                     <br>
-                                    <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
-                                    <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                    <InputRadio Name="rate" Value="CaseResponseLevelType.STAT" />Stat
+                                    <InputRadio Name="rate" Value="CaseResponseLevelType.OC" />Over Coffee
                                     @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
                                 </InputRadioGroup>
                                 @*<label>
@@ -1000,7 +1000,7 @@
     public class PriorityModel
     {
         [Range(0, 2)]
-        public int Priority { get; set; }
+        public CaseResponseLevelType Priority { get; set; }
     }
 
     private PhysicianProfileModel pProfile = new PhysicianProfileModel();
@@ -1032,7 +1032,7 @@
                     userId = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
                 }
 
-                posterSpeciality = ParseMedicalSpecialty((MedicalSpecialtyType)Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "MedicalSpecialty")?.Value));
+                posterSpeciality = Enums.GetDisplayName((MedicalSpecialtyType)Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "MedicalSpecialty")?.Value));
             }
             catch (FormatException e)
             {
@@ -1127,7 +1127,7 @@
                 Topic = i.Topic,
                 Description = i.Description,
                 DateCreated = i.DateCreated,
-                Priority = ParsePriority(i.ResponseNeeded),
+                Priority =Enums.GetDisplayName(i.ResponseNeeded),
                 ParsedCategory = ParseCategoryFromSub(i.MedicalCategory),
                 ParsedSubCategory = ParseSubCategory(i.MedicalCategory)
             }).ToList();
@@ -1526,8 +1526,8 @@
         pCase.ParsedCategory = ParseCategoryFromSub(tCase.MedicalCategory);
         pCase.ParsedSubCategory = ParseSubCategory(tCase.MedicalCategory);
         pCase.ParsedGender =Enums.GetDisplayName(tCase.Gender);
-        pCase.ParsedEthnicity = ParseEthnicity(tCase.Ethnicity);
-        pCase.Priority = ParsePriority(tCase.ResponseNeeded);
+        pCase.ParsedEthnicity = Enums.GetDisplayName(tCase.Ethnicity);
+        pCase.Priority = Enums.GetDisplayName(tCase.ResponseNeeded);
         pCase.ParsedRace = Enums.GetDisplayName(tCase.Race);
         pCase.Status = tCase.Status;
         pCase.ParsedStatus = ParseStatus(tCase.Status);
@@ -1833,98 +1833,7 @@
 
     // PARSE CODE
     #region ParseCode
-    private string ParseMedicalSpecialty(MedicalSpecialtyType MedicalSpecialty)
-    {
 
-        string medicalSpecialty = "";
-        switch (MedicalSpecialty)
-        {
-            case MedicalSpecialtyType.Anesthesiology:
-                medicalSpecialty = "Anesthesiology";
-                break;
-            case MedicalSpecialtyType.AnatomicPathologyAndClinicalPathology:
-                medicalSpecialty = "Anatomic Pathology And Clinical Pathology";
-                break;
-            case MedicalSpecialtyType.ColonAndRectalSurgery:
-                medicalSpecialty = "Colon And Rectal Surgery";
-                break;
-            case MedicalSpecialtyType.Dermatology:
-                medicalSpecialty = "Dermatology";
-                break;
-            case MedicalSpecialtyType.EmergencyMedicine:
-                medicalSpecialty = "Emergency Medicine";
-                break;
-            case MedicalSpecialtyType.FamilyMedicine:
-                medicalSpecialty = "Family Medicine";
-                break;
-            case MedicalSpecialtyType.HospiceAndPalliativeMedicine:
-                medicalSpecialty = "Hospice And Palliative Medicine";
-                break;
-            case MedicalSpecialtyType.InternalMedicine:
-                medicalSpecialty = "Internal Medicine";
-                break;
-            case MedicalSpecialtyType.MedicalGenetics:
-                medicalSpecialty = "Medical Genetics";
-                break;
-            case MedicalSpecialtyType.MedicalNuclearPhysics:
-                medicalSpecialty = "Medical Nuclear Physics";
-                break;
-            case MedicalSpecialtyType.Neurology:
-                medicalSpecialty = "Neurology";
-                break;
-            case MedicalSpecialtyType.Neurosurgery:
-                medicalSpecialty = "Neurosurgery";
-                break;
-            case MedicalSpecialtyType.NuclearMedicine:
-                medicalSpecialty = "NuclearMedicine";
-                break;
-            case MedicalSpecialtyType.ObstetricsAndGynecology:
-                medicalSpecialty = "Obstetrics And Gynecology";
-                break;
-            case MedicalSpecialtyType.Ophthalmology:
-                medicalSpecialty = "Ophthalmology";
-                break;
-            case MedicalSpecialtyType.OrthopedicSurgery:
-                medicalSpecialty = "Orthopedic Surgery";
-                break;
-            case MedicalSpecialtyType.Otolaryngology:
-                medicalSpecialty = "Otolaryngology";
-                break;
-            case MedicalSpecialtyType.Pediatrics:
-                medicalSpecialty = "Pediatrics";
-                break;
-            case MedicalSpecialtyType.PhysicalMedicineAndRehibilitation:
-                medicalSpecialty = "Physical Medicine And Rehibilitation";
-                break;
-            case MedicalSpecialtyType.PlasticSurgery:
-                medicalSpecialty = "Plastic Surgery";
-                break;
-            case MedicalSpecialtyType.Psychiatry:
-                medicalSpecialty = "Psychiatry";
-                break;
-            case MedicalSpecialtyType.PublicHealthAndGeneralPreventive:
-                medicalSpecialty = "Public Health And General Preventive";
-                break;
-            case MedicalSpecialtyType.Radiology:
-                medicalSpecialty = "Radiology";
-                break;
-            case MedicalSpecialtyType.Surgery:
-                medicalSpecialty = "Surgery";
-                break;
-            case MedicalSpecialtyType.ThoracicSurgery:
-                medicalSpecialty = "Thoracic Surgery";
-                break;
-            case MedicalSpecialtyType.Urology:
-                medicalSpecialty = "Urology";
-                break;
-            case MedicalSpecialtyType.VascularSurgery:
-                medicalSpecialty = "Vascular Surgery";
-                break;
-            default:
-                break;
-        }
-        return medicalSpecialty;
-    }
     private string ParseCategory(int category)
     {
         string rValue = "";
@@ -2306,23 +2215,7 @@
 
         return rValue;
     }
-    private int PriorityToInt(CaseResponseLevelType priority)
-    {
-        int rValue = 0;
-        switch (priority)
-        {
-            case CaseResponseLevelType.MID:
-                rValue = 1;
-                break;
-            case CaseResponseLevelType.LOW:
-                rValue = 2;
-                break;
-            default:
-                rValue = 0;
-                break;
-        }
-        return rValue;
-    }
+
     private string ParseStatus(bool tStatus)
     {
         if (tStatus)

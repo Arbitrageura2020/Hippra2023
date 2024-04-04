@@ -249,7 +249,7 @@
 
     public class FTEditProfileModel : FTEditModel
     {
-        public string mSpecialty { get; set; }
+        public MedicalSpecialtyType mSpecialty { get; set; }
     }
 
     /*
@@ -266,7 +266,7 @@
     private List<SelectListItem> specialtyList { get; set; }
 
     private int usrID { get; set; }
-    private int posterSpeciality = 0;
+    private MedicalSpecialtyType posterSpeciality = 0;
 	private int NPIN = 0;
 	private bool AmericanBoardCertified = false;
 	private string fullName = "";
@@ -280,50 +280,49 @@
         {
             @*usr = await UserManager.GetUserAsync(user);*@
             try
-			{
+            {
 
-				usrID = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
-				posterSpeciality = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "MedicalSpecialty")?.Value);
-				NPIN = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "NPIN")?.Value);
-			}
-			catch (FormatException e)
-			{
-				Console.WriteLine(e.Message);
-			}
-			fullName = user.Claims.FirstOrDefault(s => s.Type == "FirstName")?.Value + " " + user.Claims.FirstOrDefault(s => s.Type == "LastName")?.Value;
-			if (user.Claims.FirstOrDefault(s => s.Type == "AmericanBoardCertified")?.Value == "1")
-			{
-				AmericanBoardCertified = true;
-			}
+                usrID = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
+                posterSpeciality = (MedicalSpecialtyType)Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "MedicalSpecialty")?.Value);
+                NPIN = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "NPIN")?.Value);
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            fullName = user.Claims.FirstOrDefault(s => s.Type == "FirstName")?.Value + " " + user.Claims.FirstOrDefault(s => s.Type == "LastName")?.Value;
+            if (user.Claims.FirstOrDefault(s => s.Type == "AmericanBoardCertified")?.Value == "1")
+            {
+                AmericanBoardCertified = true;
+            }
 
         }
-       @* else
+        @* else
         {
             usr = await Hippra.Extensions.UserManagerExtensions.FindByPublicIDNoTrackAsync(UserManager, userId);
         }*@
-
         inputModel = new FTEditProfileModel()
-        {
-            UserName = user.Claims.FirstOrDefault(s => s.Type == "UserName")?.Value,
-			Email = user.Claims.FirstOrDefault(s => s.Type == "Email")?.Value,
+            {
+                UserName = user.Claims.FirstOrDefault(s => s.Type == "UserName")?.Value,
+                Email = user.Claims.FirstOrDefault(s => s.Type == "Email")?.Value,
 
-			FirstName = user.Claims.FirstOrDefault(s => s.Type == "FirstName")?.Value,
-			LastName = user.Claims.FirstOrDefault(s => s.Type == "LastName")?.Value,
-			NPIN = NPIN,
-			@*MedicalSpecialty = posterSpeciality,*@
+                FirstName = user.Claims.FirstOrDefault(s => s.Type == "FirstName")?.Value,
+                LastName = user.Claims.FirstOrDefault(s => s.Type == "LastName")?.Value,
+                NPIN = NPIN,
+            @*MedicalSpecialty = posterSpeciality,*@
     AmericanBoardCertified = AmericanBoardCertified,
-			ResidencyHospital = user.Claims.FirstOrDefault(s => s.Type == "ResidencyHospital")?.Value,// usr.ResidencyHospital,
-			MedicalSchoolAttended = user.Claims.FirstOrDefault(s => s.Type == "MedicalSchoolAttended")?.Value,//usr.MedicalSchoolAttended,
-			EducationDegree = user.Claims.FirstOrDefault(s => s.Type == "EducationDegree")?.Value,//usr.EducationDegree,
-			Address = user.Claims.FirstOrDefault(s => s.Type == "Address")?.Value,//usr.Address,
-			Zipcode = user.Claims.FirstOrDefault(s => s.Type == "Zipcode")?.Value,//usr.Zipcode,
-			State = user.Claims.FirstOrDefault(s => s.Type == "State")?.Value,//usr.State,
-			City = user.Claims.FirstOrDefault(s => s.Type == "City")?.Value,//usr.City,
-			PhoneNumber = user.Claims.FirstOrDefault(s => s.Type == "PhoneNumber")?.Value,//usr.PhoneNumber
+                ResidencyHospital = user.Claims.FirstOrDefault(s => s.Type == "ResidencyHospital")?.Value,// usr.ResidencyHospital,
+                MedicalSchoolAttended = user.Claims.FirstOrDefault(s => s.Type == "MedicalSchoolAttended")?.Value,//usr.MedicalSchoolAttended,
+                EducationDegree = user.Claims.FirstOrDefault(s => s.Type == "EducationDegree")?.Value,//usr.EducationDegree,
+                Address = user.Claims.FirstOrDefault(s => s.Type == "Address")?.Value,//usr.Address,
+                Zipcode = user.Claims.FirstOrDefault(s => s.Type == "Zipcode")?.Value,//usr.Zipcode,
+                State = user.Claims.FirstOrDefault(s => s.Type == "State")?.Value,//usr.State,
+                City = user.Claims.FirstOrDefault(s => s.Type == "City")?.Value,//usr.City,
+                PhoneNumber = user.Claims.FirstOrDefault(s => s.Type == "PhoneNumber")?.Value,//usr.PhoneNumber
 
 
-  
-            mSpecialty = posterSpeciality.ToString()
+
+                mSpecialty = posterSpeciality
 
         };
 
@@ -489,7 +488,7 @@
             usr.FirstName = inputModel.FirstName;
             usr.LastName = inputModel.LastName;
             usr.NPIN = inputModel.NPIN;
-            usr.MedicalSpecialty = Int32.Parse(inputModel.mSpecialty);
+            usr.MedicalSpecialty = inputModel.mSpecialty;
             usr.AmericanBoardCertified = inputModel.AmericanBoardCertified;
 
             usr.ResidencyHospital = inputModel.ResidencyHospital;

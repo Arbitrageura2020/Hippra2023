@@ -24,7 +24,7 @@ namespace Hippra.Models.POCO
         public string Email { get; set; }
 
         [Display(Name = "Medical Specialty")]
-        public int MedicalSpecialty { get; set; }
+        public MedicalSpecialtyType MedicalSpecialty { get; set; }
 
         [Display(Name = "American Board Certified")]
         public bool AmericanBoardCertified { get; set; }

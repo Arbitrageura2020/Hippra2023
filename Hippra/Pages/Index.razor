@@ -119,7 +119,7 @@
     public class PriorityModel
     {
         [Range(0, 2)]
-        public int Priority { get; set; }
+        public CaseResponseLevelType Priority { get; set; }
     }
 
     private PhysicianProfileModel pProfile = new PhysicianProfileModel();
@@ -251,7 +251,7 @@
                 Topic = i.Topic,
                 Description = i.Description,
                 DateCreated = i.DateCreated,
-                Priority = ParsePriority(i.ResponseNeeded),
+                Priority = Enums.GetDisplayName(i.ResponseNeeded),
                 ParsedCategory = ParseCategoryFromSub(i.MedicalCategory),
                 ParsedSubCategory = ParseSubCategory(i.MedicalCategory)
             }).ToList();
@@ -1406,7 +1406,7 @@
         int rValue = 0;
         switch (priority)
         {
-            case CaseResponseLevelType.MID:
+            case CaseResponseLevelType.OC:
                 rValue = 1;
                 break;
             case CaseResponseLevelType.LOW:

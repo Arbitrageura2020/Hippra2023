@@ -797,7 +797,7 @@
 	List<PostHistory> notificationList = new List<PostHistory>();
 	List<Notification> notifications = new List<Notification>();
 
-	private int posterSpeciality = 0;
+	private MedicalSpecialtyType posterSpeciality = 0;
 	private int NPIN = 0;
 	private bool AmericanBoardCertified = false;
 	private string fullName = "";
@@ -822,7 +822,7 @@
 			{
 
 				usrID = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
-				posterSpeciality = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "MedicalSpecialty")?.Value);
+				posterSpeciality = (MedicalSpecialtyType)Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "MedicalSpecialty")?.Value);
 				NPIN = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "NPIN")?.Value);
 			}
 			catch (FormatException e)

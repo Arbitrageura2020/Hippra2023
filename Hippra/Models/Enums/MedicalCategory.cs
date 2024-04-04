@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace Hippra.Models.Enums
 {
-    public enum CaseStatusType
-    {
-        [Display(Name = "Hispanic or Latino")]
-        OPEN,
-        [Display(Name = "Hispanic or Latino")] 
-        CLOSED
-    }
+	public enum MedicalCategory
+	{
+		[Display(Name = "Medicine")]
+		MED = 1,
+		[Display(Name = "Surgery")]
+		SUR = 2,
+		[Display(Name = "Diagnostics")]
+		DIA = 3,
+	}
 }

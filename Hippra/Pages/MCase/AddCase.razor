@@ -63,8 +63,8 @@
                                 <InputRadioGroup Name="rate" @bind-Value="Priority">
                                     Priority
                                     <br>
-                                    <InputRadio Name="rate" Value="CaseResponseLevelType.HIGH" />Stat
-                                    <InputRadio Name="rate" Value="CaseResponseLevelType.MID" />Over Coffee
+                                    <InputRadio Name="rate" Value="CaseResponseLevelType.STAT" />Stat
+                                    <InputRadio Name="rate" Value="CaseResponseLevelType.OC" />Over Coffee
                                     @*<InputRadio Name="rate" Value="CaseResponseLevelType.LOW" />Low*@
                                 </InputRadioGroup>
 
@@ -285,7 +285,7 @@
     private string bSubCategory { get; set; } = "0";
     private GenderType bGender { get; set; } = GenderType.MALE;
     private RaceType bRace { get; set; } = RaceType.UNKNOWN;
-    private string bEthnicity { get; set; } = "3";
+    private EthnicityType bEthnicity { get; set; } = EthnicityType.UNKNOWN;
     @*private AppUser usr { get; set; }*@
     private string debug { get; set; } = "";
 
@@ -297,7 +297,7 @@
     }
 
     [EnumDataType(typeof(CaseResponseLevelType))]
-    public CaseResponseLevelType Priority { get; set; } = CaseResponseLevelType.HIGH;
+    public CaseResponseLevelType Priority { get; set; } = CaseResponseLevelType.STAT;
 
     private string fileName;
     private string imgUrl;
@@ -486,10 +486,9 @@
             validatedCase.PosterSpecialty = posterSpeciality;//ParseMedicalSpecialty((MedicalSpecialtyType)usr.MedicalSpecialty);
             validatedCase.Race = bRace;
             validatedCase.Gender = bGender;
-            validatedCase.Ethnicity = Int32.Parse(bEthnicity);
+            validatedCase.Ethnicity = bEthnicity;
             validatedCase.MedicalCategory = Int32.Parse(bSubCategory);
-            @*validatedCase.ResponseNeeded = priorityRadio.Priority;// old*@
-            validatedCase.ResponseNeeded = PriorityToInt(Priority);
+            validatedCase.ResponseNeeded = Priority;
             validatedCase.PatientAge = pCase.PatientAge;
             validatedCase.CurrentStageOfDisease = pCase.CurrentStageOfDisease;
             validatedCase.CurrentTreatmentAdministered = pCase.CurrentTreatmentAdministered;
@@ -1291,10 +1290,10 @@
         int rValue = 0;
         switch (priority)
         {
-            case CaseResponseLevelType.MID:
+            case CaseResponseLevelType.STAT:
                 rValue = 1;
                 break;
-            case CaseResponseLevelType.LOW:
+            case CaseResponseLevelType.OC:
                 rValue = 2;
                 break;
             default:

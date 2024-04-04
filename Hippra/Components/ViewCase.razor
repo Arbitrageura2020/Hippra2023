@@ -238,7 +238,7 @@
     public class PriorityModel
     {
         [Range(0, 2)]
-        public int Priority { get; set; }
+        public CaseResponseLevelType Priority { get; set; }
     }
 
     private string[] imgUrls;
@@ -351,8 +351,8 @@
         pCase.ParsedCategory = ParseCategoryFromSub(tCase.MedicalCategory);
         pCase.ParsedSubCategory = ParseSubCategory(tCase.MedicalCategory);
         pCase.ParsedGender = Enums.GetDisplayName(tCase.Gender);
-        pCase.ParsedEthnicity = ParseEthnicity(tCase.Ethnicity);
-        pCase.Priority = ParsePriority(tCase.ResponseNeeded);
+        pCase.ParsedEthnicity = Enums.GetDisplayName(tCase.Ethnicity);
+        pCase.Priority = Enums.GetDisplayName(tCase.ResponseNeeded);
         pCase.ParsedRace = Enums.GetDisplayName(tCase.Race);
         pCase.Status = tCase.Status;
         pCase.ParsedStatus = ParseStatus(tCase.Status);

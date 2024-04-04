@@ -38,20 +38,20 @@ namespace Hippra.Extensions
             pCase.ParsedCategory = ParseCategoryFromSub(tCase.MedicalCategory);
             pCase.ParsedSubCategory = ParseSubCategory(tCase.MedicalCategory);
             pCase.ParsedGender = Enums.GetDisplayName(tCase.Gender);
-            pCase.ParsedEthnicity = ParseEthnicity(tCase.Ethnicity);
-            pCase.Priority = ParsePriority(tCase.ResponseNeeded);
+            pCase.ParsedEthnicity = Enums.GetDisplayName(tCase.Ethnicity);
+            pCase.Priority = Enums.GetDisplayName(tCase.ResponseNeeded);
             pCase.ParsedRace = Enums.GetDisplayName(tCase.Race);
             pCase.Status = tCase.Status;
             pCase.ParsedStatus = ParseStatus(tCase.Status);
 
             return pCase;
         }
-        public static string ParsePriority(int priority)
+        public static string ParsePriority(CaseResponseLevelType priority)
         {
             string rValue = "";
             switch (priority)
             {
-                case 1:
+                case CaseResponseLevelType.OC:
                     rValue = "Over Coffee";
                     break;
                 /*case 2:
@@ -70,10 +70,10 @@ namespace Hippra.Extensions
             int rValue = 0;
             switch (priority)
             {
-                case CaseResponseLevelType.MID:
+                case CaseResponseLevelType.STAT:
                     rValue = 1;
                     break;
-                case CaseResponseLevelType.LOW:
+                case CaseResponseLevelType.OC:
                     rValue = 2;
                     break;
                 default:

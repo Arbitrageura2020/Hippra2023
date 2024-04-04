@@ -34,5 +34,7 @@ namespace Hippra.Data
         public DbSet<Notification> Notifications { get; set; }
 
         public DbSet<Follow> Follows { get; set; }
-    }
+
+		public DbSet<MedicalSubCategory> MedicalSubCategories { get; set; }
+	}
 }

@@ -39,7 +39,7 @@ namespace Hippra.Models.FTDesign
 
         [Required]
         [Display(Name = "Medical Specialty")]
-        public int MedicalSpecialty { get; set; }
+        public MedicalSpecialtyType MedicalSpecialty { get; set; }
 
         [Required]
         [Display(Name = "American Board Certified")]

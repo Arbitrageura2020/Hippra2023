@@ -424,7 +424,7 @@
 		{
 			DisplayBackgroundUrl = "/img/hippra/blank-background.jpg";
 		}
-		medicalSpecialty = getMedicalSpeciality(profile.MedicalSpecialty);
+		medicalSpecialty = Enums.GetDisplayName(profile.MedicalSpecialty);
 		if (usrID != userId)
 		{
 			connectStatus = await hService.CheckConnection(usrID, userId);
@@ -455,7 +455,7 @@
 				prof = await pService.GetProfile(c.FriendID);
 			}
 			c.FullName = prof.FirstName + " " + prof.LastName;
-			c.CurrentPosition = getMedicalSpeciality(prof.MedicalSpecialty);
+			c.CurrentPosition = Enums.GetDisplayName(prof.MedicalSpecialty);
 			c.Location = prof.State;
 			if (prof.ProfileUrl != null)
 			{
@@ -538,7 +538,7 @@
 		{
 			DisplayBackgroundUrl = "/img/hippra/blank-background.jpg";
 		}
-		medicalSpecialty = getMedicalSpeciality(profile.MedicalSpecialty);
+		medicalSpecialty = Enums.GetDisplayName(profile.MedicalSpecialty);
 		if (usrID != userId)
 		{
 			connectStatus = await hService.CheckConnection(usrID, userId);
@@ -569,7 +569,7 @@
 				prof = await pService.GetProfile(c.FriendID);
 			}
 			c.FullName = prof.FirstName + " " + prof.LastName;
-			c.CurrentPosition = getMedicalSpeciality(prof.MedicalSpecialty);
+			c.CurrentPosition = Enums.GetDisplayName(prof.MedicalSpecialty);
 			c.Location = prof.State;
 			if (prof.ProfileUrl != null)
 			{
@@ -600,7 +600,7 @@
 				Topic = i.Topic,
 				Description = i.Description,
 				DateCreated = i.DateCreated,
-				Priority = ParsePriority(i.ResponseNeeded)
+				Priority = Enums.GetDisplayName(i.ResponseNeeded)
 			});
 		}
 		// count comment
@@ -763,7 +763,7 @@
 		usr.FirstName = profile.FirstName;
 		usr.LastName = profile.LastName;
 		usr.NPIN = profile.NPIN;
-		usr.MedicalSpecialty = Int32.Parse(profile.MedicalSpecialty.ToString());
+		usr.MedicalSpecialty = profile.MedicalSpecialty;
 		usr.AmericanBoardCertified = profile.AmericanBoardCertified;
 
 		usr.ResidencyHospital = profile.ResidencyHospital;
