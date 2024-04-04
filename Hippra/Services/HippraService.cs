@@ -24,6 +24,9 @@ using Hippra.Models.Enums;
 using Hippra.Code;
 using Hippra.API;
 using System.IO;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using Hippra.Models.ViewModel;
 
 namespace Hippra.Services
 {
@@ -31,19 +34,21 @@ namespace Hippra.Services
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
         // private readonly ApplicationDbContext _context;
         private AppSettings AppSettings { get; set; }
 
         private AzureStorage Storage;
         private ImageHelper ImageHelper;
         private IDbContextFactory<ApplicationDbContext> DbFactory;
+        public HttpContext WebContext => _httpContextAccessor.HttpContext;
         public HippraService(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             ApplicationDbContext context,
             IOptions<AppSettings> settings,
-            IDbContextFactory<ApplicationDbContext> dbFactory)
+            IDbContextFactory<ApplicationDbContext> dbFactory,
+            IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -52,6 +57,7 @@ namespace Hippra.Services
             Storage = new AzureStorage(settings);
             ImageHelper = new ImageHelper(Storage);
             DbFactory = dbFactory;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public bool AddMedicalCategory(IList<MedicalSubCategory> items)
@@ -333,7 +339,7 @@ namespace Hippra.Services
                                     foreach (var Id in caseIDs)
                                     {
                                         tempCase = await GetCase(Id);
-                                        if (tempCase.ResponseNeeded ==(CaseResponseLevelType)Priority && tempCase.PosterID == id)
+                                        if (tempCase.ResponseNeeded == (CaseResponseLevelType)Priority && tempCase.PosterID == id)
                                         {
                                             if (!cases.Contains(tempCase))
                                             {
@@ -365,7 +371,7 @@ namespace Hippra.Services
                                 }
                                 else
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.PosterID == id && u.ResponseNeeded == (CaseResponseLevelType) Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.PosterID == id && u.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.PosterID == id);
                                 }
                             }
@@ -382,7 +388,7 @@ namespace Hippra.Services
                                 }
                                 else
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.PosterID == id && s.ResponseNeeded ==(CaseResponseLevelType) Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(s => s.Topic.Contains(searchString) && s.PosterID == id && s.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(s => s.Topic.Contains(searchString) && s.PosterID == id);
                                 }
                             }
@@ -390,7 +396,7 @@ namespace Hippra.Services
                             {
                                 if (id == -1)
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.ResponseNeeded ==(CaseResponseLevelType) Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync();
                                 }
                                 else
@@ -456,7 +462,7 @@ namespace Hippra.Services
                             {
                                 if (id == -1)
                                 {
-                                    cases = await _context.Cases.AsNoTracking().Where(u => u.Status && u.ResponseNeeded ==(CaseResponseLevelType) Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
+                                    cases = await _context.Cases.AsNoTracking().Where(u => u.Status && u.ResponseNeeded == (CaseResponseLevelType)Priority).OrderByDescending(s => s.DateCreated).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
                                     count = await _context.Cases.AsNoTracking().CountAsync(u => u.Status);
                                 }
                                 else
@@ -943,47 +949,61 @@ namespace Hippra.Services
 
         }
 
-
-        public async Task<bool> CreateCase(Case EditedCase)
+        [Authorize]
+        public async Task<bool> AddNewCase(CaseViewModel inputCase)
         {
+            var userInfo = await _userManager.GetUserAsync(WebContext.User);
+
             using var _context = DbFactory.CreateDbContext();
 
-            var Case = await _context.Cases.FirstOrDefaultAsync(m => m.ID == EditedCase.ID);
+            var newCase = new Case();
 
-            if (Case == null)
+            newCase.UserId = userInfo!.Id;
+            newCase.PosterName = userInfo.FirstName;
+            newCase.PosterSpecialty = Enums.GetDisplayName(userInfo.MedicalSpecialty);
+            newCase.Status = true;
+            newCase.DateLastUpdated = DateTime.Now;
+            newCase.DateCreated = DateTime.Now;
+            newCase.PosterName = inputCase.PosterName;
+            newCase.PosterSpecialty = inputCase.PosterSpecialty;
+
+            newCase.Topic = inputCase.Topic;
+            newCase.Description = inputCase.Description;
+            newCase.ResponseNeeded = inputCase.ResponseNeeded;
+            newCase.MedicalCategory = inputCase.MedicalCategory;
+            newCase.PatientAge = inputCase.PatientAge;
+
+            newCase.Gender = inputCase.Gender;
+            newCase.Race = inputCase.Race;
+            newCase.Ethnicity = inputCase.Ethnicity;
+            newCase.LabValues = inputCase.LabValues;
+            newCase.CurrentStageOfDisease = inputCase.CurrentStageOfDisease;
+            newCase.imgUrl = inputCase.imgUrl;
+
+            newCase.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
+            newCase.TreatmentOutcomes = inputCase.TreatmentOutcomes;
+            if (inputCase.Tags != null)
             {
-                return false;
+                newCase.Tags = new List<CaseTags>();
+                foreach (var tag in inputCase.Tags)
+                {
+                    newCase.Tags.Add(new CaseTags()
+                    {
+                        Tag = tag,
+                        CaseID = newCase.ID,
+                        ID=DateTime.Now
+                    });
+                }
             }
-            Case.Status = true;
-            Case.DateLastUpdated = DateTime.Now;
-            Case.DateCreated = EditedCase.DateCreated;
-            Case.PosterName = EditedCase.PosterName;
-            Case.PosterSpecialty = EditedCase.PosterSpecialty;
-
-            Case.Topic = EditedCase.Topic;
-            Case.Description = EditedCase.Description;
-            Case.ResponseNeeded = EditedCase.ResponseNeeded;
-            Case.MedicalCategory = EditedCase.MedicalCategory;
-            Case.PatientAge = EditedCase.PatientAge;
-
-            Case.Gender = EditedCase.Gender;
-            Case.Race = EditedCase.Race;
-            Case.Ethnicity = EditedCase.Ethnicity;
-            Case.LabValues = EditedCase.LabValues;
-            Case.CurrentStageOfDisease = EditedCase.CurrentStageOfDisease;
-            Case.imgUrl = EditedCase.imgUrl;
-
-            Case.CurrentTreatmentAdministered = EditedCase.CurrentTreatmentAdministered;
-            Case.TreatmentOutcomes = EditedCase.TreatmentOutcomes;
 
             try
             {
-                _context.Update(Case);
+                await _context.AddAsync(newCase);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CaseExists(EditedCase.ID))
+                if (!CaseExists(inputCase.ID))
                 {
                     return false;
                 }
@@ -995,6 +1015,65 @@ namespace Hippra.Services
 
             return true;
         }
+
+
+        //public async Task<bool> CreateCase(Case EditedCase)
+        //{
+        //    var userInfo = await _userManager.GetUserAsync(WebContext.User);
+
+        //    using var _context = DbFactory.CreateDbContext();
+
+        //    var Case = await _context.Cases.FirstOrDefaultAsync(m => m.ID == EditedCase.ID);
+
+        //    if (Case == null)
+        //    {
+        //        return false;
+        //    }
+
+        //    Case.UserId = userInfo!.Id;
+        //    Case.PosterName = userInfo.FirstName;
+        //    Case.PosterSpecialty = Enums.GetDisplayName(userInfo.MedicalSpecialty);
+        //    Case.Status = true;
+        //    Case.DateLastUpdated = DateTime.Now;
+        //    Case.DateCreated = EditedCase.DateCreated;
+        //    Case.PosterName = EditedCase.PosterName;
+        //    Case.PosterSpecialty = EditedCase.PosterSpecialty;
+
+        //    Case.Topic = EditedCase.Topic;
+        //    Case.Description = EditedCase.Description;
+        //    Case.ResponseNeeded = EditedCase.ResponseNeeded;
+        //    Case.MedicalCategory = EditedCase.MedicalCategory;
+        //    Case.PatientAge = EditedCase.PatientAge;
+
+        //    Case.Gender = EditedCase.Gender;
+        //    Case.Race = EditedCase.Race;
+        //    Case.Ethnicity = EditedCase.Ethnicity;
+        //    Case.LabValues = EditedCase.LabValues;
+        //    Case.CurrentStageOfDisease = EditedCase.CurrentStageOfDisease;
+        //    Case.imgUrl = EditedCase.imgUrl;
+
+        //    Case.CurrentTreatmentAdministered = EditedCase.CurrentTreatmentAdministered;
+        //    Case.TreatmentOutcomes = EditedCase.TreatmentOutcomes;
+
+        //    try
+        //    {
+        //        _context.Update(Case);
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!CaseExists(EditedCase.ID))
+        //        {
+        //            return false;
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+
+        //    return true;
+        //}
 
         public async Task<bool> EditCase(Case EditedCase)
         {
@@ -1543,6 +1622,5 @@ namespace Hippra.Services
             string filename = await ImageHelper.UploadImageToStorage(file, name).ConfigureAwait(true);
             return true;
         }
-
     }
 }

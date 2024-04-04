@@ -1,6 +1,7 @@
 ﻿using Hippra.Models.DTO;
 using Hippra.Models.Enums;
 using Hippra.Models.SQL;
+using Hippra.Models.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

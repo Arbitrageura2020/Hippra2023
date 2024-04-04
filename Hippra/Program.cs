@@ -22,7 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 var Configuration = builder.Configuration;
 // Add services to the container.
 
-   
+
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
@@ -76,6 +76,8 @@ builder.Services.AddTransient<FTEmailService.IEmailSender, EmailService>(
 builder.Services.AddTransient<ProfileService>();
 // means run this service in background
 builder.Services.AddTransient<HippraService>();
+builder.Services.AddTransient<CommonService>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AppUser>>();
 builder.Services.AddScoped<IEmailService, SendgridEmailService>(client =>
 {
