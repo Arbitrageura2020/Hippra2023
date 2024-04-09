@@ -1,0 +1,111 @@
+﻿@using Hippra.Extensions
+@using Hippra.Models.DTO
+@using Hippra.Models.Enums
+@using Hippra.Models.SQL
+@using Hippra.Services
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+@inject IJSRuntime JSRuntime
+@inject HippraService hService
+@inject UserManager<AppUser> UserManager
+@inject IHttpContextAccessor httpContextAccessor
+<div class="dashboard-cases inside-scroll" style="max-height: 278px; padding-bottom: 20px;">
+    <!-- Ask-4 Help Loop Started -->
+    @if (IsLoading)
+    {
+        <p><em>Loading ...</em></p>
+    }
+    else
+    {
+        @if (Count > 0)
+        {
+
+            foreach (var item in SearchResults)
+            {
+                <div class="dashboard-case-item">
+                    <div class="case-tags">
+                        <!-- Case Item Tags Loop Here -->
+                        <ul>
+                            @foreach (var tag in item.Tags)
+                            {
+                                <li><a href="">@tag.Tag</a></li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="case-caption">
+                        <a href=@($"/viewcase/{item.ID}")>@item.Topic</a>
+                    </div>
+                    <div class="case-action">
+                        <button>
+                            <img src="./img/icons/chat.svg" alt="">
+                            <span>Reply</span>
+                        </button>
+                        <button>
+                            <img src="./img/icons/share.svg" alt="">
+                            <span>Share</span>
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div>No Case Found. Try Modify Search Criteria or Filter.</div>
+        }
+    }
+
+</div>
+
+@code {
+    private bool IsLoading = false;
+    private string searchString { get; set; } = "";
+    private List<ParsedCase> SearchResults { get; set; } = new List<ParsedCase>();
+    private List<Case> cases { get; set; } = new List<Case>();
+
+    public int CurrentPage { get; set; } = 1;
+    public int Count { get; set; }
+    public int PageSize { get; set; } = 10;
+    public int TotalPages => (int)Math.Ceiling(decimal.Divide(Count, PageSize));
+    private string userId = "";
+    protected override async Task OnInitializedAsync()
+    {
+        var user = httpContextAccessor.HttpContext.User;
+        var userInfo = await UserManager.GetUserAsync(httpContextAccessor.HttpContext.User);
+        userId = userInfo!.Id.ToString();
+
+        await GetSearchResults();
+    }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     //if (firstRender)
+    //     //{
+    //     await JSRuntime.InvokeVoidAsync("handlePageScrollable");
+    //     await JSRuntime.InvokeVoidAsync("InitCasePage");
+    //     //}
+    // }
+
+
+    private async Task GetSearchResults()
+    {
+        SearchResults = new List<ParsedCase>();
+
+        var searchResults = await hService.GetAllHelpCases(userId);
+
+        Count = searchResults.TotalCount;
+
+        SearchResults = searchResults.Cases.Select(i => new ParsedCase()
+            {
+                ID = i.ID,
+                Topic = i.Topic,
+                Description = i.Description,
+                DateCreated = i.DateCreated,
+                Priority = Enums.GetDisplayName(i.ResponseNeeded),
+                // ParsedCategory = ParseCategoryFromSub(i.MedicalCategory),
+                // ParsedSubCategory = ParseSubCategory(i.MedicalCategory),
+                PosterID = i.PosterID,
+                PosterName = i.PosterName,
+                PosterSpecialty = i.PosterSpecialty
+            }).ToList();
+    }
+}

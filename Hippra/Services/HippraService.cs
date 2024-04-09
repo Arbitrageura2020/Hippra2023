@@ -94,6 +94,17 @@ namespace Hippra.Services
             return result;
         }
 
+        public async Task<SearchResultModel> GetAllHelpCases(string userId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            List<Case> cases = await _context.Cases.Where(x => x.UserId == userId).Include(c => c.Comments).OrderByDescending(s => s.DateCreated).AsNoTracking().ToListAsync();
+            SearchResultModel result = new SearchResultModel();
+            result.TotalCount = cases.Count;
+            result.Cases = cases;
+            return result;
+        }
+
         public async Task<List<Case>> GetCases(int CurrentPage, int PageSize, int id)
         {
             using var _context = DbFactory.CreateDbContext();
@@ -991,7 +1002,7 @@ namespace Hippra.Services
                     {
                         Tag = tag,
                         CaseID = newCase.ID,
-                        ID=DateTime.Now
+                        ID = DateTime.Now
                     });
                 }
             }

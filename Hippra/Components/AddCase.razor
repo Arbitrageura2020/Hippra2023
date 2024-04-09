@@ -111,7 +111,8 @@
                             </div>
                             <div class="form-multi-select">
                                 <div class="form-select-wrapper">
-                                    <select class="form-select mini" name="">
+                                    <select class="form-select mini" @bind="@CaseModel.MedicalCategoryId" @onclick="()=>SwitchCategory(CaseModel.MedicalCategoryId)">
+                                        <option value="0" selected>Select category</option>
                                         @foreach (MedicalCategory i in Enum.GetValues(typeof(MedicalCategory)))
                                         {
                                             <option value="@i">@Enums.GetDisplayName(i)</option>
@@ -120,11 +121,12 @@
                                     <img src="./img/icons/chevron-down.svg" alt="">
                                 </div>
                                 <div class="form-select-wrapper">
-                                    <select class="form-select mini" name="">
-                                        <option value="" selected="" hidden="">Medical Specialty</option>
-                                        <option value="option1">Option 1</option>
-                                        <option value="option2">Option 2</option>
-                                        <option value="option3">Option 3</option>
+                                    <select class="form-select mini" name="" @bind="@CaseModel.MedicalSubCategoryId">
+                                        <option value="0" selected="" hidden="">Medical Specialty</option>
+                                        @foreach (var i in @CurrentSubCategoryList)
+                                        {
+                                            <option value="@i.ID">@i.Name</option>
+                                        }
                                     </select>
                                     <img src="./img/icons/chevron-down.svg" alt="">
                                 </div>
@@ -219,7 +221,7 @@
 
     private bool hasError { get; set; } = false;
 
-    private CaseViewModel CaseModel { get; set; } = new CaseViewModel();
+    private CaseViewModel CaseModel { get; set; } = new CaseViewModel() { };
 
 
     private List<MedicalSubCategory> CurrentSubCategoryList { get; set; } = new List<MedicalSubCategory>();
@@ -241,6 +243,7 @@
     protected override async Task OnInitializedAsync()
     {
         this.AllSubCategoryList = await commonService.GetAllSubcategories();
+
         SwitchCategory(MedicalCategory.MED);
     }
 
@@ -347,9 +350,11 @@
             hasError = true;
     }
 
-    private void SwitchCategory(MedicalCategory selectedCategory)
+
+    private async void SwitchCategory(MedicalCategory category)
     {
-        this.CurrentSubCategoryList = this.AllSubCategoryList.Where(x => x.MedicalCategory == selectedCategory).ToList();
+        this.CurrentSubCategoryList = this.AllSubCategoryList.Where(x => x.MedicalCategory == category).ToList();
+        this.CaseModel.MedicalSubCategoryId = 0;
     }
 
 }
