@@ -30,9 +30,7 @@ namespace Hippra.Models.ViewModel
         [Required]
         public string Description { get; set; }
         public CaseResponseLevelType ResponseNeeded { get; set; } // 0: high, 1: mid, 2: low 
-
-        public MedicalCategory MedicalCategoryId { get; set; }
-        public int MedicalCategory { get; set; } // => should create enum for this
+        public MedicalCategory MedicalCategory { get; set; } 
         public int MedicalSubCategoryId { get; set; } = 1;
         public MedicalSubCategory MedicalSubCategory { get; set; }
         [Required]

@@ -111,7 +111,7 @@
                             </div>
                             <div class="form-multi-select">
                                 <div class="form-select-wrapper">
-                                    <select class="form-select mini" @bind="@CaseModel.MedicalCategoryId" @onclick="()=>SwitchCategory(CaseModel.MedicalCategoryId)">
+                                    <select class="form-select mini" @bind="@CaseModel.MedicalCategory" @onclick="()=>SwitchCategory(CaseModel.MedicalCategory)">
                                         <option value="0" selected>Select category</option>
                                         @foreach (MedicalCategory i in Enum.GetValues(typeof(MedicalCategory)))
                                         {

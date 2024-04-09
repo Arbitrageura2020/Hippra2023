@@ -30,14 +30,23 @@ namespace Hippra.Extensions
             pCase.ResponseNeeded = tCase.ResponseNeeded;
             pCase.MedicalCategory = tCase.MedicalCategory;
             pCase.PosterSpecialty = tCase.PosterSpecialty;
+            pCase.MedicalSubCategory = tCase.MedicalSubCategory;
+            if (tCase.Tags != null)
+            {
+                pCase.Tags = tCase.Tags;
+            }
+            if (tCase.Comments != null)
+            {
+                pCase.Comments = tCase.Comments;
+            }
 
             pCase.PatientAge = tCase.PatientAge;
             pCase.CurrentStageOfDisease = tCase.CurrentStageOfDisease;
             pCase.CurrentTreatmentAdministered = tCase.CurrentTreatmentAdministered;
             pCase.TreatmentOutcomes = tCase.TreatmentOutcomes;
             pCase.LabValues = tCase.LabValues;
-            pCase.ParsedCategory = ParseCategoryFromSub(tCase.MedicalCategory);
-            pCase.ParsedSubCategory = ParseSubCategory(tCase.MedicalCategory);
+            pCase.ParsedCategory = Enums.GetDisplayName(tCase.MedicalCategory);
+            pCase.ParsedSubCategory = tCase.MedicalSubCategory!.Name;
             pCase.ParsedGender = Enums.GetDisplayName(tCase.Gender);
             pCase.ParsedEthnicity = Enums.GetDisplayName(tCase.Ethnicity);
             pCase.Priority = Enums.GetDisplayName(tCase.ResponseNeeded);

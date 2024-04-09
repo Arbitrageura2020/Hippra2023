@@ -165,8 +165,8 @@
                 Description = i.Description,
                 DateCreated = i.DateCreated,
                 Priority = Enums.GetDisplayName(i.ResponseNeeded),
-                ParsedCategory = ParseCategoryFromSub(i.MedicalCategory),
-                ParsedSubCategory = ParseSubCategory(i.MedicalCategory),
+                ParsedCategory = Enums.GetDisplayName(i.MedicalCategory),
+                ParsedSubCategory = i.MedicalSubCategory!.Name,
                 PosterID = i.PosterID,
                 PosterName = i.PosterName,
                 PosterSpecialty = i.PosterSpecialty

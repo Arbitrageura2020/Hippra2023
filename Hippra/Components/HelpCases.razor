@@ -25,12 +25,15 @@
                 <div class="dashboard-case-item">
                     <div class="case-tags">
                         <!-- Case Item Tags Loop Here -->
-                        <ul>
-                            @foreach (var tag in item.Tags)
-                            {
-                                <li><a href="">@tag.Tag</a></li>
-                            }
-                        </ul>
+                        @if (item.Tags != null)
+                        {
+                            <ul>
+                                @foreach (var tag in item.Tags)
+                                {
+                                    <li><a href="">@tag.Tag</a></li>
+                                }
+                            </ul>
+                        }
                     </div>
                     <div class="case-caption">
                         <a href=@($"/viewcase/{item.ID}")>@item.Topic</a>
