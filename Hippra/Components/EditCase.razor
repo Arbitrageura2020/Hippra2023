@@ -1,0 +1,520 @@
+﻿@page "/editcase/{caseId:int}"
+@using System.ComponentModel.DataAnnotations
+@using Hippra.Models.DTO
+@using Hippra.Models.ViewModel
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@using Hippra.Models.FTDesign
+@using Hippra.Services
+@using Hippra.Models.SQL
+@using Hippra.Models.Enums
+@using Hippra.Extensions
+@using Hippra.Pages.Common
+@using Hippra.Pages.FTDesign.Features
+@using Hippra.Pages.FTDesign
+@using Hippra.Pages.Home
+@using Hippra.Pages.MCase
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Http
+@using Hippra.Pages.FTDesign.Components2
+@using System.Text.RegularExpressions
+@inject IHttpContextAccessor httpContextAccessor
+@inject IJSRuntime JSRuntime
+@*@inject SignInManager<AppUser> SignInManager
+		@inject UserManager<AppUser> UserManager*@
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject ProfileService pService
+@inject HippraService hService
+@inject IAuthorizationService AuthorizationService
+
+<div id="post-ask-4-content" class="post-tab-content active">
+    <div class="content-left">
+        <!-- Ask-4 Form -->
+        <section class="dashboard-content">
+            <div class="content-form " style="max-height: 538px; padding-bottom: 20px;">
+                <EditForm Model="@CaseModel" OnValidSubmit="@UpdateCase">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="form-group">
+                        <label for="">Title</label>
+                        @*      <input class="form-control" type="text" placeholder="Title"> *@
+                        <InputText class="form-control" placeholder="Title" @bind-Value="@CaseModel.Topic" />
+                        <ValidationMessage For="() => CaseModel.Topic" />
+                    </div>
+                    <div class="form-group">
+                        <label for="">Description</label>
+                        <textarea class="form-control textarea" placeholder="Description" @bind="@CaseModel.Description"></textarea>
+                        <ValidationMessage For="() => CaseModel.Description" />
+                    </div>
+
+                    <!-- Multi Mini Inputs -->
+                    <div class="form-group multi">
+                        <label for="">Patient Information</label>
+                        <div class="form-multi-inputs">
+                            <input class="form-control mini" type="text" placeholder="Age" @bind="@CaseModel.PatientAge">
+                            <div class="form-select-wrapper">
+                                <select class="form-select mini" name="" @bind="@CaseModel.Race">
+                                    @foreach (RaceType i in Enum.GetValues(typeof(RaceType)))
+                                    {
+                                        <option value="@i">@Enums.GetDisplayName(i)</option>
+                                    }
+
+                                </select>
+                                <img src="./img/icons/chevron-down.svg" alt="">
+                            </div>
+                            <div class="form-select-wrapper">
+                                <select class="form-select mini" name="" @bind="@CaseModel.Gender" placeholder="Gender">
+                                    @foreach (GenderType i in Enum.GetValues(typeof(GenderType)))
+                                    {
+                                        <option value="@i">@Enums.GetDisplayName(i)</option>
+                                    }
+
+                                </select>
+                                <img src="./img/icons/chevron-down.svg" alt="">
+                            </div>
+                            <div class="form-select-wrapper">
+                                <select class="form-select mini" name="" @bind="@CaseModel.Ethnicity" placeholder="Ethnicity">
+                                    @foreach (EthnicityType i in Enum.GetValues(typeof(EthnicityType)))
+                                    {
+                                        <option value="@i">@Enums.GetDisplayName(i)</option>
+                                    }
+
+                                </select>
+                                <img src="./img/icons/chevron-down.svg" alt="">
+                            </div>
+                        </div>
+                        <div class="form-multi-select">
+                            <div class="form-select-wrapper">
+                                <select class="form-select mini" @bind="@CaseModel.MedicalCategory" @onclick="()=>SwitchCategory(CaseModel.MedicalCategory)">
+                                    <option value="0" selected>Select category</option>
+                                    @foreach (MedicalCategory i in Enum.GetValues(typeof(MedicalCategory)))
+                                    {
+                                        <option value="@i">@Enums.GetDisplayName(i)</option>
+                                    }
+                                </select>
+                                <img src="./img/icons/chevron-down.svg" alt="">
+                            </div>
+                            <div class="form-select-wrapper">
+                                <select class="form-select mini" name="" @bind="@CaseModel.MedicalSubCategoryId">
+                                    <option value="0" selected="" hidden="">Medical Specialty</option>
+                                    @foreach (var i in @CurrentSubCategoryList)
+                                    {
+                                        <option value="@i.ID">@i.Name</option>
+                                    }
+                                </select>
+                                <img src="./img/icons/chevron-down.svg" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Case Information</label>
+                        <textarea class="form-control case-textarea" placeholder="Lab Values" @bind="CaseModel.LabValues"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control case-textarea" placeholder="Current Stage of Disease" @bind="CaseModel.CurrentStageOfDisease"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control case-textarea" placeholder="Current Treatment Administered" @bind="CaseModel.CurrentTreatmentAdministered"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control case-textarea" placeholder="Treatment Outcomes" @bind="CaseModel.TreatmentOutcomes"></textarea>
+                    </div>
+                    <div class="ask-4-file">
+                        <div class="form-group file">
+                            <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg>
+                        </div>
+                    </div>
+                    <div class="form-group post-urgency">
+                        <div class="form-select-wrapper">
+                            <select class="form-select mini" name="">
+                                @foreach (CaseResponseLevelType i in Enum.GetValues(typeof(CaseResponseLevelType)))
+                                {
+                                    <option value="@i">@Enums.GetDisplayName(i)</option>
+                                }
+                            </select>
+                            <img src="./img/icons/chevron-down.svg" alt="">
+                        </div>
+                        <label for="urgency" class="post-checkbox-label">Urgency</label>
+                    </div>
+                    <div class="ask-4-file">
+                        @if (tagList != null)
+                        {
+                            <div>
+                                @foreach (var tag in tagList)
+                                {
+                                    <div class="tag-item">
+                                        @tag <button class="x" @onclick="(e => { deleteTag(tag); })">
+                                            x
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="ask-4-file">
+
+                        <div class="input-group">
+                            <InputText name="tagField" class="form-control" id="" placeholder="Add tag(s) to your post" @bind-Value="newTag" aria-label="Tags" aria-describedby="Add tags" @onkeydown="@enterPressHandle" />
+                            <div class="input-group-append">
+                                <button id="comment-button" type="submit" class="btn btn-primary" @onclick="@addNewTag">Add</button>
+                            </div>
+                        </div>
+
+                        <div class="tag-error">
+                            @TagFieldErrorMessage
+                        </div>
+
+                    </div>
+                    <div class="ask-4-file">
+                        <button class="btn btn-sm btn-orange btn-roboto" type="submit">Post</button>
+                    </div>
+                </EditForm>
+            </div>
+        </section>
+
+    </div>
+    <!-- Ask-4 Knowledge -->
+    <div class="content-right">
+        <section class="dashboard-content">
+        </section>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public int caseId { get; set; } = -1;
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private AuthenticationState authState { get; set; }
+    private ClaimsPrincipal user { get; set; }
+    @*private AppUser userInfo { get; set; } = new AppUser();*@
+
+    private bool hasError { get; set; } = false;
+    private int status { get; set; } = 0;
+
+    private bool isOwner { get; set; } = false;
+    private string returnUrl { get; set; } = "/viewcase/";
+    private Case InputModel { get; set; } = new Case();
+    private bool isCaseClose = false;
+
+    private FilterModel filters { get; set; } = new FilterModel();
+    public class FilterModel
+    {
+        public bool showClosed { get; set; } = false;
+        public string SubCategory { get; set; } = "-1";
+    }
+
+
+    private ParsedCase CaseModel { get; set; } = new ParsedCase() { };
+
+
+    private List<MedicalSubCategory> CurrentSubCategoryList { get; set; } = new List<MedicalSubCategory>();
+    private List<MedicalSubCategory> AllSubCategoryList { get; set; } = new List<MedicalSubCategory>();
+
+    private string debug { get; set; } = "";
+    private Case tCase = null;
+    private const int MAXTAGS = 25;
+    private bool isSubmitted = false;
+    private string newTag = "";
+    public List<string> tagList = new List<string>();
+    private bool isDeleteTag = false;
+    private string TagFieldErrorMessage = "";
+    private bool isTagOk = true;
+
+
+    private PriorityModel priorityRadio = new PriorityModel();
+    public class PriorityModel
+    {
+        [Range(0, 2)]
+        public CaseResponseLevelType Priority { get; set; }
+    }
+    [EnumDataType(typeof(CaseResponseLevelType))]
+    public CaseResponseLevelType Priority { get; set; } = CaseResponseLevelType.STAT;
+
+    private string fileName;
+    private string imgUrl;
+    @*private string originalImgUrl;*@
+
+    private int userId = -1;
+    private string posterSpeciality = "";
+    private string fullName = "";
+
+    private bool ContainsOnlyAlphaNumericCharacters(string inputString)
+    {
+        var regexItem = new Regex("^(?![0-9._])(?!.*[_]$)[a-zA-Z0-9_]+$");
+        return regexItem.IsMatch(inputString);
+    }
+
+    private async Task addNewTag()
+    {
+
+        if (tagList.Count == MAXTAGS)
+        {
+            await displayErrorMessage("Warning: Too many tags, the limit is 25 tags");
+        }
+
+        else if (!string.IsNullOrWhiteSpace(newTag))
+        {
+
+            if (!ContainsOnlyAlphaNumericCharacters(newTag))
+            {
+                await displayErrorMessage("Warning: A Tag should begin with a letter and can only contain letters, numbers, and underscores (_), no special characters");
+            }
+            else
+            {
+                foreach (var item in tagList)
+                {
+                    if (item == newTag)
+                    {
+                        string text = "Warning: Tag [" + newTag + "] already exist. Please add a different tag.";
+                        isTagOk = false;
+                        await displayErrorMessage(text);
+                        break;
+                    }
+                    else
+                    {
+                        isTagOk = true;
+                    }
+                }
+                if (tagList.Count == 0)
+                {
+                    isTagOk = true;
+                }
+                if (isTagOk)
+                {
+                    tagList.Add(newTag);
+
+                    newTag = "";
+                    isDeleteTag = true;
+                    TagFieldErrorMessage = "";
+                    this.StateHasChanged();
+                }
+            }
+        }
+        else
+        {
+            await displayErrorMessage("Warning: you cannot add empty tag");
+        }
+
+    }
+
+    private async Task Cancel()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private async Task deleteTag(string Tag)
+    {
+        if (tagList.Contains(Tag) && isDeleteTag)
+        {
+            tagList.Remove(Tag);
+            //await hService.DeleteTag(Tag);
+
+        }
+        else if (!isDeleteTag)
+        {
+            addNewTag();
+        }
+        isDeleteTag = true;
+
+    }
+
+    private async Task displayErrorMessage(string message)
+    {
+        TagFieldErrorMessage = message;
+        this.StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        // if (user.Identity.IsAuthenticated)
+        // {
+        //     @*userInfo = await UserManager.GetUserAsync(user);*@
+
+        //     try
+        //     {
+
+        //         userId = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
+        //     }
+        //     catch (FormatException e)
+        //     {
+        //         Console.WriteLine(e.Message);
+        //     }
+
+
+
+
+        // returnUrl = returnUrl + caseId;
+        var caseItem = await hService.GetCaseNoTracking(caseId);
+        if (caseItem == null)
+        {
+            // didn't find it, should flag for error
+            return;
+        }
+
+        CaseModel = caseItem.ToParsedCase();
+        CaseModel.MedicalCategory = CaseModel.MedicalCategory1;
+        if (caseItem.Tags != null)
+        {
+            tagList = caseItem.Tags.Select(x => x.Tag).ToList();
+        }
+
+        // tagList = await hService.GetTagsNoTracking(caseId);
+        isDeleteTag = true;
+        //pCase.Comments = await hService.GetCommentsNoTracking(caseId);
+
+        // fileName = "c" + pCase.ID;
+        // imgUrl = tCase.imgUrl;
+        @*originalImgUrl = imgUrl;*@
+        //   }
+
+
+    }
+    private async Task enterPressHandle(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            isDeleteTag = false;
+        }
+    }
+
+    private async Task Submitted()
+    {
+        isSubmitted = true;
+    }
+
+    @*private async Task UpdateImgUrl(ChangeEventArgs e)
+		{
+		Console.WriteLine("UpdateImgUrl executed");
+
+		var usr = await UserManager.GetUserAsync(user);
+
+		tCase.PosterName = pCase.PosterName;
+		tCase.PosterSpecialty = pCase.PosterSpecialty;
+		tCase.Race = pCase.Race;
+		tCase.Gender = pCase.Gender;
+		tCase.Ethnicity = pCase.Ethnicity;
+		tCase.MedicalCategory = pCase.MedicalCategory;
+		tCase.ResponseNeeded = pCase.ResponseNeeded;
+		tCase.imgUrl = imgUrl;
+
+		// copy back to tCase
+
+		tCase.Description = pCase.Description;
+		tCase.Topic = pCase.Topic;
+
+		tCase.PatientAge = pCase.PatientAge;
+		tCase.CurrentStageOfDisease = pCase.CurrentStageOfDisease;
+		tCase.CurrentTreatmentAdministered = pCase.CurrentTreatmentAdministered;
+		tCase.TreatmentOutcomes = pCase.TreatmentOutcomes;
+		tCase.LabValues = pCase.LabValues;
+		tCase.Status = pCase.Status;
+
+		await hService.EditCase(tCase);
+
+		}*@
+
+    private async Task UpdateCase()
+    {
+        // if (isSubmitted)
+        // {
+        //     PostHistory newHistory = new PostHistory();
+        //     @*var usr = await UserManager.GetUserAsync(user);*@
+
+        //     tCase.PosterName = fullName;
+        //     tCase.PosterSpecialty = posterSpeciality;//ParseMedicalSpecialty((MedicalSpecialtyType)usr.MedicalSpecialty);
+        //     tCase.Race = bRace;
+        //     //tCase.Gender = Int32.Parse(bGender);
+        //     tCase.Ethnicity = bEthnicity;
+        //    // tCase.MedicalCategory = Int32.Parse(bSubCategory);
+        //     @*tCase.ResponseNeeded = priorityRadio.Priority;*@
+        //     tCase.ResponseNeeded = Priority;
+        //     tCase.imgUrl = imgUrl;
+
+        //     // copy back to tCase
+
+        //     tCase.Description = pCase.Description;
+        //     tCase.Topic = pCase.Topic;
+
+        //     tCase.PatientAge = pCase.PatientAge;
+        //     tCase.CurrentStageOfDisease = pCase.CurrentStageOfDisease;
+        //     tCase.CurrentTreatmentAdministered = pCase.CurrentTreatmentAdministered;
+        //     tCase.TreatmentOutcomes = pCase.TreatmentOutcomes;
+        //     tCase.LabValues = pCase.LabValues;
+        //     tCase.Status = pCase.Status;
+
+        //     await hService.EditCase(tCase);
+        //     if (isCaseClose)
+        //     {
+        //         await addToHistory("closed a case");
+        //     }
+        //     else
+        //     {
+        //         await addToHistory("edited a case");
+        //     }
+
+
+        //     NavigationManager.NavigateTo(returnUrl);
+        // }
+
+    }
+
+    private async Task CloseCase()
+    {
+
+        //debug = "Case Closed";
+        // isCaseClose = !isCaseClose;
+        // await hService.CloseCase(pCase.ID);
+        // pCase.Status = !pCase.Status;
+
+        this.StateHasChanged();
+
+
+    }
+
+
+    // private async Task addToHistory(string historyType)
+    // {
+    // //history stuffs
+    //     @*var usr = await UserManager.GetUserAsync(user);*@
+    //     PostHistory newHistory = new PostHistory();
+    //     newHistory.ID = 0;
+    //     newHistory.PostID = caseId;
+    //     newHistory.CreationDate = DateTime.Now;
+    //     newHistory.PosterID = userId;
+    //     newHistory.UserDisplayName = fullName;
+    //     newHistory.Title = pCase.Topic;
+    //     newHistory.Detail = pCase.Description;
+    //     newHistory.HistoryTypes = historyType;
+    //     await hService.AddHistory(newHistory);
+    // }
+
+    // private async Task PopulateModel(Case tCase)
+    // {
+    //     pCase = tCase.ToParsedCase();
+    //     priorityRadio = new PriorityModel();
+    //     priorityRadio.Priority = tCase.ResponseNeeded;
+    //     // bCategory = ParseCategoryValueFromSub(tCase.MedicalCategory);
+    //     bSubCategory = tCase.MedicalCategory.ToString();
+    //     //  await SwitchSubCategory(bCategory);
+    //     bGender = tCase.Gender.ToString();
+    //     bEthnicity = tCase.Ethnicity;
+    //     bRace = tCase.Race;
+
+    // }
+
+    private async void SwitchCategory(MedicalCategory category)
+    {
+        this.CurrentSubCategoryList = this.AllSubCategoryList.Where(x => x.MedicalCategory == category).ToList();
+        this.CaseModel.MedicalSubCategoryId = 0;
+    }
+
+}
+
