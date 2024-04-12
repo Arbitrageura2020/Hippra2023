@@ -1031,71 +1031,14 @@ namespace Hippra.Services
         }
 
 
-        //public async Task<bool> CreateCase(Case EditedCase)
-        //{
-        //    var userInfo = await _userManager.GetUserAsync(WebContext.User);
-
-        //    using var _context = DbFactory.CreateDbContext();
-
-        //    var Case = await _context.Cases.FirstOrDefaultAsync(m => m.ID == EditedCase.ID);
-
-        //    if (Case == null)
-        //    {
-        //        return false;
-        //    }
-
-        //    Case.UserId = userInfo!.Id;
-        //    Case.PosterName = userInfo.FirstName;
-        //    Case.PosterSpecialty = Enums.GetDisplayName(userInfo.MedicalSpecialty);
-        //    Case.Status = true;
-        //    Case.DateLastUpdated = DateTime.Now;
-        //    Case.DateCreated = EditedCase.DateCreated;
-        //    Case.PosterName = EditedCase.PosterName;
-        //    Case.PosterSpecialty = EditedCase.PosterSpecialty;
-
-        //    Case.Topic = EditedCase.Topic;
-        //    Case.Description = EditedCase.Description;
-        //    Case.ResponseNeeded = EditedCase.ResponseNeeded;
-        //    Case.MedicalCategory = EditedCase.MedicalCategory;
-        //    Case.PatientAge = EditedCase.PatientAge;
-
-        //    Case.Gender = EditedCase.Gender;
-        //    Case.Race = EditedCase.Race;
-        //    Case.Ethnicity = EditedCase.Ethnicity;
-        //    Case.LabValues = EditedCase.LabValues;
-        //    Case.CurrentStageOfDisease = EditedCase.CurrentStageOfDisease;
-        //    Case.imgUrl = EditedCase.imgUrl;
-
-        //    Case.CurrentTreatmentAdministered = EditedCase.CurrentTreatmentAdministered;
-        //    Case.TreatmentOutcomes = EditedCase.TreatmentOutcomes;
-
-        //    try
-        //    {
-        //        _context.Update(Case);
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!CaseExists(EditedCase.ID))
-        //        {
-        //            return false;
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return true;
-        //}
-
 
         [Authorize]
         public async Task<bool> EditCase(CaseViewModel inputCase)
         {
+            var userInfo = await _userManager.GetUserAsync(WebContext.User);
             using var _context = DbFactory.CreateDbContext();
 
-            var caseObject = await _context.Cases.FirstOrDefaultAsync(m => m.ID == inputCase.ID);
+            var caseObject = await _context.Cases.Include(x => x.Tags).FirstOrDefaultAsync(m => m.ID == inputCase.ID);
 
             if (caseObject == null)
             {
@@ -1107,13 +1050,16 @@ namespace Hippra.Services
                 caseObject.Status = false;
             }
 
+            // caseObject.UserId = userInfo!.Id;
+            //caseObject.PosterName = userInfo.FirstName;
+            //caseObject.PosterSpecialty = Enums.GetDisplayName(userInfo.MedicalSpecialty);
             caseObject.DateLastUpdated = DateTime.Now;
 
             caseObject.Topic = inputCase.Topic;
             caseObject.Description = inputCase.Description;
             caseObject.ResponseNeeded = inputCase.ResponseNeeded;
             caseObject.MedicalCategory = inputCase.MedicalCategory;
-            caseObject.MedicalSubCategoryId=inputCase.MedicalSubCategoryId;
+            caseObject.MedicalSubCategoryId = inputCase.MedicalSubCategoryId;
             caseObject.PatientAge = inputCase.PatientAge;
 
             caseObject.Gender = inputCase.Gender;
@@ -1125,18 +1071,25 @@ namespace Hippra.Services
             caseObject.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
             caseObject.TreatmentOutcomes = inputCase.TreatmentOutcomes;
             caseObject.imgUrl = inputCase.imgUrl;
-            if (inputCase.Tags != null)
+            if (inputCase.Tags != null && inputCase.Tags.Count>0)
             {
-                caseObject.Tags = new List<CaseTags>();
+
                 foreach (var tag in inputCase.Tags)
                 {
-                    caseObject.Tags.Add(new CaseTags()
+                    if (!caseObject.Tags.Any(x => x.Tag == tag))
                     {
-                        Tag = tag,
-                        CaseID = caseObject.ID,
-                        ID = DateTime.Now
-                    });
+                        caseObject.Tags.Add(new CaseTags()
+                        {
+                            Tag = tag,
+                            CaseID = caseObject.ID,
+                            ID = DateTime.Now
+                        });
+                    }
                 }
+            }
+            else
+            {
+                caseObject.Tags = new List<CaseTags>();
             }
             try
             {

@@ -340,6 +340,7 @@
     private async Task CreateCase()
     {
         CaseModel.Tags = tagList;
+        CaseModel.imgUrl = imgUrl;
         var result = await hService.AddNewCase(CaseModel);
         if (result)
             NavigationManager.NavigateTo("/");

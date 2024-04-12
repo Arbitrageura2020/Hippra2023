@@ -27,7 +27,7 @@
 
 </div>
 <section class="dashboard-content">
-    <div class="main-articles inside-scroll" style="max-height: 449.6px; padding-bottom: 20px;">
+    <div class="main-articles inside-scroll" style="max-height: 1000px; padding-bottom: 20px;">
         <!-- Clinical Knowledge Loop Here -->
         @if (IsLoading)
         {
@@ -158,12 +158,13 @@
         // }
 
 
-        SearchResults = cases.Select(i => new ParsedCase()
+        SearchResults = cases.OrderByDescending(x => x.DateLastUpdated).Select(i => new ParsedCase()
             {
                 ID = i.ID,
                 Topic = i.Topic,
                 Description = i.Description,
                 DateCreated = i.DateCreated,
+                DateLastUpdated = i.DateLastUpdated,
                 Priority = Enums.GetDisplayName(i.ResponseNeeded),
                 ParsedCategory = Enums.GetDisplayName(i.MedicalCategory),
                 ParsedSubCategory = i.MedicalSubCategory!.Name,

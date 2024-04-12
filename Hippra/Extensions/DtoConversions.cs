@@ -1,4 +1,5 @@
-﻿using Hippra.Models.DTO;
+﻿using Hippra.Components;
+using Hippra.Models.DTO;
 using Hippra.Models.Enums;
 using Hippra.Models.SQL;
 using Hippra.Models.ViewModel;
@@ -39,7 +40,7 @@ namespace Hippra.Extensions
             {
                 pCase.Comments = tCase.Comments;
             }
-
+            pCase.imgUrl = tCase.imgUrl;
             pCase.PatientAge = tCase.PatientAge;
             pCase.CurrentStageOfDisease = tCase.CurrentStageOfDisease;
             pCase.CurrentTreatmentAdministered = tCase.CurrentTreatmentAdministered;
@@ -77,6 +78,7 @@ namespace Hippra.Extensions
             viewModel.MedicalCategory = @case.MedicalCategory;
             viewModel.PosterSpecialty = @case.PosterSpecialty;
             viewModel.MedicalSubCategory = @case.MedicalSubCategory;
+            viewModel.MedicalSubCategoryId = @case.MedicalSubCategoryId;
             if (@case.Tags != null)
             {
                 viewModel.Tags = @case.Tags.Select(x => x.Tag).ToList();
@@ -85,7 +87,7 @@ namespace Hippra.Extensions
             {
                 viewModel.Comments = @case.Comments;
             }
-
+            viewModel.imgUrl = @case.imgUrl;
             viewModel.PatientAge = @case.PatientAge;
             viewModel.CurrentStageOfDisease = @case.CurrentStageOfDisease;
             viewModel.CurrentTreatmentAdministered = @case.CurrentTreatmentAdministered;

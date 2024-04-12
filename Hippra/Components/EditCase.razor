@@ -89,7 +89,7 @@
                         </div>
                         <div class="form-multi-select">
                             <div class="form-select-wrapper">
-                                <select class="form-select mini" @bind="@CaseModel.MedicalCategory" @onclick="()=>SwitchCategory(CaseModel.MedicalCategory)">
+                                <select class="form-select mini" @bind="@CaseModel.MedicalCategory">
                                     <option value="0" selected>Select category</option>
                                     @foreach (MedicalCategory i in Enum.GetValues(typeof(MedicalCategory)))
                                     {
@@ -101,7 +101,7 @@
                             <div class="form-select-wrapper">
                                 <select class="form-select mini" name="" @bind="@CaseModel.MedicalSubCategoryId">
                                     <option value="0" selected="" hidden="">Medical Specialty</option>
-                                    @foreach (var i in @CurrentSubCategoryList)
+                                    @foreach (var i in AllSubCategoryList.Where(x => x.MedicalCategory == CaseModel.MedicalCategory))
                                     {
                                         <option value="@i.ID">@i.Name</option>
                                     }
@@ -125,7 +125,8 @@
                     </div>
                     <div class="ask-4-file">
                         <div class="form-group file">
-                            <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg>
+                            @* <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg> *@
+                            <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
                         </div>
                     </div>
                     <div class="form-group post-urgency">
@@ -147,7 +148,7 @@
                                 @foreach (var tag in tagList)
                                 {
                                     <div class="tag-item">
-                                        @tag <button class="x" @onclick="(e => { deleteTag(tag); })">
+                                        @tag <button class="x" type="button" @onclick="(e => { deleteTag(tag); })">
                                             x
                                         </button>
                                     </div>
@@ -160,7 +161,7 @@
                         <div class="input-group">
                             <InputText name="tagField" class="form-control" id="" placeholder="Add tag(s) to your post" @bind-Value="newTag" aria-label="Tags" aria-describedby="Add tags" @onkeydown="@enterPressHandle" />
                             <div class="input-group-append">
-                                <button id="comment-button" type="submit" class="btn btn-primary" @onclick="@addNewTag">Add</button>
+                                <button id="comment-button" type="button" class="btn btn-primary" @onclick="@addNewTag">Add</button>
                             </div>
                         </div>
 
@@ -173,51 +174,50 @@
                         <button class="btn btn-sm btn-orange btn-roboto" type="submit">Save</button>
                     </div>
                 </EditForm>
+
+                <div class="ask-4-file">
+                    @*   @if (userId == pCase.PosterID)
+                    { *@
+                    <div class="mx-4 d-flex justify-content-between">
+
+                        @if (CaseModel.Status)
+                        {
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Close Case</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Reopen Case</button>
+                        }
+
+
+                    </div>
+                    @*    } *@
+                </div>
             </div>
         </section>
 
     </div>
-    <!-- Ask-4 Knowledge -->
-    <div class="content-right">
-        <section class="dashboard-content">
-        </section>
-    </div>
+
 </div>
 
 
 @code {
     [Parameter]
     public int caseId { get; set; } = -1;
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
-    private AuthenticationState authState { get; set; }
-    private ClaimsPrincipal user { get; set; }
-    @*private AppUser userInfo { get; set; } = new AppUser();*@
 
     private bool hasError { get; set; } = false;
     private int status { get; set; } = 0;
 
-    private bool isOwner { get; set; } = false;
     private string returnUrl { get; set; } = "/viewcase/";
-    private Case InputModel { get; set; } = new Case();
+
     private bool isCaseClose = false;
 
-    private FilterModel filters { get; set; } = new FilterModel();
-    public class FilterModel
-    {
-        public bool showClosed { get; set; } = false;
-        public string SubCategory { get; set; } = "-1";
-    }
-
-
     private CaseViewModel CaseModel { get; set; } = new CaseViewModel() { };
-
 
     private List<MedicalSubCategory> CurrentSubCategoryList { get; set; } = new List<MedicalSubCategory>();
     private List<MedicalSubCategory> AllSubCategoryList { get; set; } = new List<MedicalSubCategory>();
 
     private string debug { get; set; } = "";
-    private Case tCase = null;
     private const int MAXTAGS = 25;
     private bool isSubmitted = false;
     private string newTag = "";
@@ -315,7 +315,7 @@
     {
         this.AllSubCategoryList = await commonService.GetAllSubcategories();
 
-        // returnUrl = returnUrl + caseId;
+        returnUrl = returnUrl + caseId;
         var caseItem = await hService.GetCaseNoTracking(caseId);
         if (caseItem == null)
         {
@@ -324,11 +324,12 @@
         }
 
         CaseModel = caseItem.ToViewModelCase();
+        tagList = CaseModel.Tags;
         isDeleteTag = true;
         //pCase.Comments = await hService.GetCommentsNoTracking(caseId);
 
-        // fileName = "c" + pCase.ID;
-        // imgUrl = tCase.imgUrl;
+        fileName = "c" + CaseModel.ID;
+        imgUrl = CaseModel.imgUrl;
         @*originalImgUrl = imgUrl;*@
         //   }
 
@@ -374,25 +375,21 @@
 
     private async Task UpdateCase()
     {
-        if (isSubmitted)
+        PostHistory newHistory = new PostHistory();
+
+        CaseModel.imgUrl = imgUrl;
+
+        var result = await hService.EditCase(CaseModel);
+        if (isCaseClose)
         {
-            PostHistory newHistory = new PostHistory();
-
-            CaseModel.imgUrl = imgUrl;
-
-            await hService.EditCase(CaseModel);
-            if (isCaseClose)
-            {
-               await commonService.AddToHistory("closed a case", this.CaseModel);
-            }
-            else
-            {
-                await commonService.AddToHistory("edited a case", this.CaseModel);
-            }
-
-            NavigationManager.NavigateTo(returnUrl);
+            await commonService.AddToHistory("closed a case", this.CaseModel);
+        }
+        else
+        {
+            await commonService.AddToHistory("edited a case", this.CaseModel);
         }
 
+        NavigationManager.NavigateTo(returnUrl);
     }
 
     private async Task CloseCase()

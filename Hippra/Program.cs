@@ -63,6 +63,14 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LogoutPath = $"/Identity/Account/Logout";
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
+
+
+// can't believe this worked! basically override the built configuration with value from azure, then everything is the same
+//Configuration.GetSection("AppSettings").GetSection("StorageConnectionString").Value = Configuration["StorageConnectionString"];
+//Configuration.GetSection("AppSettings").GetSection("StorageRootContainer").Value = Configuration["StorageRootContainer"];
+
+builder.Services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
 var emailAccount = Configuration["FTEmailAccount"];
 var emailCred = Configuration["FTEmailCred"];
 builder.Services.AddTransient<FTEmailService.IEmailSender, EmailService>(
