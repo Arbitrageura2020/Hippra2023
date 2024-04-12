@@ -19,7 +19,6 @@ namespace Hippra.Data
 
         public DbSet<CaseComment> CaseComments { get; set; }
 
-        public DbSet<Tag> Tags { get; set; }
 
         public DbSet<CaseTags> CaseTags { get; set; }
 
@@ -29,8 +28,7 @@ namespace Hippra.Data
 
         public DbSet<Connection> Connections { get; set; }
 
-        public DbSet<BioMoreInfo> BioMoreInfos { get; set; }
-
+ 
         public DbSet<Notification> Notifications { get; set; }
 
         public DbSet<Follow> Follows { get; set; }

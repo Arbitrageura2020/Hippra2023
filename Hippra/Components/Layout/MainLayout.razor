@@ -1,5 +1,10 @@
-﻿@inherits LayoutComponentBase
+﻿@using Hippra.Models.SQL
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+@inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
+@inject UserManager<AppUser> UserManager
+@inject IHttpContextAccessor httpContextAccessor
 <HeadContent>
     <!-- Globle CSS  -->
     <link rel="stylesheet" href="./css/main.css">
@@ -8,7 +13,7 @@
     <link rel="stylesheet" href="./css/dashboard.css">
 
     <!-- Dashboard  -->
- @*    <link rel="stylesheet" href="./css/case.css"> *@
+    @*    <link rel="stylesheet" href="./css/case.css"> *@
 </HeadContent>
 <Sidebar ToggleModeChanged="@ToggleSidebar" />
 <!-- Main Content Start -->
@@ -66,7 +71,7 @@
                                     <div class="nav-dropdown-links">
                                         <ul>
                                             <li>
-                                                <a href="profile.html">
+                                                <a href="PersonalPage/@publicId">
                                                     <img src="./img/icons/profile-settings.svg" alt=""> <span>
                                                         Profile
                                                         Settings
@@ -121,11 +126,18 @@
     public bool HasSidebar = false;
 
     public bool ShowProfileDropdown = false;
-
+    private string userId = "";
+    private int publicId = 0;
     protected override async Task OnInitializedAsync()
     {
-
-
+        var user = httpContextAccessor.HttpContext.User;
+        if (user.Identity.IsAuthenticated)
+        {
+            // var userInfo = await UserManager.GetUserAsync(httpContextAccessor.HttpContext.User);
+            // userId = userInfo!.Id.ToString();
+            publicId = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
+            //publicId = userInfo.PublicId;
+        }
     }
 
     public void ToggleProfileDropdown()
