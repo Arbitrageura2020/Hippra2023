@@ -8,6 +8,9 @@ namespace Hippra.Models.ViewModel
 {
     public class CaseViewModel
     {
+        public CaseViewModel() { 
+        this.Tags = new List<string>();
+        }
         public int ID { get; set; }
 
         public int PosterID { get; set; }

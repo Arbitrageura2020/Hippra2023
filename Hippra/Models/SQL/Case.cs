@@ -29,11 +29,11 @@ namespace Hippra.Models.SQL
 		public string Description { get; set; }
 		public CaseResponseLevelType ResponseNeeded { get; set; } // 0: high, 1: mid, 2: low 
 
-		public MedicalCategory MedicalCategory { get; set; } // => should create enum for this
+		public MedicalCategory MedicalCategoryOld { get; set; } // => should create enum for this
 		public int MedicalSubCategoryId { get; set; } = 1;
         public MedicalSubCategory MedicalSubCategory { get;set; }
 
-		public MedicalCategory MedicalCategory1 { get; set; }
+		public MedicalCategory MedicalCategory { get; set; }
 
         public int PatientAge { get; set; }
 		public GenderType Gender { get; set; } // 0 Male, 1, Female, 2 Neutral 

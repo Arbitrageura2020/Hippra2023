@@ -25,6 +25,8 @@ using Hippra.Code;
 using Hippra.API;
 using System.IO;
 using Microsoft.AspNetCore.Http;
+using Hippra.Models.ViewModel;
+using System.Text.RegularExpressions;
 
 namespace Hippra.Services
 {
@@ -108,6 +110,28 @@ namespace Hippra.Services
                 newNotifs.CreationDate = DateTime.Now;
                 await hService.AddNotification(newNotifs);
             }
+        }
+
+
+        public async Task AddToHistory(string historyType, CaseViewModel caseItem)
+        {
+            //history stuffs
+            PostHistory newHistory = new PostHistory();
+            newHistory.ID = 0;
+            newHistory.PostID = caseItem.ID;
+            newHistory.CreationDate = DateTime.Now;
+            newHistory.PosterID = caseItem.PosterID;
+            //  newHistory.UserDisplayName = fullName;
+            newHistory.Title = caseItem.Topic;
+            newHistory.Detail = caseItem.Description;
+            newHistory.HistoryTypes = historyType;
+            await hService.AddHistory(newHistory).ConfigureAwait(false);
+        }
+
+        public bool ContainsOnlyAlphaNumericCharacters(string inputString)
+        {
+            var regexItem = new Regex("^(?![0-9._])(?!.*[_]$)[a-zA-Z0-9_]+$");
+            return regexItem.IsMatch(inputString);
         }
     }
 }

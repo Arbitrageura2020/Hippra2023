@@ -30,7 +30,7 @@
 @inject ProfileService pService
 @inject HippraService hService
 @inject IAuthorizationService AuthorizationService
-
+@inject CommonService commonService;
 <div id="post-ask-4-content" class="post-tab-content active">
     <div class="content-left">
         <!-- Ask-4 Form -->
@@ -170,7 +170,7 @@
 
                     </div>
                     <div class="ask-4-file">
-                        <button class="btn btn-sm btn-orange btn-roboto" type="submit">Post</button>
+                        <button class="btn btn-sm btn-orange btn-roboto" type="submit">Save</button>
                     </div>
                 </EditForm>
             </div>
@@ -210,7 +210,7 @@
     }
 
 
-    private ParsedCase CaseModel { get; set; } = new ParsedCase() { };
+    private CaseViewModel CaseModel { get; set; } = new CaseViewModel() { };
 
 
     private List<MedicalSubCategory> CurrentSubCategoryList { get; set; } = new List<MedicalSubCategory>();
@@ -226,33 +226,11 @@
     private string TagFieldErrorMessage = "";
     private bool isTagOk = true;
 
-
-    private PriorityModel priorityRadio = new PriorityModel();
-    public class PriorityModel
-    {
-        [Range(0, 2)]
-        public CaseResponseLevelType Priority { get; set; }
-    }
-    [EnumDataType(typeof(CaseResponseLevelType))]
-    public CaseResponseLevelType Priority { get; set; } = CaseResponseLevelType.STAT;
-
     private string fileName;
     private string imgUrl;
-    @*private string originalImgUrl;*@
-
-    private int userId = -1;
-    private string posterSpeciality = "";
-    private string fullName = "";
-
-    private bool ContainsOnlyAlphaNumericCharacters(string inputString)
-    {
-        var regexItem = new Regex("^(?![0-9._])(?!.*[_]$)[a-zA-Z0-9_]+$");
-        return regexItem.IsMatch(inputString);
-    }
 
     private async Task addNewTag()
     {
-
         if (tagList.Count == MAXTAGS)
         {
             await displayErrorMessage("Warning: Too many tags, the limit is 25 tags");
@@ -261,7 +239,7 @@
         else if (!string.IsNullOrWhiteSpace(newTag))
         {
 
-            if (!ContainsOnlyAlphaNumericCharacters(newTag))
+            if (!commonService.ContainsOnlyAlphaNumericCharacters(newTag))
             {
                 await displayErrorMessage("Warning: A Tag should begin with a letter and can only contain letters, numbers, and underscores (_), no special characters");
             }
@@ -303,11 +281,6 @@
 
     }
 
-    private async Task Cancel()
-    {
-        NavigationManager.NavigateTo("/");
-    }
-
     private async Task deleteTag(string Tag)
     {
         if (tagList.Contains(Tag) && isDeleteTag)
@@ -324,6 +297,14 @@
 
     }
 
+    private async Task enterPressHandle(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            isDeleteTag = false;
+        }
+    }
+
     private async Task displayErrorMessage(string message)
     {
         TagFieldErrorMessage = message;
@@ -332,24 +313,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-
-
-        // if (user.Identity.IsAuthenticated)
-        // {
-        //     @*userInfo = await UserManager.GetUserAsync(user);*@
-
-        //     try
-        //     {
-
-        //         userId = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
-        //     }
-        //     catch (FormatException e)
-        //     {
-        //         Console.WriteLine(e.Message);
-        //     }
-
-
-
+        this.AllSubCategoryList = await commonService.GetAllSubcategories();
 
         // returnUrl = returnUrl + caseId;
         var caseItem = await hService.GetCaseNoTracking(caseId);
@@ -359,14 +323,7 @@
             return;
         }
 
-        CaseModel = caseItem.ToParsedCase();
-        CaseModel.MedicalCategory = CaseModel.MedicalCategory1;
-        if (caseItem.Tags != null)
-        {
-            tagList = caseItem.Tags.Select(x => x.Tag).ToList();
-        }
-
-        // tagList = await hService.GetTagsNoTracking(caseId);
+        CaseModel = caseItem.ToViewModelCase();
         isDeleteTag = true;
         //pCase.Comments = await hService.GetCommentsNoTracking(caseId);
 
@@ -377,13 +334,7 @@
 
 
     }
-    private async Task enterPressHandle(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            isDeleteTag = false;
-        }
-    }
+
 
     private async Task Submitted()
     {
@@ -423,46 +374,24 @@
 
     private async Task UpdateCase()
     {
-        // if (isSubmitted)
-        // {
-        //     PostHistory newHistory = new PostHistory();
-        //     @*var usr = await UserManager.GetUserAsync(user);*@
+        if (isSubmitted)
+        {
+            PostHistory newHistory = new PostHistory();
 
-        //     tCase.PosterName = fullName;
-        //     tCase.PosterSpecialty = posterSpeciality;//ParseMedicalSpecialty((MedicalSpecialtyType)usr.MedicalSpecialty);
-        //     tCase.Race = bRace;
-        //     //tCase.Gender = Int32.Parse(bGender);
-        //     tCase.Ethnicity = bEthnicity;
-        //    // tCase.MedicalCategory = Int32.Parse(bSubCategory);
-        //     @*tCase.ResponseNeeded = priorityRadio.Priority;*@
-        //     tCase.ResponseNeeded = Priority;
-        //     tCase.imgUrl = imgUrl;
+            CaseModel.imgUrl = imgUrl;
 
-        //     // copy back to tCase
+            await hService.EditCase(CaseModel);
+            if (isCaseClose)
+            {
+               await commonService.AddToHistory("closed a case", this.CaseModel);
+            }
+            else
+            {
+                await commonService.AddToHistory("edited a case", this.CaseModel);
+            }
 
-        //     tCase.Description = pCase.Description;
-        //     tCase.Topic = pCase.Topic;
-
-        //     tCase.PatientAge = pCase.PatientAge;
-        //     tCase.CurrentStageOfDisease = pCase.CurrentStageOfDisease;
-        //     tCase.CurrentTreatmentAdministered = pCase.CurrentTreatmentAdministered;
-        //     tCase.TreatmentOutcomes = pCase.TreatmentOutcomes;
-        //     tCase.LabValues = pCase.LabValues;
-        //     tCase.Status = pCase.Status;
-
-        //     await hService.EditCase(tCase);
-        //     if (isCaseClose)
-        //     {
-        //         await addToHistory("closed a case");
-        //     }
-        //     else
-        //     {
-        //         await addToHistory("edited a case");
-        //     }
-
-
-        //     NavigationManager.NavigateTo(returnUrl);
-        // }
+            NavigationManager.NavigateTo(returnUrl);
+        }
 
     }
 
@@ -475,40 +404,7 @@
         // pCase.Status = !pCase.Status;
 
         this.StateHasChanged();
-
-
     }
-
-
-    // private async Task addToHistory(string historyType)
-    // {
-    // //history stuffs
-    //     @*var usr = await UserManager.GetUserAsync(user);*@
-    //     PostHistory newHistory = new PostHistory();
-    //     newHistory.ID = 0;
-    //     newHistory.PostID = caseId;
-    //     newHistory.CreationDate = DateTime.Now;
-    //     newHistory.PosterID = userId;
-    //     newHistory.UserDisplayName = fullName;
-    //     newHistory.Title = pCase.Topic;
-    //     newHistory.Detail = pCase.Description;
-    //     newHistory.HistoryTypes = historyType;
-    //     await hService.AddHistory(newHistory);
-    // }
-
-    // private async Task PopulateModel(Case tCase)
-    // {
-    //     pCase = tCase.ToParsedCase();
-    //     priorityRadio = new PriorityModel();
-    //     priorityRadio.Priority = tCase.ResponseNeeded;
-    //     // bCategory = ParseCategoryValueFromSub(tCase.MedicalCategory);
-    //     bSubCategory = tCase.MedicalCategory.ToString();
-    //     //  await SwitchSubCategory(bCategory);
-    //     bGender = tCase.Gender.ToString();
-    //     bEthnicity = tCase.Ethnicity;
-    //     bRace = tCase.Race;
-
-    // }
 
     private async void SwitchCategory(MedicalCategory category)
     {

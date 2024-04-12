@@ -250,7 +250,7 @@
                 Description = i.Description,
                 DateCreated = i.DateCreated,
                 Priority = Enums.GetDisplayName(i.ResponseNeeded),
-                ParsedCategory = Enums.GetDisplayName(i.MedicalCategory),
+             //   ParsedCategory = Enums.GetDisplayName(i.MedicalCategory),
                 ParsedSubCategory = i.MedicalSubCategory!.Name
             }).ToList();
 
@@ -451,7 +451,7 @@
         priorityRadio = new PriorityModel();
         priorityRadio.Priority = tCase.ResponseNeeded;
       //  bCategory = ParseCategoryValueFromSub(tCase.MedicalCategory);
-        bSubCategory = tCase.MedicalCategory.ToString();
+      //  bSubCategory = tCase.MedicalCategory.ToString();
       //  await SwitchSubCategory(bCategory);
         bGender = tCase.Gender.ToString();
         bEthnicity = tCase.Ethnicity.ToString();

@@ -56,6 +56,45 @@ namespace Hippra.Extensions
 
             return pCase;
         }
+
+
+        public static CaseViewModel ToViewModelCase(this Case @case)
+        {
+            var viewModel = new CaseViewModel();
+            viewModel.ID = @case.ID;
+
+            // TODO: fill the rest
+            viewModel.DateCreated = @case.DateCreated;
+            viewModel.DateLastUpdated = @case.DateLastUpdated;
+            viewModel.Description = @case.Description;
+            viewModel.Topic = @case.Topic;
+            viewModel.PosterID = @case.PosterID;
+            viewModel.PosterName = @case.PosterName;
+            viewModel.Race = @case.Race;
+            viewModel.Gender = @case.Gender;
+            viewModel.Ethnicity = @case.Ethnicity;
+            viewModel.ResponseNeeded = @case.ResponseNeeded;
+            viewModel.MedicalCategory = @case.MedicalCategory;
+            viewModel.PosterSpecialty = @case.PosterSpecialty;
+            viewModel.MedicalSubCategory = @case.MedicalSubCategory;
+            if (@case.Tags != null)
+            {
+                viewModel.Tags = @case.Tags.Select(x => x.Tag).ToList();
+            }
+            if (@case.Comments != null)
+            {
+                viewModel.Comments = @case.Comments;
+            }
+
+            viewModel.PatientAge = @case.PatientAge;
+            viewModel.CurrentStageOfDisease = @case.CurrentStageOfDisease;
+            viewModel.CurrentTreatmentAdministered = @case.CurrentTreatmentAdministered;
+            viewModel.TreatmentOutcomes = @case.TreatmentOutcomes;
+            viewModel.LabValues = @case.LabValues;
+            viewModel.Status = @case.Status;
+            return viewModel;
+        }
+
         public static string ParsePriority(CaseResponseLevelType priority)
         {
             string rValue = "";

@@ -255,10 +255,27 @@
         }
     }
 
-    private bool ContainsOnlyAlphaNumericCharacters(string inputString)
+
+    private async Task deleteTag(string Tag)
     {
-        var regexItem = new Regex("^(?![0-9._])(?!.*[_]$)[a-zA-Z0-9_]+$");
-        return regexItem.IsMatch(inputString);
+        if (tagList.Contains(Tag) && isDeleteTag)
+        {
+            tagList.Remove(Tag);
+            //await hService.DeleteTag(Tag);
+
+        }
+        else if (!isDeleteTag)
+        {
+            addNewTag();
+        }
+        isDeleteTag = true;
+
+    }
+
+    private async Task displayErrorMessage(string message)
+    {
+        TagFieldErrorMessage = message;
+        this.StateHasChanged();
     }
 
     private async Task addNewTag()
@@ -272,7 +289,7 @@
         else if (!string.IsNullOrWhiteSpace(newTag))
         {
 
-            if (!ContainsOnlyAlphaNumericCharacters(newTag))
+            if (!commonService.ContainsOnlyAlphaNumericCharacters(newTag))
             {
                 await displayErrorMessage("Warning: A Tag should begin with a letter and can only contain letters, numbers, and underscores (_), no special characters");
             }
@@ -319,27 +336,6 @@
         NavigationManager.NavigateTo("/");
     }
 
-    private async Task deleteTag(string Tag)
-    {
-        if (tagList.Contains(Tag) && isDeleteTag)
-        {
-            tagList.Remove(Tag);
-            //await hService.DeleteTag(Tag);
-
-        }
-        else if (!isDeleteTag)
-        {
-            addNewTag();
-        }
-        isDeleteTag = true;
-
-    }
-
-    private async Task displayErrorMessage(string message)
-    {
-        TagFieldErrorMessage = message;
-        this.StateHasChanged();
-    }
 
     private async Task CreateCase()
     {
