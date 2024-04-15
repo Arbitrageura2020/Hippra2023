@@ -11,7 +11,7 @@ namespace Hippra.Models.POCO
     public class Profile
     {
         // + personal info 
-
+        public string Userid { get; set; }
         public string FirstName { get; set; }
 
         public string LastName { get; set; }

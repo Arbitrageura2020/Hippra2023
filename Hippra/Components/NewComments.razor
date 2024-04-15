@@ -1,5 +1,6 @@
 ﻿@using Hippra.Models.SQL
 @using Hippra.Models.POCO
+@using Hippra.Pages.Common
 @using Hippra.Services
 @using Hippra.Pages.FTDesign.Features
 @using Hippra.Models.Enums
@@ -15,7 +16,7 @@
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService
-
+@inject CommonService commonService;
 
 <section class="case-comment">
     <div class="case-comment-form">
@@ -26,7 +27,9 @@
                 <input type="text" placeholder="Write a Comment" @bind="@newComment.Comment" required></input>
                 <button type="submit">Comment</button>
             </div>
-
+            <div class="border">
+                <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
+            </div>
         </EditForm>
     </div>
     <div class="case-comments">
@@ -36,11 +39,25 @@
             {
                 <div class="case-comment-item">
                     <div class="comment-author">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt="">
+                        @if (c.User != null)
+                        {
+                            <img src="@c.User.ProfileUrl" alt="@c.User.FirstName">
+                        }
+                        else
+                        {
+                            <img src="/img/hippra/blank-profile.png" />
+                        }
                     </div>
                     <div class="comment-info">
                         <h6>@c.LastUpdatedDate</h6>
                         <p> @c.Comment</p>
+                        @if (!string.IsNullOrWhiteSpace(c.imgUrl))
+                        {
+                            <label class="label-img">
+                                <input type="checkbox">
+                                <img id="caseImg" src="@c.imgUrl" width="20%" height="20%" />
+                            </label>
+                        }
                     </div>
                 </div>
             }
@@ -55,16 +72,12 @@
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
-    private AuthenticationState authState { get; set; }
-    private ClaimsPrincipal user { get; set; }
-    @*private AppUser usr { get; set; }*@
+
 
     public List<CaseComment> CommentList { get; set; }
     [Parameter]
     public bool isOpened { get; set; }
     private CaseComment newComment = new CaseComment();
-    private Profile profile { get; set; } = new Profile();
-
     private int EditThis = -1;
     private string fileName;
     private string imgUrl;
@@ -73,284 +86,58 @@
     private Case caseInfo = new Case();
     private int lastHistoryID = -1;
     private bool dataReady = false;
+    private int userId { get; set; }
 
-    private int userId = -1;
-    private string posterSpeciality = "";
-    private string fullName = "";
+    protected override async Task OnInitializedAsync()
+    {
+
+        caseInfo = await hService.GetCase(caseId);
+        CommentList = await hService.GetCommentsNoTracking(caseId);
+
+        this.StateHasChanged();
+        dataReady = true;
+        // OpenComment();
+    }
 
     public async Task DeleteComment(CaseComment c)
     {
 
         isSubmitted = false;
-        authState = await authenticationStateTask;
-        user = authState.User;
 
-        if (user.Identity.IsAuthenticated)
-        {
+
+       
             await hService.DeleteComment(c.ID);
 
             isSubmitted = true;
-            @* usr = await UserManager.GetUserAsync(user);
-				if (usr != null)
-				{
-				await hService.DeleteComment(c.ID);
 
-				isSubmitted = true;
-				}*@
-        }
         CommentList = await hService.GetCommentsNoTracking(caseId);
-        await getProfilePic();
-        await addToHistory("deleted a comment on", c);
-        await addNotification();
+
+        await commonService.addToHistoryComment("deleted a comment on", caseInfo);
+        await commonService.addNotification(caseInfo);
         this.StateHasChanged();
     }
     public async Task DeleteFile(CaseComment c)
     {
         c.imgUrl = "";
     }
-    protected override async Task OnInitializedAsync()
-    {
-
-        authState = await authenticationStateTask;
-        user = authState.User;
-        // caseInfo = await hService.GetCase(postId);
-        CommentList = await hService.GetCommentsNoTracking(caseId);
-
-
-        if (user.Identity.IsAuthenticated)
-        {
-            try
-            {
-                userId = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
-                posterSpeciality = ParseMedicalSpecialty((MedicalSpecialtyType)Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "MedicalSpecialty")?.Value));
-            }
-            catch (FormatException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            fullName = user.Claims.FirstOrDefault(s => s.Type == "FirstName")?.Value + " " + user.Claims.FirstOrDefault(s => s.Type == "LastName")?.Value;
-
-
-        }
-        await getProfilePic();
-        dataReady = true;
-        this.StateHasChanged();
-    }
-
 
     private async Task AddComment()
     {
         isSubmitted = false;
-        authState = await authenticationStateTask;
-        user = authState.User;
         CaseComment addComment = new CaseComment();
-        if (user.Identity.IsAuthenticated)
-        {
-            @*usr = await UserManager.GetUserAsync(user);
-			if (usr != null)
-			{*@
-            addComment.PosterId = userId;
-            addComment.PosterName = fullName;
-            addComment.PostedDate = DateTime.Now;
-            addComment.LastUpdatedDate = newComment.PostedDate;
-            addComment.posterSpeciality = posterSpeciality;//ParseMedicalSpecialty((MedicalSpecialtyType)usr.MedicalSpecialty);
-            addComment.CaseID = caseId;
-            addComment.ID = 0;
-            addComment.Comment = newComment.Comment;
-            if (profile.ProfileUrl != null)
-            {
-                addComment.ProfileUrl = profile.ProfileUrl;
-            }
-            else
-            {
-                addComment.ProfileUrl = "/img/hippra/blank-profile.png";
-            }
-            if (!string.IsNullOrWhiteSpace(imgUrl))
-            {
-                addComment.imgUrl = imgUrl;
-            }
 
-            await hService.AddComment(addComment);
+        await hService.AddComment(caseId, newComment.Comment, imgUrl);
 
-            isSubmitted = true;
-            @*}*@
-        }
+        isSubmitted = true;
+
         newComment.Comment = "";
         CommentList = await hService.GetCommentsNoTracking(caseId);
-        await getProfilePic();
+
         imgUrl = "";
-        newComment.imgUrl = "";
         isOpened = true;
-        await addToHistory("added a comment on", newComment);
-        await addNotification();
+        await commonService.addToHistoryComment("added a comment on", caseInfo);
+        await commonService.addNotification(caseInfo);
         this.StateHasChanged();
     }
-   
-    private async Task addToHistory(string historyType, CaseComment c)
-    {
-        //history stuffs
-        PostHistory newHistory = new PostHistory();
-        newHistory.ID = 0;
-        newHistory.PostID = caseId;
-        newHistory.UserID = c.PosterId;
-        newHistory.CreationDate = DateTime.Now;
-        newHistory.PosterID = userId;
-        newHistory.UserDisplayName = fullName;
-        newHistory.UserDisplayName2 = c.PosterName;
-        newHistory.Title = caseInfo.Topic;
-        newHistory.Detail = caseInfo.Description;
-        newHistory.HistoryTypes = historyType;
-        lastHistoryID = await hService.AddHistory(newHistory);
-    }
 
-    private async Task addNotification()
-    {
-        bool hasPoster = false;
-        List<Follow> followerList = new List<Follow>();
-        followerList = await hService.GetAllFollowers(userId);
-        foreach (var follower in followerList)
-        {
-            if (follower.FollowerUserID == caseInfo.PosterID || userId != caseInfo.PosterID)
-            {
-                hasPoster = true;
-            }
-            Notification newNotifs = new Notification();
-            newNotifs.ID = 0;
-            newNotifs.SenderID = follower.FollowingUserID;
-            newNotifs.ReceiverID = follower.FollowerUserID;
-            newNotifs.NotificationID = lastHistoryID;
-            newNotifs.IsRead = -1;
-            newNotifs.IsResponseNeeded = -1;
-            newNotifs.CreationDate = DateTime.Now;
-            await hService.AddNotification(newNotifs);
-        }
-        if (!hasPoster && userId != caseInfo.PosterID)
-        {
-            Notification newNotifs = new Notification();
-            newNotifs.ID = 0;
-            newNotifs.SenderID = userId;
-            newNotifs.ReceiverID = caseInfo.PosterID;
-            newNotifs.NotificationID = lastHistoryID;
-            newNotifs.IsRead = -1;
-            newNotifs.IsResponseNeeded = -1;
-            newNotifs.CreationDate = DateTime.Now;
-            await hService.AddNotification(newNotifs);
-        }
-    }
-    private async Task viewPage(int id)
-    {
-        NavigationManager.NavigateTo("/PersonalPage/" + id);
-    }
-
-    private string ParseMedicalSpecialty(MedicalSpecialtyType MedicalSpecialty)
-    {
-
-        string medicalSpecialty = "";
-        switch (MedicalSpecialty)
-        {
-            case MedicalSpecialtyType.Anesthesiology:
-                medicalSpecialty = "Anesthesiology";
-                break;
-            case MedicalSpecialtyType.AnatomicPathologyAndClinicalPathology:
-                medicalSpecialty = "Anatomic Pathology And Clinical Pathology";
-                break;
-            case MedicalSpecialtyType.ColonAndRectalSurgery:
-                medicalSpecialty = "Colon And Rectal Surgery";
-                break;
-            case MedicalSpecialtyType.Dermatology:
-                medicalSpecialty = "Dermatology";
-                break;
-            case MedicalSpecialtyType.EmergencyMedicine:
-                medicalSpecialty = "Emergency Medicine";
-                break;
-            case MedicalSpecialtyType.FamilyMedicine:
-                medicalSpecialty = "Family Medicine";
-                break;
-            case MedicalSpecialtyType.HospiceAndPalliativeMedicine:
-                medicalSpecialty = "Hospice And Palliative Medicine";
-                break;
-            case MedicalSpecialtyType.InternalMedicine:
-                medicalSpecialty = "Internal Medicine";
-                break;
-            case MedicalSpecialtyType.MedicalGenetics:
-                medicalSpecialty = "Medical Genetics";
-                break;
-            case MedicalSpecialtyType.MedicalNuclearPhysics:
-                medicalSpecialty = "Medical Nuclear Physics";
-                break;
-            case MedicalSpecialtyType.Neurology:
-                medicalSpecialty = "Neurology";
-                break;
-            case MedicalSpecialtyType.Neurosurgery:
-                medicalSpecialty = "Neurosurgery";
-                break;
-            case MedicalSpecialtyType.NuclearMedicine:
-                medicalSpecialty = "NuclearMedicine";
-                break;
-            case MedicalSpecialtyType.ObstetricsAndGynecology:
-                medicalSpecialty = "Obstetrics And Gynecology";
-                break;
-            case MedicalSpecialtyType.Ophthalmology:
-                medicalSpecialty = "Ophthalmology";
-                break;
-            case MedicalSpecialtyType.OrthopedicSurgery:
-                medicalSpecialty = "Orthopedic Surgery";
-                break;
-            case MedicalSpecialtyType.Otolaryngology:
-                medicalSpecialty = "Otolaryngology";
-                break;
-            case MedicalSpecialtyType.Pediatrics:
-                medicalSpecialty = "Pediatrics";
-                break;
-            case MedicalSpecialtyType.PhysicalMedicineAndRehibilitation:
-                medicalSpecialty = "Physical Medicine And Rehibilitation";
-                break;
-            case MedicalSpecialtyType.PlasticSurgery:
-                medicalSpecialty = "Plastic Surgery";
-                break;
-            case MedicalSpecialtyType.Psychiatry:
-                medicalSpecialty = "Psychiatry";
-                break;
-            case MedicalSpecialtyType.PublicHealthAndGeneralPreventive:
-                medicalSpecialty = "Public Health And General Preventive";
-                break;
-            case MedicalSpecialtyType.Radiology:
-                medicalSpecialty = "Radiology";
-                break;
-            case MedicalSpecialtyType.Surgery:
-                medicalSpecialty = "Surgery";
-                break;
-            case MedicalSpecialtyType.ThoracicSurgery:
-                medicalSpecialty = "Thoracic Surgery";
-                break;
-            case MedicalSpecialtyType.Urology:
-                medicalSpecialty = "Urology";
-                break;
-            case MedicalSpecialtyType.VascularSurgery:
-                medicalSpecialty = "Vascular Surgery";
-                break;
-            default:
-                break;
-        }
-        return medicalSpecialty;
-    }
-    private async Task getProfilePic()
-    {
-        if (CommentList != null)
-        {
-            foreach (var c in CommentList)
-            {
-                profile = new Profile();
-                profile = await pService.GetProfile(c.PosterId);
-                if (profile.ProfileUrl != null)
-                {
-                    c.ProfileUrl = profile.ProfileUrl;
-                }
-                else
-                {
-                    c.ProfileUrl = "/img/hippra/blank-profile.png";
-                }
-            }
-        }
-    }
 }

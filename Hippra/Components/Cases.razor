@@ -67,7 +67,14 @@
                         </div>
                         <div class="article-bot">
                             <div class="article-author">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt="">
+                                @if (c.User != null)
+                                {
+                                    <img src="@c.User.ProfileUrl" alt="@c.User.FirstName">
+                                }
+                                else
+                                {
+                                    <img src="/img/hippra/blank-profile.png" />
+                                }
                                 <div class="article-author-info">
                                     <h6>@c.PosterName</h6>
                                     <p>@c.PosterSpecialty</p>

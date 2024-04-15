@@ -39,7 +39,7 @@ namespace Hippra.Services
         public ProfileService(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            //FriendManagerService fmService,
+           //FriendManagerService fmService,
            IEmailService emailSender,
             ApplicationDbContext context,
             IOptions<AppSettings> settings)
@@ -63,6 +63,7 @@ namespace Hippra.Services
             {
                 rProfile = new Profile
                 {
+                    Userid = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     NPIN = user.NPIN,
@@ -110,7 +111,7 @@ namespace Hippra.Services
         }
         public async Task<int> GetUserIdByEmail(string email)
         {
-            var user = await UserManagerExtensions.FindByEmail(_userManager,email);
+            var user = await UserManagerExtensions.FindByEmail(_userManager, email);
             return user.PublicId;
         }
         public async Task<int> RegisterAccount(FTRegisterModel Input, string urlStr)
@@ -463,7 +464,7 @@ namespace Hippra.Services
         }
         public async Task<int> SendContactEmail(string name, string email, string subject, string message)
         {
-            if(string.IsNullOrWhiteSpace(name) ||
+            if (string.IsNullOrWhiteSpace(name) ||
                 string.IsNullOrWhiteSpace(email) ||
                 string.IsNullOrWhiteSpace(subject) ||
                 string.IsNullOrWhiteSpace(message))
@@ -473,8 +474,8 @@ namespace Hippra.Services
 
             await _emailSender.FTSendAdminEmailAsync(
                 email,
-                email + " : "+ subject,
-                name + " : "+ message);
+                email + " : " + subject,
+                name + " : " + message);
 
             return 0;
         }
@@ -493,9 +494,9 @@ namespace Hippra.Services
             return await Hippra.Extensions.UserManagerExtensions.GetUserReport(_userManager);
         }
 
-        public async Task UpdateUserProfile(ClaimsPrincipal cpUser, AppUser usr)
+        public async Task UpdateUserProfile(Profile usr)
         {
-            var user = await Hippra.Extensions.UserManagerExtensions.FindByPublicIDNoTrackAsync(_userManager, usr.PublicId);
+            var user = await _userManager.FindByIdAsync(usr.Userid);
 
             if (user != null)
             {
@@ -518,9 +519,9 @@ namespace Hippra.Services
                 user.BackgroundUrl = usr.BackgroundUrl;
                 user.Bio = usr.Bio;
 
-                await Hippra.Extensions.UserManagerExtensions.UpdateUserProfile(_userManager, cpUser, user);
+                await _userManager.UpdateAsync(user);
             }
-         
+
         }
 
     }

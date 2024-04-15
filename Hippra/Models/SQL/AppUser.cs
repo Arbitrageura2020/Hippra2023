@@ -18,6 +18,8 @@ namespace Hippra.Models.SQL
         [PersonalData]
         public string LastName { get; set; }
 
+        public string FullName { get { return this.FirstName + " " + this.LastName; } }
+
         [Required]
         [PersonalData]
         [Display(Name = "National Provider Identifier Number")]

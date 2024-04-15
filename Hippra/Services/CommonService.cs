@@ -27,6 +27,8 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Hippra.Models.ViewModel;
 using System.Text.RegularExpressions;
+using AutoMapper;
+using System.Dynamic;
 
 namespace Hippra.Services
 {
@@ -126,6 +128,85 @@ namespace Hippra.Services
             newHistory.Detail = caseItem.Description;
             newHistory.HistoryTypes = historyType;
             await hService.AddHistory(newHistory).ConfigureAwait(false);
+        }
+
+        public async Task<int> addToHistory(string historyType, AppUser user)
+        {
+            //history stuffs
+            PostHistory newHistory = new PostHistory();
+            newHistory.ID = 0;
+            newHistory.PostID = user.PublicId;
+            newHistory.CreationDate = DateTime.Now;
+            newHistory.PosterID = user.PublicId;
+            newHistory.UserID = user.PublicId;
+            newHistory.UserDisplayName = user.FirstName;
+            newHistory.UserDisplayName2 = user.FirstName + " " + user.LastName;
+            if (historyType == "Invited")
+            {
+                newHistory.Title = user.FirstName + " " + user.LastName + "to connect.";
+            }
+            else
+            {
+                newHistory.Title = "on " + user.FirstName + " " + user.LastName + "'s Hippra page";
+            }
+
+            newHistory.Detail = "";
+            newHistory.HistoryTypes = historyType;
+            return  await hService.AddHistory(newHistory);
+        }
+
+        public async Task addToHistoryComment(string historyType, Case c)
+        {
+            var userInfo = await _userManager.GetUserAsync(WebContext.User);
+            //history stuffs
+            PostHistory newHistory = new PostHistory();
+            newHistory.ID = 0;
+            newHistory.PostID = c.ID;
+            newHistory.UserID = userInfo.PublicId;
+            newHistory.CreationDate = DateTime.Now;
+            newHistory.PosterID = userInfo.PublicId;
+            newHistory.UserDisplayName = userInfo.FullName;
+            newHistory.UserDisplayName2 = c.PosterName;
+            newHistory.Title = c.Topic;
+            newHistory.Detail = c.Description;
+            newHistory.HistoryTypes = historyType;
+            await hService.AddHistory(newHistory);
+        }
+
+        public async Task addNotification(Case caseInfo)
+        {
+            var userInfo = await _userManager.GetUserAsync(WebContext.User);
+            bool hasPoster = false;
+            List<Follow> followerList = new List<Follow>();
+            followerList = await hService.GetAllFollowers(userInfo.PublicId);
+            foreach (var follower in followerList)
+            {
+                if (follower.FollowerUserID == caseInfo.PosterID || userInfo.PublicId != caseInfo.PosterID)
+                {
+                    hasPoster = true;
+                }
+                Notification newNotifs = new Notification();
+                newNotifs.ID = 0;
+                newNotifs.SenderID = follower.FollowingUserID;
+                newNotifs.ReceiverID = follower.FollowerUserID;
+               // newNotifs.NotificationID = lastHistoryID;
+                newNotifs.IsRead = -1;
+                newNotifs.IsResponseNeeded = -1;
+                newNotifs.CreationDate = DateTime.Now;
+                await hService.AddNotification(newNotifs);
+            }
+            if (!hasPoster && userInfo.PublicId != caseInfo.PosterID)
+            {
+                Notification newNotifs = new Notification();
+                newNotifs.ID = 0;
+                newNotifs.SenderID = userInfo.PublicId;
+                newNotifs.ReceiverID = caseInfo.PosterID;
+              //  newNotifs.NotificationID = lastHistoryID;
+                newNotifs.IsRead = -1;
+                newNotifs.IsResponseNeeded = -1;
+                newNotifs.CreationDate = DateTime.Now;
+                await hService.AddNotification(newNotifs);
+            }
         }
 
         public bool ContainsOnlyAlphaNumericCharacters(string inputString)
