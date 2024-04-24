@@ -22,10 +22,11 @@ namespace Hippra.Models.SQL
 		public DateTime DateCreated { get; set; }
 		public DateTime DateLastUpdated { get; set; }
 		public DateTime DateClosed { get; set; }
+		public CaseType Type { get; set; }
 
-		// info
+        // info
 
-		public string Topic { get; set; }
+        public string Topic { get; set; }
 		public string Description { get; set; }
 		public CaseResponseLevelType ResponseNeeded { get; set; } // 0: high, 1: mid, 2: low 
 
@@ -47,6 +48,5 @@ namespace Hippra.Models.SQL
 		public List<CaseTags> Tags { get; set; }
 		public List<CaseComment> Comments { get; set; }
 
-		//public List<Tag> Tags { get; set; } //  many to many relations (let's use Phat's implementation for now)
 	}
 }
