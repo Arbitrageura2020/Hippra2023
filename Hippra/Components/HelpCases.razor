@@ -72,9 +72,9 @@
     private string userId = "";
     protected override async Task OnInitializedAsync()
     {
-        var user = httpContextAccessor.HttpContext.User;
-        var userInfo = await UserManager.GetUserAsync(httpContextAccessor.HttpContext.User);
-        userId = userInfo!.Id.ToString();
+        // var user = httpContextAccessor.HttpContext.User;
+        // var userInfo = await UserManager.GetUserAsync(httpContextAccessor.HttpContext.User);
+        // userId = userInfo!.Id.ToString();
 
         await GetSearchResults();
     }
@@ -93,7 +93,7 @@
     {
         SearchResults = new List<ParsedCase>();
 
-        var searchResults = await hService.GetAllHelpCases(userId);
+        var searchResults = await hService.GetAllCases(CaseType.AskForHelp);
 
         Count = searchResults.TotalCount;
 
@@ -110,5 +110,7 @@
                 PosterName = i.PosterName,
                 PosterSpecialty = i.PosterSpecialty
             }).ToList();
+
+        IsLoading = false;
     }
 }

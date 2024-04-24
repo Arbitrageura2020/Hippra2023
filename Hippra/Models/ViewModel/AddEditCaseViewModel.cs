@@ -6,10 +6,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Hippra.Models.ViewModel
 {
-    public class CaseViewModel
+    public class AddEditCaseViewModel
     {
-        public CaseViewModel() { 
-        this.Tags = new List<string>();
+        public AddEditCaseViewModel()
+        {
+            this.Tags = new List<string>();
         }
         public int ID { get; set; }
 
@@ -21,10 +22,13 @@ namespace Hippra.Models.ViewModel
 
 
         // case 
-        public bool Status { get; set; } 
+        public bool Status { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateLastUpdated { get; set; }
         public DateTime DateClosed { get; set; }
+
+        public CaseType Type { get; set; }
+        public int Votes { get; set; }
 
         // info
 
@@ -32,11 +36,16 @@ namespace Hippra.Models.ViewModel
         public string Topic { get; set; }
         [Required]
         public string Description { get; set; }
-        public CaseResponseLevelType ResponseNeeded { get; set; } // 0: high, 1: mid, 2: low 
-        public MedicalCategory MedicalCategory { get; set; } 
+        //[MinLength(1,ErrorMessage ="Please select urgency")]
+        public CaseResponseLevelType ResponseNeeded { get; set; } 
+
+        //[MinLength(1, ErrorMessage = "Please medical category")]
+        public MedicalCategory MedicalCategory { get; set; }
+        //[MinLength(1, ErrorMessage = "Please select medical subcategory")]
         public int MedicalSubCategoryId { get; set; } = 1;
         public MedicalSubCategory MedicalSubCategory { get; set; }
         [Required]
+
         public int PatientAge { get; set; }
         public GenderType Gender { get; set; } // 0 Male, 1, Female, 2 Neutral 
         public RaceType Race { get; set; }

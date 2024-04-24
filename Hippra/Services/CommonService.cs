@@ -115,7 +115,7 @@ namespace Hippra.Services
         }
 
 
-        public async Task AddToHistory(string historyType, CaseViewModel caseItem)
+        public async Task AddToHistory(string historyType, AddEditCaseViewModel caseItem)
         {
             //history stuffs
             PostHistory newHistory = new PostHistory();

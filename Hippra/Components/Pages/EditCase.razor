@@ -31,176 +31,180 @@
 @inject HippraService hService
 @inject IAuthorizationService AuthorizationService
 @inject CommonService commonService;
-<div id="post-ask-4-content" class="post-tab-content active">
-    <div class="content-left">
-        <!-- Ask-4 Form -->
-        <section class="dashboard-content">
-            <div class="content-form " style="max-height: 538px; padding-bottom: 20px;">
-                <EditForm Model="@CaseModel" OnValidSubmit="@UpdateCase">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
-                    <div class="form-group">
-                        <label for="">Title</label>
-                        @*      <input class="form-control" type="text" placeholder="Title"> *@
-                        <InputText class="form-control" placeholder="Title" @bind-Value="@CaseModel.Topic" />
-                        <ValidationMessage For="() => CaseModel.Topic" />
-                    </div>
-                    <div class="form-group">
-                        <label for="">Description</label>
-                        <textarea class="form-control textarea" placeholder="Description" @bind="@CaseModel.Description"></textarea>
-                        <ValidationMessage For="() => CaseModel.Description" />
-                    </div>
+<div class="main-layout @mainItemClass">
+    <div class="container">
+        <div class="main-tab-layout">
+            <div id="post-ask-4-content" class="post-tab-content active">
+                <div class="content-left">
+                    <!-- Ask-4 Form -->
+                    <section class="dashboard-content">
+                        <div class="content-form " style="max-height: 538px; padding-bottom: 20px;">
+                            <EditForm Model="@CaseModel" OnValidSubmit="@UpdateCase">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
+                                <div class="form-group">
+                                    <label for="">Title</label>
+                                    @*      <input class="form-control" type="text" placeholder="Title"> *@
+                                    <InputText class="form-control" placeholder="Title" @bind-Value="@CaseModel.Topic" />
+                                    <ValidationMessage For="() => CaseModel.Topic" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Description</label>
+                                    <textarea class="form-control textarea" placeholder="Description" @bind="@CaseModel.Description"></textarea>
+                                    <ValidationMessage For="() => CaseModel.Description" />
+                                </div>
 
-                    <!-- Multi Mini Inputs -->
-                    <div class="form-group multi">
-                        <label for="">Patient Information</label>
-                        <div class="form-multi-inputs">
-                            <input class="form-control mini" type="text" placeholder="Age" @bind="@CaseModel.PatientAge">
-                            <div class="form-select-wrapper">
-                                <select class="form-select mini" name="" @bind="@CaseModel.Race">
-                                    @foreach (RaceType i in Enum.GetValues(typeof(RaceType)))
-                                    {
-                                        <option value="@i">@Enums.GetDisplayName(i)</option>
-                                    }
+                                <!-- Multi Mini Inputs -->
+                                <div class="form-group multi">
+                                    <label for="">Patient Information</label>
+                                    <div class="form-multi-inputs">
+                                        <input class="form-control mini" type="text" placeholder="Age" @bind="@CaseModel.PatientAge">
+                                        <div class="form-select-wrapper">
+                                            <select class="form-select mini" name="" @bind="@CaseModel.Race">
+                                                @foreach (RaceType i in Enum.GetValues(typeof(RaceType)))
+                                                {
+                                                    <option value="@i">@Enums.GetDisplayName(i)</option>
+                                                }
 
-                                </select>
-                                <img src="./img/icons/chevron-down.svg" alt="">
-                            </div>
-                            <div class="form-select-wrapper">
-                                <select class="form-select mini" name="" @bind="@CaseModel.Gender" placeholder="Gender">
-                                    @foreach (GenderType i in Enum.GetValues(typeof(GenderType)))
-                                    {
-                                        <option value="@i">@Enums.GetDisplayName(i)</option>
-                                    }
+                                            </select>
+                                            <img src="./img/icons/chevron-down.svg" alt="">
+                                        </div>
+                                        <div class="form-select-wrapper">
+                                            <select class="form-select mini" name="" @bind="@CaseModel.Gender" placeholder="Gender">
+                                                @foreach (GenderType i in Enum.GetValues(typeof(GenderType)))
+                                                {
+                                                    <option value="@i">@Enums.GetDisplayName(i)</option>
+                                                }
 
-                                </select>
-                                <img src="./img/icons/chevron-down.svg" alt="">
-                            </div>
-                            <div class="form-select-wrapper">
-                                <select class="form-select mini" name="" @bind="@CaseModel.Ethnicity" placeholder="Ethnicity">
-                                    @foreach (EthnicityType i in Enum.GetValues(typeof(EthnicityType)))
-                                    {
-                                        <option value="@i">@Enums.GetDisplayName(i)</option>
-                                    }
+                                            </select>
+                                            <img src="./img/icons/chevron-down.svg" alt="">
+                                        </div>
+                                        <div class="form-select-wrapper">
+                                            <select class="form-select mini" name="" @bind="@CaseModel.Ethnicity" placeholder="Ethnicity">
+                                                @foreach (EthnicityType i in Enum.GetValues(typeof(EthnicityType)))
+                                                {
+                                                    <option value="@i">@Enums.GetDisplayName(i)</option>
+                                                }
 
-                                </select>
-                                <img src="./img/icons/chevron-down.svg" alt="">
-                            </div>
-                        </div>
-                        <div class="form-multi-select">
-                            <div class="form-select-wrapper">
-                                <select class="form-select mini" @bind="@CaseModel.MedicalCategory">
-                                    <option value="0" selected>Select category</option>
-                                    @foreach (MedicalCategory i in Enum.GetValues(typeof(MedicalCategory)))
-                                    {
-                                        <option value="@i">@Enums.GetDisplayName(i)</option>
-                                    }
-                                </select>
-                                <img src="./img/icons/chevron-down.svg" alt="">
-                            </div>
-                            <div class="form-select-wrapper">
-                                <select class="form-select mini" name="" @bind="@CaseModel.MedicalSubCategoryId">
-                                    <option value="0" selected="" hidden="">Medical Specialty</option>
-                                    @foreach (var i in AllSubCategoryList.Where(x => x.MedicalCategory == CaseModel.MedicalCategory))
-                                    {
-                                        <option value="@i.ID">@i.Name</option>
-                                    }
-                                </select>
-                                <img src="./img/icons/chevron-down.svg" alt="">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="">Case Information</label>
-                        <textarea class="form-control case-textarea" placeholder="Lab Values" @bind="CaseModel.LabValues"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <textarea class="form-control case-textarea" placeholder="Current Stage of Disease" @bind="CaseModel.CurrentStageOfDisease"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <textarea class="form-control case-textarea" placeholder="Current Treatment Administered" @bind="CaseModel.CurrentTreatmentAdministered"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <textarea class="form-control case-textarea" placeholder="Treatment Outcomes" @bind="CaseModel.TreatmentOutcomes"></textarea>
-                    </div>
-                    <div class="ask-4-file">
-                        <div class="form-group file">
-                            @* <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg> *@
-                            <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
-                        </div>
-                    </div>
-                    <div class="form-group post-urgency">
-                        <div class="form-select-wrapper">
-                            <select class="form-select mini" name="">
-                                @foreach (CaseResponseLevelType i in Enum.GetValues(typeof(CaseResponseLevelType)))
-                                {
-                                    <option value="@i">@Enums.GetDisplayName(i)</option>
-                                }
-                            </select>
-                            <img src="./img/icons/chevron-down.svg" alt="">
-                        </div>
-                        <label for="urgency" class="post-checkbox-label">Urgency</label>
-                    </div>
-                    <div class="ask-4-file">
-                        @if (tagList != null)
-                        {
-                            <div>
-                                @foreach (var tag in tagList)
-                                {
-                                    <div class="tag-item">
-                                        @tag <button class="x" type="button" @onclick="(e => { deleteTag(tag); })">
-                                            x
-                                        </button>
+                                            </select>
+                                            <img src="./img/icons/chevron-down.svg" alt="">
+                                        </div>
                                     </div>
-                                }
-                            </div>
-                        }
-                    </div>
-                    <div class="ask-4-file">
+                                    <div class="form-multi-select">
+                                        <div class="form-select-wrapper">
+                                            <select class="form-select mini" @bind="@CaseModel.MedicalCategory">
+                                                <option value="0" selected>Select category</option>
+                                                @foreach (MedicalCategory i in Enum.GetValues(typeof(MedicalCategory)))
+                                                {
+                                                    <option value="@i">@Enums.GetDisplayName(i)</option>
+                                                }
+                                            </select>
+                                            <img src="./img/icons/chevron-down.svg" alt="">
+                                        </div>
+                                        <div class="form-select-wrapper">
+                                            <select class="form-select mini" name="" @bind="@CaseModel.MedicalSubCategoryId">
+                                                <option value="0" selected="" hidden="">Medical Specialty</option>
+                                                @foreach (var i in AllSubCategoryList.Where(x => x.MedicalCategory == CaseModel.MedicalCategory))
+                                                {
+                                                    <option value="@i.ID">@i.Name</option>
+                                                }
+                                            </select>
+                                            <img src="./img/icons/chevron-down.svg" alt="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Case Information</label>
+                                    <textarea class="form-control case-textarea" placeholder="Lab Values" @bind="CaseModel.LabValues"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <textarea class="form-control case-textarea" placeholder="Current Stage of Disease" @bind="CaseModel.CurrentStageOfDisease"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <textarea class="form-control case-textarea" placeholder="Current Treatment Administered" @bind="CaseModel.CurrentTreatmentAdministered"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <textarea class="form-control case-textarea" placeholder="Treatment Outcomes" @bind="CaseModel.TreatmentOutcomes"></textarea>
+                                </div>
+                                <div class="ask-4-file">
+                                    <div class="form-group file">
+                                        @* <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg> *@
+                                        <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
+                                    </div>
+                                </div>
+                                <div class="form-group post-urgency">
+                                    <div class="form-select-wrapper">
+                                        <select class="form-select mini" name="" @bind="@CaseModel.ResponseNeeded">
+                                            <option value="0" selected="" hidden="">Urgency</option>
+                                            @foreach (CaseResponseLevelType i in Enum.GetValues(typeof(CaseResponseLevelType)))
+                                            {
+                                                <option value="@i">@Enums.GetDisplayName(i)</option>
+                                            }
+                                        </select>
+                                        <img src="./img/icons/chevron-down.svg" alt="">
+                                    </div>
+                                </div>
+                                <div class="ask-4-file">
+                                    @if (tagList != null)
+                                    {
+                                        <div>
+                                            @foreach (var tag in tagList)
+                                            {
+                                                <div class="tag-item">
+                                                    @tag <button class="x" type="button" @onclick="(e => { deleteTag(tag); })">
+                                                        x
+                                                    </button>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                                <div class="ask-4-file">
 
-                        <div class="input-group">
-                            <InputText name="tagField" class="form-control" id="" placeholder="Add tag(s) to your post" @bind-Value="newTag" aria-label="Tags" aria-describedby="Add tags" @onkeydown="@enterPressHandle" />
-                            <div class="input-group-append">
-                                <button id="comment-button" type="button" class="btn btn-primary" @onclick="@addNewTag">Add</button>
+                                    <div class="input-group">
+                                        <InputText name="tagField" class="form-control" id="" placeholder="Add tag(s) to your post" @bind-Value="newTag" aria-label="Tags" aria-describedby="Add tags" @onkeydown="@enterPressHandle" />
+                                        <div class="input-group-append">
+                                            <button id="comment-button" type="button" class="btn btn-primary" @onclick="@addNewTag">Add</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="tag-error">
+                                        @TagFieldErrorMessage
+                                    </div>
+
+                                </div>
+                                <div class="ask-4-file">
+                                    <button class="btn btn-sm btn-orange btn-roboto" type="submit">Save</button>
+                                </div>
+                            </EditForm>
+
+                            <div class="ask-4-file">
+                                @*   @if (userId == pCase.PosterID)
+                                { *@
+                                <div class="mx-4 d-flex justify-content-between">
+
+                                    @if (CaseModel.Status)
+                                    {
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Close Case</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Reopen Case</button>
+                                    }
+
+
+                                </div>
+                                @*    } *@
                             </div>
                         </div>
+                    </section>
 
-                        <div class="tag-error">
-                            @TagFieldErrorMessage
-                        </div>
-
-                    </div>
-                    <div class="ask-4-file">
-                        <button class="btn btn-sm btn-orange btn-roboto" type="submit">Save</button>
-                    </div>
-                </EditForm>
-
-                <div class="ask-4-file">
-                    @*   @if (userId == pCase.PosterID)
-                    { *@
-                    <div class="mx-4 d-flex justify-content-between">
-
-                        @if (CaseModel.Status)
-                        {
-                            <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Close Case</button>
-                        }
-                        else
-                        {
-                            <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@CloseCase">Reopen Case</button>
-                        }
-
-
-                    </div>
-                    @*    } *@
                 </div>
+
             </div>
-        </section>
-
+        </div>
     </div>
-
 </div>
-
-
 @code {
     [Parameter]
     public int caseId { get; set; } = -1;
@@ -212,7 +216,7 @@
 
     private bool isCaseClose = false;
 
-    private CaseViewModel CaseModel { get; set; } = new CaseViewModel() { };
+    private AddEditCaseViewModel CaseModel { get; set; } = new AddEditCaseViewModel() { };
 
     private List<MedicalSubCategory> CurrentSubCategoryList { get; set; } = new List<MedicalSubCategory>();
     private List<MedicalSubCategory> AllSubCategoryList { get; set; } = new List<MedicalSubCategory>();
@@ -228,6 +232,16 @@
 
     private string fileName;
     private string imgUrl;
+
+    private string mainItemClass
+    {
+        get
+        {
+            if (CaseModel.Type == CaseType.AskForHelp)
+                return "orange";
+            else return "";
+        }
+    }
 
     private async Task addNewTag()
     {
@@ -343,35 +357,35 @@
     }
 
     @*private async Task UpdateImgUrl(ChangeEventArgs e)
-		{
-		Console.WriteLine("UpdateImgUrl executed");
+    {
+    Console.WriteLine("UpdateImgUrl executed");
 
-		var usr = await UserManager.GetUserAsync(user);
+    var usr = await UserManager.GetUserAsync(user);
 
-		tCase.PosterName = pCase.PosterName;
-		tCase.PosterSpecialty = pCase.PosterSpecialty;
-		tCase.Race = pCase.Race;
-		tCase.Gender = pCase.Gender;
-		tCase.Ethnicity = pCase.Ethnicity;
-		tCase.MedicalCategory = pCase.MedicalCategory;
-		tCase.ResponseNeeded = pCase.ResponseNeeded;
-		tCase.imgUrl = imgUrl;
+    tCase.PosterName = pCase.PosterName;
+    tCase.PosterSpecialty = pCase.PosterSpecialty;
+    tCase.Race = pCase.Race;
+    tCase.Gender = pCase.Gender;
+    tCase.Ethnicity = pCase.Ethnicity;
+    tCase.MedicalCategory = pCase.MedicalCategory;
+    tCase.ResponseNeeded = pCase.ResponseNeeded;
+    tCase.imgUrl = imgUrl;
 
-		// copy back to tCase
+    // copy back to tCase
 
-		tCase.Description = pCase.Description;
-		tCase.Topic = pCase.Topic;
+    tCase.Description = pCase.Description;
+    tCase.Topic = pCase.Topic;
 
-		tCase.PatientAge = pCase.PatientAge;
-		tCase.CurrentStageOfDisease = pCase.CurrentStageOfDisease;
-		tCase.CurrentTreatmentAdministered = pCase.CurrentTreatmentAdministered;
-		tCase.TreatmentOutcomes = pCase.TreatmentOutcomes;
-		tCase.LabValues = pCase.LabValues;
-		tCase.Status = pCase.Status;
+    tCase.PatientAge = pCase.PatientAge;
+    tCase.CurrentStageOfDisease = pCase.CurrentStageOfDisease;
+    tCase.CurrentTreatmentAdministered = pCase.CurrentTreatmentAdministered;
+    tCase.TreatmentOutcomes = pCase.TreatmentOutcomes;
+    tCase.LabValues = pCase.LabValues;
+    tCase.Status = pCase.Status;
 
-		await hService.EditCase(tCase);
+    await hService.EditCase(tCase);
 
-		}*@
+    }*@
 
     private async Task UpdateCase()
     {
@@ -408,6 +422,5 @@
         this.CurrentSubCategoryList = this.AllSubCategoryList.Where(x => x.MedicalCategory == category).ToList();
         this.CaseModel.MedicalSubCategoryId = 0;
     }
-
 }
 

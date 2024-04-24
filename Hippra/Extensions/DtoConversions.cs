@@ -59,9 +59,9 @@ namespace Hippra.Extensions
         }
 
 
-        public static CaseViewModel ToViewModelCase(this Case @case)
+        public static AddEditCaseViewModel ToViewModelCase(this Case @case)
         {
-            var viewModel = new CaseViewModel();
+            var viewModel = new AddEditCaseViewModel();
             viewModel.ID = @case.ID;
 
             // TODO: fill the rest

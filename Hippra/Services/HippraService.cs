@@ -84,22 +84,11 @@ namespace Hippra.Services
             return _context.Cases.Include(x => x.MedicalSubCategory).AsNoTracking().Where(s => s.PosterID == profileId).Count();
         }
 
-        public async Task<SearchResultModel> GetAllCases()
+        public async Task<SearchResultModel> GetAllCases(CaseType type)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            List<Case> cases = await _context.Cases.Include(c => c.MedicalSubCategory).Include(x => x.User).OrderByDescending(s => s.DateCreated).AsNoTracking().ToListAsync();
-            SearchResultModel result = new SearchResultModel();
-            result.TotalCount = cases.Count;
-            result.Cases = cases;
-            return result;
-        }
-
-        public async Task<SearchResultModel> GetAllHelpCases(string userId)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            List<Case> cases = await _context.Cases.Where(x => x.UserId == userId).Include(c => c.Tags).OrderByDescending(s => s.DateCreated).AsNoTracking().ToListAsync();
+            List<Case> cases = await _context.Cases.Where(x=>x.Type==type).Include(c => c.MedicalSubCategory).Include(c => c.Tags).Include(x=>x.User).OrderByDescending(s => s.DateCreated).AsNoTracking().ToListAsync();
             SearchResultModel result = new SearchResultModel();
             result.TotalCount = cases.Count;
             result.Cases = cases;
@@ -963,7 +952,7 @@ namespace Hippra.Services
         }
 
         [Authorize]
-        public async Task<bool> AddNewCase(CaseViewModel inputCase)
+        public async Task<bool> AddNewCase(AddEditCaseViewModel inputCase)
         {
             var userInfo = await _userManager.GetUserAsync(WebContext.User);
 
@@ -979,14 +968,14 @@ namespace Hippra.Services
             newCase.DateCreated = DateTime.Now;
             newCase.PosterName = inputCase.PosterName;
             newCase.PosterSpecialty = inputCase.PosterSpecialty;
-
+            newCase.Type = inputCase.Type;
             newCase.Topic = inputCase.Topic;
             newCase.Description = inputCase.Description;
             newCase.ResponseNeeded = inputCase.ResponseNeeded;
             newCase.MedicalCategory = inputCase.MedicalCategory;
             newCase.MedicalSubCategoryId = inputCase.MedicalSubCategoryId;
             newCase.PatientAge = inputCase.PatientAge;
-
+      
             newCase.Gender = inputCase.Gender;
             newCase.Race = inputCase.Race;
             newCase.Ethnicity = inputCase.Ethnicity;
@@ -1033,7 +1022,7 @@ namespace Hippra.Services
 
 
         [Authorize]
-        public async Task<bool> EditCase(CaseViewModel inputCase)
+        public async Task<bool> EditCase(AddEditCaseViewModel inputCase)
         {
             var userInfo = await _userManager.GetUserAsync(WebContext.User);
             using var _context = DbFactory.CreateDbContext();

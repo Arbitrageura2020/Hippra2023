@@ -23,6 +23,7 @@ namespace Hippra.Models.SQL
 		public DateTime DateLastUpdated { get; set; }
 		public DateTime DateClosed { get; set; }
 		public CaseType Type { get; set; }
+		public int Votes { get; set; }
 
         // info
 

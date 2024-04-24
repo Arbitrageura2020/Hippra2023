@@ -10,10 +10,10 @@ namespace Hippra.Models.Enums
     public enum CaseResponseLevelType
     {
         [Display(Name = "Stat")]
-        STAT = 0,
+        STAT = 1,
         [Display(Name = "Over Coffee")]
-        OC = 1,
+        OC = 2,
         [Display(Name = "Low")]
-        LOW = 2
+        LOW = 3
     }
 }

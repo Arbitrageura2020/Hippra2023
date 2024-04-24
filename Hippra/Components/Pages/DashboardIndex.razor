@@ -30,21 +30,6 @@
 @inject IAuthorizationService AuthorizationService
 @attribute [Authorize]
 
-@* <FTSubHeaderBar Title="" HasSeparator="false">
-
-    <div class="btn-group-toggle" data-toggle="buttons">
-        <label class="btn  btn-outline-dark @cssAllActive" @onclick="(e=>ShowAllCases())">
-            <input type="radio" name="options" id="option1" autocomplete="off" checked> All Cases
-        </label>
-        <label class="btn  btn-outline-dark @cssMyActive" @onclick="(e=>ShowMyCases())">
-            <input type="radio" name="options" id="option2" autocomplete="off"> My Cases
-        </label>
-    </div>
-
-
-</FTSubHeaderBar> *@
-
-
 <div class="dashboard-layout">
     <!-- Dashboard ASK-4-HELP -->
     <div class="dashboard-left">
@@ -54,7 +39,7 @@
             </div>
         </div>
         <section class="dashboard-content">
-            <div class="dashboard-case-create">
+         @*    <div class="dashboard-case-create">
                 <form action="" method="post">
                     <div class="form-group create-case">
                         <input class="form-case" type="text" placeholder="What case would you like to share today?">
@@ -67,7 +52,7 @@
                         <button class="btn btn-sm btn-orange  btn-roboto">Post</button>
                     </div>
                 </form>
-            </div>
+            </div> *@
             <HelpCases />
         </section>
     </div>

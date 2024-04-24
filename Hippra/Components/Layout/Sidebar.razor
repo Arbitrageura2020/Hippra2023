@@ -1,18 +1,23 @@
-﻿@inject IJSRuntime JSRuntime;
-
+﻿@using Hippra.Models.Enums
+@using Hippra.Models.SQL
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+@inject IJSRuntime JSRuntime;
+@inject UserManager<AppUser> UserManager
+@inject IHttpContextAccessor httpContextAccessor
 <!-- Sidebar Start -->
 <aside id="sidebar" class="sidebar @(IsMinMode?"":"expand")">
     <div class="sidebar-top">
         <div class="sidebar-profile">
             <div class="sidebar-profile-img">
-                <a href="profile.html">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU"
+                <a href="/PersonalPage/@UserProfileId">
+                    <img src="@ProfileUrl"
                          alt="">
                 </a>
             </div>
             <div class="sidebar-profile-info @(IsMinMode?"":"show")" style="@(IsMinMode?"display:none;":"display:block;")">
-                <h4>Mary Kate</h4>
-                <p>Nurse Practitioner</p>
+                <h4>@FullUserName</h4>
+                <p>@UserSpeciality</p>
             </div>
         </div>
         <div class="sidebar-menu">
@@ -115,9 +120,22 @@
     private bool IsMinMode { get; set; } = false;
     private string SidebarCssClass { get; set; } = "ft-sidebar";
     private string SidebarCustomCssClass { get; set; } = "";
-
+    private string FullUserName { get; set; }
+    private string UserSpeciality { get; set; }
+    private string ProfileUrl { get; set; } = "/img/hippra/blank-profile.png";
+    private int UserProfileId { get; set; }
     protected override async Task OnInitializedAsync()
     {
+        var user = httpContextAccessor.HttpContext.User;
+        var userInfo = await UserManager.GetUserAsync(httpContextAccessor.HttpContext.User);
+        //userId = userInfo!.Id.ToString();
+        if (userInfo != null)
+        {
+            FullUserName = userInfo.FullName;
+            UserSpeciality = Enums.GetDisplayName(userInfo.MedicalSpecialty);
+            ProfileUrl = userInfo.ProfileUrl;
+            UserProfileId = userInfo.PublicId;
+        }
         IsMinMode = false;
     }
 
