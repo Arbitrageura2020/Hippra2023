@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using System.Security.Claims;
 using Newtonsoft.Json;
 using Hippra.Services.Email;
+using Hippra.Models.ViewModel;
 
 namespace Hippra.Services
 {
@@ -114,113 +115,7 @@ namespace Hippra.Services
             var user = await UserManagerExtensions.FindByEmail(_userManager, email);
             return user.PublicId;
         }
-        public async Task<int> RegisterAccount(FTRegisterModel Input, string urlStr)
-        {
-            //var user = new AppUser { UserName = Input.Email, Email = Input.Email };
-            var userWithlargestPublicID = await UserManagerExtensions.GetLastPID(_userManager);
 
-            AppUser user;
-
-            if (Input.Email.ToUpper() == AppSettings.FTManagerUsr.ToUpper())
-            {
-                user = new AppUser
-                {
-                    UserName = Input.Email,
-                    Email = Input.Email,
-                    PublicId = userWithlargestPublicID + 1,
-
-                    FirstName = Input.FirstName,
-                    LastName = Input.LastName,
-                    NPIN = Input.NPIN,
-                    MedicalSpecialty = Input.MedicalSpecialty,
-                    AmericanBoardCertified = Input.AmericanBoardCertified,
-                    ResidencyHospital = Input.ResidencyHospital,
-                    MedicalSchoolAttended = Input.MedicalSchoolAttended,
-                    EducationDegree = Input.EducationDegree,
-                    Address = Input.Address,
-                    Zipcode = Input.Zipcode,
-                    State = Input.State,
-                    City = Input.City,
-                    PhoneNumber = Input.PhoneNumber,
-
-                    DateJoined = DateTime.Now,
-                    isApproved = true
-                };
-            }
-            else
-            {
-                user = new AppUser
-                {
-                    UserName = Input.Email,
-                    Email = Input.Email,
-                    PublicId = userWithlargestPublicID + 1,
-                    FirstName = Input.FirstName,
-                    LastName = Input.LastName,
-                    NPIN = Input.NPIN,
-                    MedicalSpecialty = Input.MedicalSpecialty,
-                    AmericanBoardCertified = Input.AmericanBoardCertified,
-                    ResidencyHospital = Input.ResidencyHospital,
-                    MedicalSchoolAttended = Input.MedicalSchoolAttended,
-                    EducationDegree = Input.EducationDegree,
-                    Address = Input.Address,
-                    Zipcode = Input.Zipcode,
-                    State = Input.State,
-                    City = Input.City,
-                    PhoneNumber = Input.PhoneNumber,
-                    DateJoined = DateTime.Now,
-                    isApproved = true
-                };
-                // temporary approve all sign up
-            }
-
-
-            var result = await _userManager.CreateAsync(user, Input.Password);
-            if (result.Succeeded)
-            {
-                //_logger.LogInformation("User created a new account with password.");
-
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-
-                var callbackUrl = urlStr + "Identity/Account/ConfirmEmail?userId=" + user.Id + "&code=" + code;
-
-                //var callbackUrl = Url.Page(
-                //    "/Account/ConfirmEmail",
-                //    pageHandler: null,
-                //    values: new { area = "Identity", userId = user.Id, code = code },
-                //    protocol: Request.Scheme);
-
-                await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                // create azure storage for contact management
-                //await UserDataHelper.InitUserData(user.PublicId);
-
-                if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                {
-                    return 2;// RedirectToPage("RegisterConfirmation", new { email = Input.Email });
-                }
-                else
-                {
-                    if (user.isApproved)
-                    {
-                        // NOTE: THIS WILL FAIL AS OF ASPNETCORE 3.1 blazor due to fact that cannot update cookie directly
-                        //await _signInManager.SignInAsync(user, isPersistent: false);
-                        return 0;// LocalRedirect(returnUrl);
-                    }
-                    else
-                    {
-                        return 1;// LocalRedirect("/PendingApproval");
-                    }
-
-                }
-            }
-            return -1;
-            //foreach (var error in result.Errors)
-            //{
-            //    ModelState.AddModelError(string.Empty, error.Description);
-            //}
-        }
 
         public async Task<int> LoginAccount(FTLoginModel Input)
         {
@@ -522,6 +417,123 @@ namespace Hippra.Services
                 await _userManager.UpdateAsync(user);
             }
 
+        }
+
+        public async Task<int> RegisterUser(RegisterViewModel Input, string callbackUrl)
+        {
+            //var user = new AppUser { UserName = Input.Email, Email = Input.Email };
+            var userWithlargestPublicID = await UserManagerExtensions.GetLastPID(_userManager);
+
+            AppUser user;
+
+            if (Input.Email.ToUpper() == AppSettings.FTManagerUsr.ToUpper())
+            {
+                user = new AppUser
+                {
+                    UserName = Input.Email,
+                    Email = Input.Email,
+                    PublicId = userWithlargestPublicID + 1,
+                    AccountType = Input.AccountType,
+                    FirstName = Input.FirstName,
+                    LastName = Input.LastName,
+                    NPIN = Input.NPIN,
+                    MedicalSpecialty = Input.MedicalSpecialty,
+                    AmericanBoardCertified = Input.AmericanBoardCertified,
+                    ResidencyHospital = Input.ResidencyHospital,
+                    MedicalSchoolAttended = Input.MedicalSchoolAttended,
+                    EducationDegree = Input.EducationDegree,
+                    Address = Input.Address,
+                    Zipcode = Input.Zipcode,
+                    State = Input.State,
+                    City = Input.City,
+                    PhoneNumber = Input.PhoneNumber,
+                    Country = Input.Country,
+                    DateJoined = DateTime.Now,
+                    isApproved = true
+                };
+            }
+            else
+            {
+                user = new AppUser
+                {
+                    UserName = Input.Email,
+                    Email = Input.Email,
+                    PublicId = userWithlargestPublicID + 1,
+                    FirstName = Input.FirstName,
+                    LastName = Input.LastName,
+                    NPIN = Input.NPIN,
+                    MedicalSpecialty = Input.MedicalSpecialty,
+                    AmericanBoardCertified = Input.AmericanBoardCertified,
+                    ResidencyHospital = Input.ResidencyHospital,
+                    MedicalSchoolAttended = Input.MedicalSchoolAttended,
+                    EducationDegree = Input.EducationDegree,
+                    Address = Input.Address,
+                    Zipcode = Input.Zipcode,
+                    State = Input.State,
+                    City = Input.City,
+                    PhoneNumber = Input.PhoneNumber,
+                    DateJoined = DateTime.Now,
+                    isApproved = true
+                };
+                // temporary approve all sign up
+            }
+
+
+            var result = await _userManager.CreateAsync(user, Input.Password);
+            if (result.Succeeded)
+            {
+                if (Input.AccountType == Models.Enums.UserAccountType.Nurse)
+                {
+                    await _userManager.AddToRoleAsync(user, "Nurse");
+                }
+                else
+                {
+                    await _userManager.AddToRoleAsync(user, "Physician");
+                }
+
+                //_logger.LogInformation("User created a new account with password.");
+
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+                //   var callbackUrl = urlStr + "Identity/Account/ConfirmEmail?userId=" + user.Id + "&code=" + code;
+
+                //var callbackUrl = Url.Page(
+                //    "/Account/ConfirmEmail",
+                //    pageHandler: null,
+                //    values: new { area = "Identity", userId = user.Id, code = code },
+                //    protocol: Request.Scheme);
+
+                await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                // create azure storage for contact management
+                //await UserDataHelper.InitUserData(user.PublicId);
+
+                if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                {
+                    return 2;// RedirectToPage("RegisterConfirmation", new { email = Input.Email });
+                }
+                else
+                {
+                    if (user.isApproved)
+                    {
+                        // NOTE: THIS WILL FAIL AS OF ASPNETCORE 3.1 blazor due to fact that cannot update cookie directly
+                        //await _signInManager.SignInAsync(user, isPersistent: false);
+                        return 0;// LocalRedirect(returnUrl);
+                    }
+                    else
+                    {
+                        return 1;// LocalRedirect("/PendingApproval");
+                    }
+
+                }
+            }
+            return -1;
+            //foreach (var error in result.Errors)
+            //{
+            //    ModelState.AddModelError(string.Empty, error.Description);
+            //}
         }
 
     }

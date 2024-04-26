@@ -1,195 +1,203 @@
 ﻿@page "/Register"
+@using Hippra.Models.Enums
+@using Hippra.Models.ViewModel
+@using Hippra.Services
+@inject ProfileService pService;
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @layout LoginLayout
 <PageTitle>Register</PageTitle>
-@if (CurrentPage == 1)
-{
-    <div class="create-an-account">Create an Account</div>
+<EditForm Model="@InputModel" OnValidSubmit="@SubmitSignUp">
+    @if (CurrentPage == 1)
+    {
+        <div class="create-an-account">Create an Account</div>
 
-    <div class="dot-progress">
-        <svg class="frame-5004"
-             width="794"
-             height="43"
-             viewBox="0 0 794 43"
+        <div class="dot-progress">
+            <svg class="frame-5004"
+                 width="794"
+                 height="43"
+                 viewBox="0 0 794 43"
+                 fill="none"
+                 xmlns="http://www.w3.org/2000/svg">
+                <line x1="31"
+                      y1="20.125"
+                      x2="752.001"
+                      y2="20.125"
+                      stroke="#DA5810"
+                      stroke-width="2" />
+                <circle cx="18.5" cy="21.5" r="12.5" fill="#1DA39D" />
+                <circle cx="764.5" cy="21.5" r="12.5" fill="#DA5810" />
+                <circle cx="397.5" cy="21.5" r="12.5" fill="#DA5810" />
+            </svg>
+        </div>
+
+        <div class="select-account-type">Select Account Type</div>
+
+        <div class="center-container">
+            <div class="dropdown-container">
+                <select class="dropdown" placeholder="I'm a ..." @bind="@InputModel.AccountType">
+                    <option value="0" disabled selected>I'm a ...</option>
+                    <option value="1">Physician</option>
+                    <option value="2">Nurse Practitioner</option>
+                </select>
+            </div>
+        </div>
+    }
+    @if (CurrentPage == 2)
+    {
+        <div class="create-an-account">Create an Account</div>
+
+        <div class="dot-progress">
+            <svg class="frame-5004" width="794" height="43" viewBox="0 0 794 43" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="387" y1="20.125" x2="752.001" y2="20.125" stroke="#DA5810" stroke-width="2"></line>
+                <line x1="31" y1="20.125" x2="391.5" y2="20.125" stroke="#1DA39D" stroke-width="2"></line>
+                <circle cx="18.5" cy="21.5" r="12.5" fill="#1DA39D"></circle>
+                <circle cx="764.5" cy="21.5" r="12.5" fill="#DA5810"></circle>
+                <circle cx="391.5" cy="21.5" r="12.5" fill="#1DA39D"></circle>
+            </svg>
+        </div>
+
+        <div class="profile">Profile</div>
+
+        <div class="form-container">
+            <form class="two-column-form">
+                <div class="column column-1 login-container">
+                    <div class="input-field">
+                        <input type="FirstName" placeholder="First Name" @bind="@InputModel.FirstName">
+                    </div>
+                    <div class="input-field">
+                        <input type="LastName" placeholder="Last Name" @bind="@InputModel.LastName">
+                    </div>
+                    <div class="dropdown-container symbol">
+                        <select class="dropdown" placeholder="Credential Type">
+                            <option value="" disabled="" selected="">Credential Type</option>
+                            <option value="option1">
+                                National Provider Identifier (NPI)
+                            </option>
+                            <option value="option2">ID.Me</option>
+                        </select>
+                    </div>
+                    <span class="subtext"><i>You can change this later</i></span>
+
+                    <div class="dropdown-container">
+                        <select class="dropdown" placeholder="Medical Specialty">
+                            <option value="0" disabled="" selected="">Medical Specialty</option>
+                            @foreach (MedicalSpecialtyType i in Enum.GetValues(typeof(MedicalSpecialtyType)))
+                            {
+                                <option value="@i">@Enums.GetDisplayName(i)</option>
+                            }
+                        </select>
+                    </div>
+                    <span class="subtext"><i>You can change this later</i></span>
+                </div>
+
+                <div class="column column-2 login-container">
+                    <div class="input-field">
+                        <input type="ResHosp" placeholder="Residency Hospital" @bind="@InputModel.ResidencyHospital">
+                    </div>
+                    <div class="input-field">
+                        <input type="MedSch" placeholder="Medical School Attended" @bind="@InputModel.MedicalSchoolAttended">
+                    </div>
+                    <div class="input-field">
+                        <input type="Edu" placeholder="Education/Degree" @bind="@InputModel.EducationDegree">
+                    </div>
+                    <div class="check-box">
+                        <input type="checkbox" id="remember" name="remember" @bind="@InputModel.AmericanBoardCertified">
+                        <label for="remember">American Board Certified</label>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+
+    }
+
+    @if (CurrentPage == 3)
+    {
+
+        <div class="create-an-account">Create an Account</div>
+
+        <div class="dot-progress">
+            <svg class="frame-5004" width="794" height="43" viewBox="0 0 794 43" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="387" y1="20.125" x2="752.001" y2="20.125" stroke="#1DA39D" stroke-width="2"></line>
+                <line x1="31" y1="20.125" x2="391.5" y2="20.125" stroke="#1DA39D" stroke-width="2"></line>
+                <circle cx="18.5" cy="21.5" r="12.5" fill="#1DA39D"></circle>
+                <circle cx="764.5" cy="21.5" r="12.5" fill="#1DA39D"></circle>
+                <circle cx="391.5" cy="21.5" r="12.5" fill="#1DA39D"></circle>
+            </svg>
+        </div>
+
+        <div class="profile">Contact</div>
+
+        <div class="form-container">
+            <form class="two-column-form" action="/submit-form-url" method="post">
+                <div class="column column-1 login-container">
+                    <div class="input-field">
+                        <input type="Address" placeholder="Address" @bind="@InputModel.Address">
+                    </div>
+                    <div class="input-field">
+                        <input type="City" placeholder="City" @bind="@InputModel.City">
+                    </div>
+
+                    <div class="dropdown-container margtop arrow1">
+                        <select class="dropdown" placeholder="State" @bind="@InputModel.State">
+                            <option value="" disabled="" selected="">State</option>
+                            <option value="option1">Anesthesiology</option>
+                            <option value="option2">Colon and Rectal Surgery</option>
+                            <option value="option3">Dermatology</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="column column-2 login-container">
+                    <div class="input-field">
+                        <input type="Zipcode" placeholder="Zipcode" @bind="@InputModel.Zipcode">
+                    </div>
+                    <div class="dropdown-container margtop arrow2">
+                        <select class="dropdown" placeholder="Country" @bind="@InputModel.Country">
+                            <option value="" disabled="" selected="">Country</option>
+                            <option value="option1">Anesthesiology</option>
+                            <option value="option2">Colon and Rectal Surgery</option>
+                            <option value="option3">Dermatology</option>
+                        </select>
+                    </div>
+                    <div class="input-field">
+                        <input type="Num" placeholder="Phone Number" @bind="@InputModel.PhoneNumber">
+                    </div>
+                </div>
+
+                <div class="sub-btn">
+                    <a href="#" class="submit-btn btn">Submit</a>
+                </div>
+            </form>
+        </div>
+        <div class="check-box-agreement">
+            <input type="checkbox" id="lolremember" name="lolremember" @bind="@InputModel.AgreedTerm">
+            <label for="lolremember">
+                I have read and agree to the terms presented in the
+                <span class="t-and-c"><a href="">Terms and Conditions</a></span>
+                agreement
+            </label>
+        </div>
+
+
+    }
+    <div class="h-logo">
+        <svg class="h-color"
+             width="241"
+             height="196"
+             viewBox="0 0 241 196"
              fill="none"
              xmlns="http://www.w3.org/2000/svg">
-            <line x1="31"
-                  y1="20.125"
-                  x2="752.001"
-                  y2="20.125"
-                  stroke="#DA5810"
-                  stroke-width="2" />
-            <circle cx="18.5" cy="21.5" r="12.5" fill="#1DA39D" />
-            <circle cx="764.5" cy="21.5" r="12.5" fill="#DA5810" />
-            <circle cx="397.5" cy="21.5" r="12.5" fill="#DA5810" />
+            <path d="M0 10.8737C0 4.90905 4.83532 0.0737305 10.8 0.0737305H25.6573C31.622 0.0737305 36.4573 4.90906 36.4573 10.8737V185.18C36.4573 191.145 31.622 195.98 25.6573 195.98H10.8C4.83533 195.98 0 191.145 0 185.18V10.8737Z"
+                  fill="#1DA39D"
+                  fill-opacity="0.1" />
+            <path d="M236.93 79.1435H164.763C162.858 79.1435 161.314 77.5887 161.314 75.6713V3.47222C161.314 1.55478 159.77 0 157.865 0H128.305C126.401 0 124.857 1.55478 124.857 3.47222V75.6713C124.857 77.5887 123.312 79.1435 121.408 79.1435H49.2442C47.3397 79.1435 45.7954 80.6983 45.7954 82.6157V112.377C45.7954 114.294 47.3397 115.849 49.2442 115.849H121.412C123.316 115.849 124.86 117.404 124.86 119.321V192.438C124.86 194.356 126.405 195.91 128.309 195.91H157.869C159.773 195.91 161.318 194.356 161.318 192.438V119.321C161.318 117.404 162.862 115.849 164.766 115.849H236.934C238.838 115.849 240.383 114.294 240.383 112.377V82.6157C240.383 80.6983 238.838 79.1435 236.934 79.1435L236.93 79.1435Z"
+                  fill="#DA5810"
+                  fill-opacity="0.1" />
         </svg>
     </div>
-
-    <div class="select-account-type">Select Account Type</div>
-
-    <div class="center-container">
-        <div class="dropdown-container">
-            <select class="dropdown" placeholder="I'm a ...">
-                <option value="" disabled selected>I'm a ...</option>
-                <option value="option1">Physician</option>
-                <option value="option2">Nurse Practitioner</option>
-            </select>
-        </div>
-    </div>
-}
-@if (CurrentPage == 2)
-{
-    <div class="create-an-account">Create an Account</div>
-
-    <div class="dot-progress">
-        <svg class="frame-5004" width="794" height="43" viewBox="0 0 794 43" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="387" y1="20.125" x2="752.001" y2="20.125" stroke="#DA5810" stroke-width="2"></line>
-            <line x1="31" y1="20.125" x2="391.5" y2="20.125" stroke="#1DA39D" stroke-width="2"></line>
-            <circle cx="18.5" cy="21.5" r="12.5" fill="#1DA39D"></circle>
-            <circle cx="764.5" cy="21.5" r="12.5" fill="#DA5810"></circle>
-            <circle cx="391.5" cy="21.5" r="12.5" fill="#1DA39D"></circle>
-        </svg>
-    </div>
-
-    <div class="profile">Profile</div>
-
-    <div class="form-container">
-        <form class="two-column-form">
-            <div class="column column-1 login-container">
-                <div class="input-field">
-                    <input type="FirstName" placeholder="First Name">
-                </div>
-                <div class="input-field">
-                    <input type="LastName" placeholder="Last Name">
-                </div>
-                <div class="dropdown-container symbol">
-                    <select class="dropdown" placeholder="Credential Type">
-                        <option value="" disabled="" selected="">Credential Type</option>
-                        <option value="option1">
-                            National Provider Identifier (NPI)
-                        </option>
-                        <option value="option2">ID.Me</option>
-                    </select>
-                </div>
-                <span class="subtext"><i>You can change this later</i></span>
-
-                <div class="dropdown-container">
-                    <select class="dropdown" placeholder="Medical Specialty">
-                        <option value="" disabled="" selected="">Medical Specialty</option>
-                        <option value="option1">Anesthesiology</option>
-                        <option value="option2">Colon and Rectal Surgery</option>
-                        <option value="option3">Dermatology</option>
-                    </select>
-                </div>
-                <span class="subtext"><i>You can change this later</i></span>
-            </div>
-
-            <div class="column column-2 login-container">
-                <div class="input-field">
-                    <input type="ResHosp" placeholder="Residency Hospital">
-                </div>
-                <div class="input-field">
-                    <input type="MedSch" placeholder="Medical School Attended">
-                </div>
-                <div class="input-field">
-                    <input type="Edu" placeholder="Education/Degree">
-                </div>
-                <div class="check-box">
-                    <input type="checkbox" id="remember" name="remember">
-                    <label for="remember">American Board Certified</label>
-                </div>
-            </div>
-
-        </form>
-    </div>
-
-
-}
-
-@if (CurrentPage == 3)
-{
-
-    <div class="create-an-account">Create an Account</div>
-
-    <div class="dot-progress">
-        <svg class="frame-5004" width="794" height="43" viewBox="0 0 794 43" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="387" y1="20.125" x2="752.001" y2="20.125" stroke="#1DA39D" stroke-width="2"></line>
-            <line x1="31" y1="20.125" x2="391.5" y2="20.125" stroke="#1DA39D" stroke-width="2"></line>
-            <circle cx="18.5" cy="21.5" r="12.5" fill="#1DA39D"></circle>
-            <circle cx="764.5" cy="21.5" r="12.5" fill="#1DA39D"></circle>
-            <circle cx="391.5" cy="21.5" r="12.5" fill="#1DA39D"></circle>
-        </svg>
-    </div>
-
-    <div class="profile">Contact</div>
-
-    <div class="form-container">
-        <form class="two-column-form" action="/submit-form-url" method="post">
-            <div class="column column-1 login-container">
-                <div class="input-field">
-                    <input type="Address" placeholder="Address">
-                </div>
-                <div class="input-field">
-                    <input type="City" placeholder="City">
-                </div>
-
-                <div class="dropdown-container margtop arrow1">
-                    <select class="dropdown" placeholder="State">
-                        <option value="" disabled="" selected="">State</option>
-                        <option value="option1">Anesthesiology</option>
-                        <option value="option2">Colon and Rectal Surgery</option>
-                        <option value="option3">Dermatology</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="column column-2 login-container">
-                <div class="input-field">
-                    <input type="Zipcode" placeholder="Zipcode">
-                </div>
-                <div class="dropdown-container margtop arrow2">
-                    <select class="dropdown" placeholder="Country">
-                        <option value="" disabled="" selected="">Country</option>
-                        <option value="option1">Anesthesiology</option>
-                        <option value="option2">Colon and Rectal Surgery</option>
-                        <option value="option3">Dermatology</option>
-                    </select>
-                </div>
-                <div class="input-field">
-                    <input type="Num" placeholder="Phone Number">
-                </div>
-            </div>
-
-            <div class="sub-btn">
-                <a href="#" class="submit-btn btn">Submit</a>
-            </div>
-        </form>
-    </div>
-    <div class="check-box-agreement">
-        <input type="checkbox" id="lolremember" name="lolremember">
-        <label for="lolremember">
-            I have read and agree to the terms presented in the
-            <span class="t-and-c"><a href="">Terms and Conditions</a></span>
-            agreement
-        </label>
-    </div>
-
-
-}
-<div class="h-logo">
-    <svg class="h-color"
-         width="241"
-         height="196"
-         viewBox="0 0 241 196"
-         fill="none"
-         xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 10.8737C0 4.90905 4.83532 0.0737305 10.8 0.0737305H25.6573C31.622 0.0737305 36.4573 4.90906 36.4573 10.8737V185.18C36.4573 191.145 31.622 195.98 25.6573 195.98H10.8C4.83533 195.98 0 191.145 0 185.18V10.8737Z"
-              fill="#1DA39D"
-              fill-opacity="0.1" />
-        <path d="M236.93 79.1435H164.763C162.858 79.1435 161.314 77.5887 161.314 75.6713V3.47222C161.314 1.55478 159.77 0 157.865 0H128.305C126.401 0 124.857 1.55478 124.857 3.47222V75.6713C124.857 77.5887 123.312 79.1435 121.408 79.1435H49.2442C47.3397 79.1435 45.7954 80.6983 45.7954 82.6157V112.377C45.7954 114.294 47.3397 115.849 49.2442 115.849H121.412C123.316 115.849 124.86 117.404 124.86 119.321V192.438C124.86 194.356 126.405 195.91 128.309 195.91H157.869C159.773 195.91 161.318 194.356 161.318 192.438V119.321C161.318 117.404 162.862 115.849 164.766 115.849H236.934C238.838 115.849 240.383 114.294 240.383 112.377V82.6157C240.383 80.6983 238.838 79.1435 236.934 79.1435L236.93 79.1435Z"
-              fill="#DA5810"
-              fill-opacity="0.1" />
-    </svg>
-</div>
+</EditForm>
 <div class="footer-profile-phy">
     @if (CurrentPage > 1)
     {
@@ -204,7 +212,9 @@
 
 @code {
     private int CurrentPage { get; set; } = 1;
-
+    private bool hasError { get; set; }
+    private bool hasPasswordError { get; set; }
+    private RegisterViewModel InputModel { get; set; } = new RegisterViewModel();
 
     public void NextPage()
     {
@@ -215,5 +225,66 @@
     {
         if (CurrentPage > 1)
             CurrentPage--;
+    }
+
+    private async Task SubmitSignUp()
+    {
+        hasError = false;
+        hasPasswordError = false;
+        //validate password
+        if (InputModel.Password.All(Char.IsLetterOrDigit))
+        {
+            hasPasswordError = true;
+            return;
+        }
+
+        var baseurl = NavigationManager.Uri;
+        baseurl = baseurl.Remove(baseurl.Length - 10);
+
+        // fill bMedicalSpecialty back to inputModel
+        InputModel.UserName = InputModel.Email;
+
+        var result = await pService.RegisterUser(InputModel, baseurl);
+        if (result != -1)
+        {
+            // 0 already signed in (this is me)
+            // 1 PendingApproval
+            // 2 RegisterConfirmation
+            // if (result == 0)
+            // {
+            //     PostHistory newHistory = new PostHistory();
+            //     newHistory.ID = 0;
+            //     newHistory.PostID = -1;
+            //     newHistory.CreationDate = DateTime.Now;
+            //     newHistory.PosterID = await pService.GetUserIdByEmail(inputModel.Email);
+            //     newHistory.UserDisplayName = inputModel.FirstName + " " + inputModel.LastName;
+            //     newHistory.Title = "Welcome to Hippra!";
+            //     newHistory.Detail = "Account created on " + newHistory.CreationDate.ToShortDateString();
+            //     newHistory.HistoryTypes = "joined Hippra";
+            //     await hService.AddHistory(newHistory);
+            // }
+            // if (ShowTabs)
+            // {
+            //     menuArray.ElementAt(currentTab).cssClass = "d-none";
+            //     currentTab = currentTab + 1;
+            //     menuArray.ElementAt(currentTab).cssClass = "";
+            // }
+            // else
+            // {
+            //     menuArray.ElementAt(0).cssClass = "d-none";
+            //     menuArray.ElementAt(1).cssClass = "d-none";
+            //     menuArray.ElementAt(2).cssClass = "d-none";
+            //     menuArray.ElementAt(3).cssClass = "d-none";
+            //     menuArray.ElementAt(4).cssClass = "";
+            // }
+
+            this.StateHasChanged();
+        }
+        else
+        {
+            hasError = true;
+        }
+
+
     }
 }

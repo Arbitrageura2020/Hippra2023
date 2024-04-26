@@ -436,46 +436,46 @@
         inputModel.UserName = inputModel.Email;
         inputModel.MedicalSpecialty = bMedicalSpecialty;
 
-        var result = await pService.RegisterAccount(inputModel, baseurl);
-        if (result != -1)
-        {
-            // 0 already signed in (this is me)
-            // 1 PendingApproval
-            // 2 RegisterConfirmation
-            if (result == 0)
-            {
-                PostHistory newHistory = new PostHistory();
-                newHistory.ID = 0;
-                newHistory.PostID = -1;
-                newHistory.CreationDate = DateTime.Now;
-                newHistory.PosterID = await pService.GetUserIdByEmail(inputModel.Email);
-                newHistory.UserDisplayName = inputModel.FirstName + " " + inputModel.LastName;
-                newHistory.Title = "Welcome to Hippra!";
-                newHistory.Detail = "Account created on " + newHistory.CreationDate.ToShortDateString();
-                newHistory.HistoryTypes = "joined Hippra";
-                await hService.AddHistory(newHistory);
-            }
-            if (ShowTabs)
-            {
-                menuArray.ElementAt(currentTab).cssClass = "d-none";
-                currentTab = currentTab + 1;
-                menuArray.ElementAt(currentTab).cssClass = "";
-            }
-            else
-            {
-                menuArray.ElementAt(0).cssClass = "d-none";
-                menuArray.ElementAt(1).cssClass = "d-none";
-                menuArray.ElementAt(2).cssClass = "d-none";
-                menuArray.ElementAt(3).cssClass = "d-none";
-                menuArray.ElementAt(4).cssClass = "";
-            }
+        // var result = await pService.RegisterUser(inputModel);
+        // if (result != -1)
+        // {
+        //     // 0 already signed in (this is me)
+        //     // 1 PendingApproval
+        //     // 2 RegisterConfirmation
+        //     if (result == 0)
+        //     {
+        //         PostHistory newHistory = new PostHistory();
+        //         newHistory.ID = 0;
+        //         newHistory.PostID = -1;
+        //         newHistory.CreationDate = DateTime.Now;
+        //         newHistory.PosterID = await pService.GetUserIdByEmail(inputModel.Email);
+        //         newHistory.UserDisplayName = inputModel.FirstName + " " + inputModel.LastName;
+        //         newHistory.Title = "Welcome to Hippra!";
+        //         newHistory.Detail = "Account created on " + newHistory.CreationDate.ToShortDateString();
+        //         newHistory.HistoryTypes = "joined Hippra";
+        //         await hService.AddHistory(newHistory);
+        //     }
+        //     if (ShowTabs)
+        //     {
+        //         menuArray.ElementAt(currentTab).cssClass = "d-none";
+        //         currentTab = currentTab + 1;
+        //         menuArray.ElementAt(currentTab).cssClass = "";
+        //     }
+        //     else
+        //     {
+        //         menuArray.ElementAt(0).cssClass = "d-none";
+        //         menuArray.ElementAt(1).cssClass = "d-none";
+        //         menuArray.ElementAt(2).cssClass = "d-none";
+        //         menuArray.ElementAt(3).cssClass = "d-none";
+        //         menuArray.ElementAt(4).cssClass = "";
+        //     }
 
-            this.StateHasChanged();
-        }
-        else
-        {
-            hasError = true;
-        }
+        //     this.StateHasChanged();
+        // }
+        // else
+        // {
+        //     hasError = true;
+        // }
 
 
     }
