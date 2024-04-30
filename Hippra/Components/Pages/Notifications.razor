@@ -1,0 +1,693 @@
+﻿@page "/Notifications"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Text
+@using System.Text.Encodings.Web
+@using Hippra.Models.FTDesign
+@using Hippra.Services
+@using Hippra.Models.SQL
+@using Hippra.Models.Enums
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
+@inject IJSRuntime JSRuntime
+@*@inject SignInManager<AppUser> SignInManager
+	@inject UserManager<AppUser> UserManager*@
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject HippraService hService
+@inject ProfileService pService
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@using Hippra.Extensions
+@inject IAuthorizationService AuthorizationService
+
+        <div class="ft-main-px">
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="offset-md-2 col-md-8 offset-md-2 text-center">
+                            <br />
+                            <h4 class="display-4 text-center">Notifications</h4>
+                            <br />
+                            <div class="row py-2">
+                                <div class="col">
+                                    @{
+                                        var curDate = "";
+                                    }
+                                    @if (notificationList != null)
+                                    {
+
+                                        @foreach (var notification in notificationList)
+                                        {
+                                            @if (curDate == "" || notification.CreationDate.ToShortDateString() != curDate)
+                                            {
+                                                curDate = notification.CreationDate.ToShortDateString();
+                                                <div class="text-left">
+                                                    <h3>@notification.CreationDate.ToString("MMMM dd, yyyy")</h3>
+                                                </div>
+
+                                            }
+                                            @if (notification.HistoryTypes == "followed" || notification.HistoryTypes == "invited"
+                                           || notification.HistoryTypes == "connected with" || notification.HistoryTypes == "decline invitation")
+                                            {
+                                                <div class="border border-dark rounded p-4 mb-2 hover-class notif-card" style="background: @notification.IsRead">
+                                                    <button class="clear-notif" @onclick="(e => { ClearNotification(notification); })"><span class="far fa-times-circle"></span></button>
+                                                    <div class="row">
+                                                        <div class="col-md-9 align-self-center">
+                                                            <h4>@notification.UserDisplayName @notification.HistoryTypes you.</h4>
+                                                        </div>
+                                                    </div>
+                                                    @if (notification.HistoryTypes == "followed")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>@notification.Title</div>
+                                                                <div><strong></strong>@notification.Detail</div>
+                                                                <button class="notif-btn-v" @onclick="(e => { viewPage(notification); })">View Profile</button>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-user-check activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    else if (notification.HistoryTypes == "invited")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>@notification.Title</div>
+                                                                <div><strong></strong>@notification.Detail</div>
+                                                                @if (notification.Detail == "")
+                                                                {
+                                                                    <button class="notif-btn-a" @onclick="(e => { AddToConnection(notification); })">accept</button>
+
+                                                                    <button class="notif-btn-d" @onclick="(e => { Decline(notification); })">decline</button>
+                                                                }
+                                                                <button class="notif-btn-v" @onclick="(e => { viewPage(notification); })"> View Profile</button>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-envelope-open-text activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+
+                                                        </div>
+
+                                                    }
+                                                    else if (notification.HistoryTypes == "connected with")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>@notification.Title</div>
+                                                                <div><strong></strong>@notification.Detail</div>
+                                                                <button class="notif-btn-v" @onclick="(e => { viewPage(notification); })"> View Profile</button>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-user-plus activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    else if (notification.HistoryTypes == "decline invitation")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>@notification.Title</div>
+                                                                <div><strong></strong>@notification.Detail</div>
+                                                                <button class="notif-btn-v" @onclick="(e => { viewPage(notification); })"> View Profile</button>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-user-times activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="border border-dark rounded p-4 mb-2 hover-class notif-card" style="background: @notification.IsRead" @onclick="(e => OpenViewModalFromNotification(notification))">
+                                                    <button class="clear-notif" @onclick="(e => { ClearNotification(notification); })"><span class="far fa-times-circle"></span></button>
+                                                    <div class="row">
+                                                        <div class="col-md-9 align-self-center">
+                                                            @if (notification.HistoryTypes == "added a comment on" || notification.HistoryTypes == "updated a comment on"
+                                                           || notification.HistoryTypes == "deleted a comment on" || notification.HistoryTypes == "added an up vote on"
+                                                           || notification.HistoryTypes == "added a down vote on")
+                                                            {
+                                                                @if (usrID == notification.PosterID)
+                                                                {
+                                                                    <h4>@notification.UserDisplayName @notification.HistoryTypes your post.</h4>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <h4>@notification.UserDisplayName @notification.HistoryTypes a post.</h4>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <h4>@notification.UserDisplayName @notification.HistoryTypes. </h4>
+                                                            }
+
+                                                        </div>
+                                                    </div>
+                                                    @if (notification.HistoryTypes == "added a new case")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>Case Topic: @notification.Title</div>
+                                                                <div><strong></strong>Case Description: @notification.Detail</div>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <p><span class="fa fa-calendar-plus-o activity-log-icon"></span></p>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    else if (notification.HistoryTypes == "added a comment on")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>Case Topic: @notification.Title</div>
+                                                                <div><strong></strong>Case Description: @notification.Detail</div>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <p><span class="fa fa-commenting-o activity-log-icon"></span></p>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    else if (notification.HistoryTypes == "updated a comment on")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>Case Topic: @notification.Title</div>
+                                                                <div><strong></strong>Case Description: @notification.Detail</div>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-comments-o activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    else if (notification.HistoryTypes == "deleted a comment on")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>Case Topic: @notification.Title</div>
+                                                                <div><strong></strong>Case Description: @notification.Detail</div>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-comment-o activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    else if (notification.HistoryTypes == "added an up vote on")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>Case Topic: @notification.Title</div>
+                                                                <div><strong></strong>Case Description: @notification.Detail</div>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-caret-square-o-up activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    else if (notification.HistoryTypes == "added a down vote on")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>Case Topic: @notification.Title</div>
+                                                                <div><strong></strong>Case Description: @notification.Detail</div>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-caret-square-o-down activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                </div>
+                                            }
+
+                                        }
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+//new design
+
+<div class="main-layout">
+    <section class="notification-content">
+        <div class="container">
+            <div class="notification-layout">
+                <!-- Notification Top -->
+                <div class="notification-top">
+                    <h4>Notifications</h4>
+                    <div class="notification-switch">
+                        <div class="notification-caption">
+                            <img src="./img/icons/bell-icon.svg" alt="">
+                            <h6>Turn on notification badges.</h6>
+                        </div>
+                        <label class="form-switch">
+                            <input type="checkbox">
+                            <span class="form-slider"></span>
+                        </label>
+
+                    </div>
+                </div>
+                <!-- Notification Tabs -->
+                <div class="notification-tabs">
+                    <div class="notification-tab-item active">
+                        <button data-tab="notification-general" class="active">General</button>
+                    </div>
+                    <div class="notification-tab-item">
+                        <button data-tab="notification-chats" href="account-password.html" class="">Chats</button>
+                    </div>
+                    <div class="notification-tab-item">
+                        <button data-tab="notification-posts" href="notifications-subscriptions.html" class="">My Posts</button>
+                    </div>
+                </div>
+                <!-- Notification Content -->
+                <!-- General -->
+                <div data-content="notification-general" class="notification-inner-content inside-scroll active" style="max-height: 344px; padding-bottom: 20px;">
+                    <ul>
+                        <!-- Notification Item Loop Here -->
+
+
+
+                        <li>
+                            <a href="" class="notification-item">
+                                <div class="notification-avatar">
+                                    <img src="data:image/jpeg;base64,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" alt="">
+                                </div>
+                                <div class="notification-info">
+                                    <h6>23 new posts on <span>Paediatrics and Child Health.</span></h6>
+                                    <p>8s</p>
+                                </div>
+                                <div class="notification-action">
+                                    <!-- Set the "aria-disabled" attribute to "true" to remove the dot from the notification. -->
+                                    <span aria-disabled="false"></span>
+                                    <img src="./img/icons/chevron-right.svg" alt="">
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="notification-item">
+                                <div class="notification-avatar">
+                                    <img src="data:image/jpeg;base64,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" alt="">
+                                </div>
+                                <div class="notification-info">
+                                    <h6>23 new posts on <span>Paediatrics and Child Health.</span></h6>
+                                    <p>8s</p>
+                                </div>
+                                <div class="notification-action">
+                                    <span aria-disabled="false"></span>
+                                    <img src="./img/icons/chevron-right.svg" alt="">
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="notification-item">
+                                <div class="notification-avatar">
+                                    <img src="data:image/jpeg;base64,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" alt="">
+                                </div>
+                                <div class="notification-info user">
+                                    <h6><span>Zoe Zhao</span> followed you.</h6>
+                                    <p>8s</p>
+                                </div>
+                                <div class="notification-action">
+                                    <span aria-disabled="false"></span>
+                                    <img src="./img/icons/chevron-right.svg" alt="">
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="notification-item">
+                                <div class="notification-avatar">
+                                    <img src="data:image/jpeg;base64,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" alt="">
+                                </div>
+                                <div class="notification-info">
+                                    <h6>23 new posts on <span>Paediatrics and Child Health.</span></h6>
+                                    <p>8s</p>
+                                </div>
+                                <div class="notification-action">
+                                    <span aria-disabled="false"></span>
+                                    <img src="./img/icons/chevron-right.svg" alt="">
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="notification-item">
+                                <div class="notification-avatar">
+                                    <img src="data:image/jpeg;base64,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" alt="">
+                                </div>
+                                <div class="notification-info">
+                                    <h6>23 new posts on <span>Paediatrics and Child Health.</span></h6>
+                                    <p>8s</p>
+                                </div>
+                                <div class="notification-action">
+                                    <span aria-disabled="false"></span>
+                                    <img src="./img/icons/chevron-right.svg" alt="">
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chats : Add the "user" class to the notification-info for the color user name. -->
+                <div data-content="notification-chats" class="notification-inner-content inside-scroll" style="max-height: 586px; padding-bottom: 20px;">
+                    <ul>
+                        <!-- Notification Item Loop Here -->
+                        <li>
+                            <a href="" class="notification-item">
+                                <div class="notification-avatar">
+                                    <img src="data:image/jpeg;base64,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" alt="">
+                                </div>
+                                <div class="notification-info user">
+                                    <h6><span>Madeline Allen</span> sent you a new chat.</h6>
+                                    <p>8s</p>
+                                </div>
+                                <div class="notification-action">
+                                    <span aria-disabled="false"></span>
+                                    <img src="./img/icons/chevron-right.svg" alt="">
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="notification-item">
+                                <div class="notification-avatar">
+                                    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEBUQDxIVFRUVEA8VEBAQFRAVEA8QFRUWFxUVFRUYHSggGBolHRUVITEhJSkrLi4uFx80OTQtOCgtLisBCgoKDg0OGhAQGi0lHR4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIALcBEwMBIgACEQEDEQH/xAAbAAACAwEBAQAAAAAAAAAAAAACAwABBAUGB//EAEEQAAIBAgQCCAMEBgoDAQAAAAABAgMRBBIhMUFRBRMiYXGBkfChsdEGFDJSQnKSorLBU2JjgoOTwtLh8SSU1CP/xAAaAQADAQEBAQAAAAAAAAAAAAABAgMABAUG/8QAMhEAAgECBQIDCAEEAwAAAAAAAAECAxEEEhMhMUFRBWHwInGBkaGxwdEUFdLh4jIzQv/aAAwDAQACEQMRAD8A+P2LsQsukGxViyyWHUTWuVYuwViJD2CkVYuwViWKKIyiDYuxdgkh1EZRAyl5Q7F5SiiNlF5S8o3KXlGyDKApRLyjFEvKNkHVMVlJlG5SZRshtMVlKyjspHEGQ2mIyksOylZQZBdMVlKyjXErKI4CuApxKaG2BsLlFcQLFNBtEsTcRXEXYlhlirCOIuUXYuwbBsI0BoEoIjXn36iNAKsQhYtjWIQtF2HSGsRIiRYSRRIdIFIKxEg0iiQ2UFIKxaRaiVUR1AqxEg1EJRHUSqpgqJaiMUQ1AoolY0rilEJQGqAagUUSsaQnITIPVMPqxspRUTPkKyGnqy+rNYZ0TJkJkNXVldWbKK6JmyAOBqcCnAFhHSMjiU4mlwAcBXEm6RncQXEe4guJNxIumJaBsOcQWibRNwF2BsNsC0TcbCOAFimgmipMlLbcnJbA2JYJFNCW7AsBYsKxQLAylpBWCSAmbhFbWQMmMiJDh74Cwk7k4S3GpBpA5uDBp1PM6VNXsdKlG6XccohKIUEGonQjqjTuCojFEKMRiiUii8aQtQDjAbGA2MCiR0RoiY0xipjo0xipjo6I0RCphKmaFTDVMJZUDJ1ZOqNvVk6ow/8AHMTpgumbXTBdMIroGN0xbpm50yo0bgJPDtnOcAJQOpPBNGeVBitEp4Wa5RgcQHE1zpi3ARo5Z0mZXEFxGVZJbuz7xCq3fctfF8iEppbHHUlFO3UjiC0O8gKmgsu4kopK4mp4iGPjTvqC6fa8jinFy3OOcJS3sDEKweREcSijbkdQa5AsQOxDWNlBuFGF9QHSdrjIwa3/AJ6E1zuho5nK0lsSdK/wBVFmlx28YfNDMpTTi3udP8WLkIjSdtxUMO22uRvUAoQ3/WHyJtFXg4yav62EUE9peppjEOMA4xLx2R20qGVW5FNpbldes2VW1tZ8MnH5B4mMtopa9135I5qwk8zjbWzenoaU2uCGJq1KclGMfp66HdjAZCBzMFismk4WWuqtq17t6HaoLMr2LRmmenhJwrLbnqt9voVGmMjTGxgPjTKXPThREKkGqRpjTGxpAzHQqSXJk6onVG5UQuoBnQcsTmukA6Z0nRFSpBUwOnE58qYvKbp0xcqY1yUqNjDO4ttmucBUoAbOaVNmaVuQFTE5V2VGPlqOnE4+OxD1jZW5P8fjvoTnOxwYrEOhG992LxFeUnay1/R3du8x0ovNZb/I04Gpw178qTlbzexqo0022vz/AOhHHlztSbPDjSliWpZt7+revgZ02lre/J2+Zjqyv/22jrVaN9xOIoJrwu/gapByVh8Rhaji99kYoLTb1evoDKevzN9alcQsMrq/J38RZQfCIVMPUWy42Ai7+2W0NVK23/RTiG3cqqbt7QmxBmUswNMmUYohSj2R2Umd8KO/wX5Eyjt+vD+JDlElSOi/Xp/xxHqA6Z0Qo+0/cvyLjEunH+Jjkkt2lyvxCow/Ev6zGuXVH2kl5/YCMAqklCLm9kxcsdSi2m9VfZS3Xf8AA4lfESm2293e3BchsxzYrH0qEbQalJ34fHv+PQ3YDHdt59m/2eGnw9Dszgru6v2NtO1qeVgz0HQWKV1TlvltDzzSt75jJ7HL4XjM8lRqvl7N930/Xy4MWMwVS8HKMIZ55YU4W0l3nT6HpVE803Kzbjabbjdaf3Tr1Kf4f11/MdW7MW/5N6+C3CnY9ql4XCjVdXM9t/ft148/XNxojoUzhYfE1lVeanOySurK9OM3o99E2ufDuPSUo3SZSUrHbRxcaydk1burFQpmqlh7mOtjYwqRg+P43+VPb6+B7PoLopS7c9lsvzP6HLiazpRTa548yOIxkaabvwczBdB1KivGOnN2S9XubKv2XqpaZX3J/U9NKPC/kTWxzRnVe7djxpeI1m7qx4HF9Gyg7Si0+TMNSlY99j55o5JxuuD4p80zyOPo5ZNFaWIebLI9TCYuVTaS3OPOAp0jbOJzulsUqUG79prsLv5/z8jtjK+yPQlWjTi5S4QqnFSvladpOLtwa3QNahY850Xjuqqdr8MtJ/U9LCcZK8JKSu1daq6Hm7M5cDjKeLh0UlyvyvIyTpmGOBjdtpPl3f8AJ1pwMuJkoxc3w1EbuNiMPBrNNbR3OVRoQhCCb1kk4X3z2W3viMpw1n+uv4IHExGIlK2Z/hVl3I6vRmMzPLPdpSjL8zslbx0+ZK9j57CYyjOoqSjZcL5dfjwOlEVWh2Zfqy+TNkoiq8exL9WX8LM2elXpWhL3P7CJRFOOq8Jf6TXKAuUdvCX+kVshWpfdfczOIDiaXECpom3wWopKdNJXZnykEYmv23Z6afJFC5kec8TRTtc6FSHYkPyanPXSaakpRy3WjjqFU6Xd+zBWvxfafnwJXPRXiGETzZui6O/L6GvFtRhmfCdPztNP+RyoY6Sm6l991wtyAxWKlN3nw2S2Qg2Y8fG+IOrVTpXUVx3ur7/XgbiK7nLM/LklyHff6lrKT1Wu193xMgUXb2mFSdzhVeak5Zmm+XdkICaYvKpRauns2u1CS+XFPx7kNFix3FDnXebMtHp+HSzXH1VxIVPv2tvxXvQvB2GjNrg6sulambNGpLwduze+3g3v4HoegulIyUadR9rVKb2m+Cvz1PEo30K6SUuKbvrvpo0+D4+RaykrHqYTxOrCpmbv3u38T3n3ikqrhKUVJ009bbJu9374g9MdIKlC0Gs7dktHltu2ve54RTvrfxvvceu/e+q4+I0MPG6bZ6L8WlOLsrX634/ydJV3KTlJ3bd2fRfsF003/wCNN6Zb0tuH4o348/U+YUmzrdH4qUJKcW001aS3izorUY1YOL+HkycJKacZdfufa2i0eN6I+17yy69ZnvBwSS22fvidfoz7SU5pRm1Gez4Rb8eB41ShXgm3HZdvV/eI8NVSbtdLsdtwT3PJ/azF0acFODjJvRJNO/f4bmP7UfaVSj1VK6V+1LZtp6Jd2zPC4nE3dpSL4fw7NapU28v2WpwdG0pOz7fs6GF6aX4aqbeiUorWWvH3wPPdNYtzqN304Lglw995c61pSSf6DWu+u9u/h5nPqP3xPQyRjJtdTnxWMnUhkb6iJMfg8fOndU3va6autAJ0Wo53s3p78n6PkLovWy83yjxIykjzI1JU5pxbT6PqdfEdPycV1cMrv2r9pPuRy8VjJTUVJt2u3fjJvh3Wt8RCqK0vDT13Ym5zuSXA2J8Qr1/+ybd/gvkrL6FyJPRprkipMpsjKRwOR049NT0zJPXtbJyXfyN8cXGpTm4uzyyzQfDR/A84Wv5P5GzHpUfFcRG8ZvMmmt/dbZ8/vfuenq1IrM3J6NRe7tITSqqVrcp5o8tjgwqtL5MbDEW7Sfa17re9QuUbFv6xUnUWeKUeqXPN+fpx3O1UVldrY5vSNf8AQ5xg2mtVfXX4aGGVST3bfi2C5Pj792JuexPF+JutHLBZU/mH1Tet9+bRBZBMx5eZF2JY0KkF1RTTZzapmsSxo6kLqQ6bBrIy2DhbW6vo+Nmnwfv/AJNHUldSMqTNrJGbKOnNysuNoptve2ib5aWXkM6knUjqmwqvYzyhZ2as02n4ofhpyTtGz1vlaTUtGmvNNrTf0LVEKNH3w8xlB3DGv7WwiEbtJcbLvbGOk0rvv04q26a4DMj+veW4X+ut5a8S0UxlXjvcCNN2v6d/DQbGTWj5vfdPii4xdu5PxSuNjJZWmuVmn6lo3KxrR72N+Hlmjo9FrJfpJ7Xa4rZX8DRCdlp5nOpQs7xbTNNOd9N33b/8lUelRxW1m/dvz67G+lirDYYq/GxzISV9/n9DRGo/0Vot5v6hbsdlLGdXL8j61ayvJ2XLTM+5cvE41WtJtyS2Wy2S5DcROT1ftGe0nHKtr3aW78ffEDexwYnHOpKyvbp3F5JSbk3wzSlwj6cdrJdxklL33eBsdF5bva+i/NJcvC+/f3mfqyMrnBPENW6XBnO6ipaLW3JLi7d7493cFUqRyZYR3d5vjJ8I+C+L8ED1RXVEXFifzOfP5mZorKauqJ1RJwZHWRksTKaepL6knps2sjKo66kaNPUlOkDTYdZNGaxMpp6kvqAaTF1kZrFZTX1BXUG02bWRlykNnUEDpM2sNgny+KNVKKe6t6HOUu8NVO9/A6IySITpt+mdZYePNFrDR5o5SrPm/gX175ssqkexzuhLudR4ePNCZUuVvVGLru9+pfW+7sOeHYZUX1NSw7vuvVGinh092vVHMVVe7hqsgqUAuk33Ol90jzXqgJ4flZ/3omJVwliB1KJo0X5mxYdcn+1D6jXgVzX7pz/vASxQ14lFR8n8zd9x5W/aht6jPu0nHLdW8aV/XdGBYodTxelreetw+yzoo0Jbq7W3fny2Rrj0ZJ8v2qf1NNLoOcl+in3yp2fx0MtHEnQw9f0GPWw/hsZtZ038V/aVH7N1Xtl/bp/UlT7P1lpaL/xKX1N9OvHiXUrLh8wXZ6f9EoKP/r3Zl/acat0RPjl/zKW/N9rcQ+jmuMfKVP6mzFYpcjBPFIJ4eIwajJ2b+f8AqW8Bzt+1D6g/cVz+KFPEK2m63XNc0IeKF9k8yph5R879b/4NcsGlx9HERPDvgl+6JeJBeIA3EmoW6Bywb5r1RcMO1yfmhDrFdcTeQzg2dBYeNv5XQHVR7/WP1MXXe7sF1V7bNmiJpe86Kw0ea9UV91jzXqc11F7bKdRd/qDPHsDQfdnV+7R5r1J93jzRyus8S+t7/kDPHsDQfdnU+7x/MidRD8yOV1vf8iutfM2pDsb+O+79fA6vVQ/MviWcnrXz+BDakexv4/n6+RizkziyHmZz19MbnJnFMu4c7NpobnIpirkTCpsKpodnLziLh3HUxo00MzlqYq5aY0Z7jRpq45TCzmZSGRVyymysIX2saY1AlX5GdIK5WMjojBryOhh3xZ0KVWxw41nsdDB3k0luXUj08M4r2Yo69Btmnqnbj5XOr0L0NeF5o69PopJLT3c5pYqKdkevFU4q03ueDxSet/icurK10e06e6MtqjxmMp5Xr3lYVVNbHnY7DJrPHh9TM58BDmXN6ipMWTPEqUIhuZTkLc9CsxFyIOjC4bqEzibkuScyDpJDHMrOLuVcRzF00NzkzirkuDObTVh2crOLKBnF0xmcmcWVcXObTQ3OQTcsOc2mgixdy0yNz0k0XJABNkQRZQTZRA2QIFTVxZdyNFGvYnlaDIgBtPceLHpRzOxbgzXhKXFis67vgOhPw9UUUj06NKnGd+xsha+3IDE001/0hKlrp3chkXz+aCpHoOcZxcWjJkaf0PS/ZXCXqKcl2Ur8LP1aR5+TTfD4HosF0jSo0+1fV2WXq5fCNSLRSdWWWy6k8NTjFym3/wAT3OErq279cP8A7jZKsrLtPbnh+b7zxFP7U0l/SfsT/wDpOlh+mo1I5oZrXa1yx18JYrvISpyXQfOpHanKM+zdt8F/+Dffope7HjPtPQSllUWn3qK18jp1+kJcvV0GvjiWef6ZqxzXSST4Z6HyjJi07xnc6qTThJS9fRnHjhufwsYqys7HRdVbaesDHiDpzs8vE0IZFk6GW5Iq5SV2aE7E81zzaVLNu+BLiwGjS5CpWEbuUnQj0Yq5RGi4onycWS7sWoh5dCXKcg3OmNOEUFZA2KuRs1wyUOxeUGSJclxbk5qL2BIQsS5HTBLBuRCXNmCIS5QbhzFkKJcNw5u4VymygrjXDmKQWYAtMylY0ZJbIPMFnFNhqXf8xlIoqnT9fsJMO/8AV/dFqf8AWflcvP8A2j/eHUyqqJLn6r9jFJ/l/dOjhsfGMVFzmnxSw2FqJPxnJM5tJ3dlUfq18bjlgKktbw86tC/xkFzXUvCpUtemm/r9mdSPS0P6ap/6WA/3l1+kcPNJVJV5WvbJRwdG3lFu5zV0TV/s/wDPw3+8N9HKK/8AIrQp3fZUbVr879U3l4bh1F3G1a6Tco2Xd3S+cnYZOrheCxHn93+gqtWi0lS6zS986pvT+6hcsNQ4Ypf5FcB0aS2xF/8ACqozn7/r+iarz4vHftKK/ILcuT9Cm2+HwFO35n6FXXN+gMxPV7/dFx8A22xLfIq4MxPVUVb9BtkbAuRiOQmd9C2WgblC5hVLsgymyijZg3fYMEoq4uYRz6NBEKKBcDkEWAQ1xbolyrkIKIQu5ZDBexREWQKNEq5LlkMBtlXJcshhmUWWQYKBuQsgbmJcqxCGuzNJ8ksWmQgbs0UirkLIC7MRkLIa4WVchCGuboQhZAABKIQUWWzLuQhDB6XJchCAAQlyEMAlyEIYJ//Z" alt="">
+                                </div>
+                                <div class="notification-info user">
+                                    <h6><span>Madeline Allen</span> replied to your chat.</h6>
+                                    <p>8s</p>
+                                </div>
+                                <div class="notification-action">
+                                    <span aria-disabled="false"></span>
+                                    <img src="./img/icons/chevron-right.svg" alt="">
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="notification-item">
+                                <div class="notification-avatar">
+                                    <img src="data:image/jpeg;base64,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" alt="">
+                                </div>
+                                <div class="notification-info user">
+                                    <h6><span>Janice</span> sent you a new chat.</h6>
+                                    <p>8s</p>
+                                </div>
+                                <div class="notification-action">
+                                    <span aria-disabled="false"></span>
+                                    <img src="./img/icons/chevron-right.svg" alt="">
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Posts : Add the "post" class to the notification-info for the color post title.  -->
+                <div data-content="notification-posts" class="notification-inner-content inside-scroll" style="max-height: 586px; padding-bottom: 20px;">
+                    <ul>
+                        <!-- Notification Item Loop Here -->
+                        <li>
+                            <a href="" class="notification-item">
+                                <div class="notification-avatar">
+                                    <img src="data:image/jpeg;base64,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" alt="">
+                                </div>
+                                <div class="notification-info user">
+                                    <h6>
+                                        <span>Madeline</span> shared your post <span class="post">
+                                            “Spontaneous pneumomediastinum in
+                                            COVID-19”.
+                                        </span>
+                                    </h6>
+                                    <p>8s</p>
+                                </div>
+                                <div class="notification-action">
+                                    <span aria-disabled="false"></span>
+                                    <img src="./img/icons/chevron-right.svg" alt="">
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="notification-item">
+                                <div class="notification-avatar">
+                                    <img src="data:image/jpeg;base64,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" alt="">
+                                </div>
+                                <div class="notification-info user">
+                                    <h6>
+                                        <span>Madeline</span> shared your post <span class="post">
+                                            “Spontaneous pneumomediastinum in
+                                            COVID-19”.
+                                        </span>
+                                    </h6>
+                                    <p>8s</p>
+                                </div>
+                                <div class="notification-action">
+                                    <span aria-disabled="false"></span>
+                                    <img src="./img/icons/chevron-right.svg" alt="">
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="notification-item">
+                                <div class="notification-avatar">
+                                    <img src="data:image/jpeg;base64,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" alt="">
+                                </div>
+                                <div class="notification-info user">
+                                    <h6><span>Janice</span> sent you a new chat.</h6>
+                                    <p>8s</p>
+                                </div>
+                                <div class="notification-action">
+                                    <span aria-disabled="false"></span>
+                                    <img src="./img/icons/chevron-right.svg" alt="">
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@code {
+    [Parameter]
+    public int userId { get; set; } = -1; // public ID
+    [Parameter]
+    public int actionOptions { get; set; } = 2; // 0 = profile, 1 = activity log, 2 = Notification
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private AuthenticationState authState { get; set; }
+    private ClaimsPrincipal user { get; set; }
+    @*private AppUser usr { get; set; }*@
+    @*private FTRegisterModel profile { get; set; } = new FTRegisterModel();*@
+    public List<FTPaginationModel> paginationData = new List<FTPaginationModel>();
+    public List<FTPaginationModel> paginationNotifData = new List<FTPaginationModel>();
+    public int PageSize { get; set; } = 10;
+    public int Count { get; set; }
+    public int CountN { get; set; }
+    public int CurrentPage { get; set; } = 1;
+    public int CurrentNotifPage { get; set; } = 1;
+    public int TotalPages => (int)Math.Ceiling(decimal.Divide(Count, PageSize));
+    public int TotalNotifPages => (int)Math.Ceiling(decimal.Divide(CountN, PageSize));
+    private string medicalSpecialty = "";
+    private string boardCertified = "No";
+    private string cssProfile { get; set; } = "";
+    private string cssActivityLog { get; set; } = "";
+    private string cssNotification { get; set; } = "active";
+    private string historyDate = "";
+    private int usrID { get; set; }
+    private int lastHistoryID = -1;
+
+    List<PostHistory> activityLog = new List<PostHistory>();
+    List<PostHistory> notificationList = new List<PostHistory>();
+    List<Notification> notifications = new List<Notification>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        authState = await authenticationStateTask;
+        user = authState.User;
+        @*AppUser usr = new AppUser();*@
+        if (user.Identity.IsAuthenticated)
+        {
+
+            @*                usr = await UserManager.GetUserAsync(user);
+				usrID = usr.PublicId;*@
+
+            try
+            {
+
+                usrID = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
+
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+
+
+            await GetHistoryResults(usrID, CurrentPage);
+
+            await GetNotificationResults(usrID, CurrentNotifPage);
+
+
+        }
+
+
+    }
+
+    private async Task ChangePage(int targetPage)
+    {
+
+        await GetHistoryResults(usrID, targetPage);
+
+        var pg = paginationData.FirstOrDefault(s => s.isActive);
+        pg.isActive = false;
+        CurrentPage = targetPage;
+        pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
+        pg.isActive = true;
+        this.StateHasChanged();
+    }
+
+    private async Task ChangePageNotif(int targetPage)
+    {
+
+        await GetHistoryResults(usrID, targetPage);
+
+        var pg = paginationNotifData.FirstOrDefault(s => s.isActive);
+        pg.isActive = false;
+        CurrentNotifPage = targetPage;
+        pg = paginationNotifData.FirstOrDefault(s => s.id == CurrentNotifPage);
+        pg.isActive = true;
+        this.StateHasChanged();
+    }
+    private async Task GetHistoryResults(int id, int targetPage)
+    {
+        var result = await hService.GetPostHistories(id);
+        activityLog = result.Histories;
+        Count = result.TotalCount;
+    }
+    private async Task GetNotificationResults(int id, int targetPage)
+    {
+        var result = await hService.GetAllNotifications(id);
+        notifications = result.Notifications;
+        CountN = result.TotalCount;
+        foreach (var notif in notifications)
+        {
+            PostHistory ph = new PostHistory();
+            ph = await hService.GetHistoryByIDs(notif.NotificationID);
+            if (notif.IsRead == 2)
+            {
+                ph.IsRead = "";
+            }
+            else
+            {
+                ph.IsRead = "antiquewhite";
+            }
+            ph.NotificationID = notif.ID;
+            notificationList.Add(ph);
+        }
+        StateHasChanged();
+    }
+    private async Task OpenViewModal(int postID)
+    {
+        NavigationManager.NavigateTo("/viewcase/" + postID);
+    }
+    private async Task OpenViewModalFromNotification(PostHistory p)
+    {
+        await hService.NotificationRead(p.NotificationID);
+        p.IsRead = "";
+        NavigationManager.NavigateTo("/viewcase/" + p.PostID);
+    }
+    private async Task viewPage(PostHistory p)
+    {
+        await hService.NotificationRead(p.NotificationID);
+        p.IsRead = "";
+        NavigationManager.NavigateTo("/PersonalPage/" + p.PosterID);
+    }
+    private async Task ClearNotification(PostHistory h)
+    {
+        await hService.DeleteNotification(h.ID);
+        notificationList.Remove(h);
+        StateHasChanged();
+
+    }
+    private async Task AddToConnection(PostHistory p)
+    {
+        p.Detail = "invite accepted";
+        await hService.ChangeConnectionStatus(p.PosterID, usrID);
+        await addToHistory("connected with", p);
+        await Notify(-1, p.PosterID);
+        await hService.NotificationRead(p.NotificationID);
+        await GetNotificationResults(usrID, CurrentNotifPage);
+        StateHasChanged();
+        // add history here
+    }
+    private async Task Decline(PostHistory p)
+    {
+        p.Detail = "invite declined";
+        await addToHistory("decline invitation", p);
+        await Notify(-1, p.PosterID);
+        await hService.NotificationRead(p.NotificationID);
+        await GetNotificationResults(usrID, CurrentNotifPage);
+    }
+    private async Task addToHistory(string historyType, PostHistory p)
+    {
+        //history stuffs
+        PostHistory newHistory = new PostHistory();
+        newHistory.ID = 0;
+        newHistory.PostID = usrID;
+        newHistory.PosterID = usrID;
+        newHistory.CreationDate = DateTime.Now;
+        newHistory.UserID = p.PosterID;
+        newHistory.UserDisplayName = user.Claims.FirstOrDefault(s => s.Type == "FirstName")?.Value + " " + user.Claims.FirstOrDefault(s => s.Type == "LastName")?.Value; //usr.FirstName + " " + usr.LastName;
+        newHistory.UserDisplayName2 = p.UserDisplayName;
+        newHistory.Title = "on Hippra";
+        if (historyType == "connected with")
+        {
+            newHistory.Detail = "invite accepted";
+        }
+        else
+        {
+            newHistory.Detail = "invite declined";
+        }
+        newHistory.HistoryTypes = historyType;
+        lastHistoryID = await hService.AddHistory(newHistory);
+    }
+    private async Task Notify(int type, int receiverID)
+    {
+        //    int id = await hService.GetHistoryID(userId, usr.PublicId);
+        Notification newNotifs = new Notification();
+        newNotifs.ID = 0;
+        newNotifs.SenderID = usrID;//usr.PublicId;
+        newNotifs.ReceiverID = receiverID;
+        newNotifs.NotificationID = lastHistoryID;
+        newNotifs.IsRead = -1;
+        newNotifs.IsResponseNeeded = -1;
+        newNotifs.CreationDate = DateTime.Now;
+        await hService.AddNotification(newNotifs);
+    }
+}

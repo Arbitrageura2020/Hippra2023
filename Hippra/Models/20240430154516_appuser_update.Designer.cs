@@ -4,6 +4,7 @@ using Hippra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hippra.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240430154516_appuser_update")]
+    partial class appuser_update
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -413,14 +416,8 @@ namespace Hippra.Migrations
                     b.Property<int>("ReceiverID")
                         .HasColumnType("int");
 
-                    b.Property<string>("ReceiverUserID")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("SenderID")
                         .HasColumnType("int");
-
-                    b.Property<string>("SenderUserID")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 

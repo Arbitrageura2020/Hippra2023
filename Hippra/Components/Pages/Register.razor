@@ -34,10 +34,12 @@
 
         <div class="center-container">
             <div class="dropdown-container">
-                <select class="dropdown" placeholder="I'm a ..." @bind="@InputModel.AccountType">
+                <select class="dropdown" @bind="@InputModel.AccountType" @bind:after="UserTypeSelected">
                     <option value="0" disabled selected>I'm a ...</option>
-                    <option value="1">Physician</option>
-                    <option value="2">Nurse Practitioner</option>
+                    @foreach (UserAccountType i in Enum.GetValues(typeof(UserAccountType)))
+                    {
+                        <option value="@i">@Enums.GetDisplayName(i)</option>
+                    }
                 </select>
             </div>
         </div>
@@ -67,15 +69,30 @@
                     <div class="input-field">
                         <input type="LastName" placeholder="Last Name" @bind="@InputModel.LastName">
                     </div>
-                    <div class="dropdown-container symbol">
-                        <select class="dropdown" placeholder="Credential Type">
-                            <option value="" disabled="" selected="">Credential Type</option>
-                            <option value="option1">
-                                National Provider Identifier (NPI)
-                            </option>
-                            <option value="option2">ID.Me</option>
-                        </select>
-                    </div>
+                    @if (InputModel.AccountType == UserAccountType.Nurse)
+                    {
+                        <div class="dropdown-container symbol">
+                            <select class="dropdown" placeholder="Credential Type" @bind="InputModel.IsNPINString">
+                                <option value="False" disabled="" selected="">Credential Type</option>
+                                <option value="True">
+                                    National Provider Identifier (NPI)
+                                </option>
+                                <option value="false">ID.Me</option>
+                            </select>
+                        </div>
+                    }
+                    @if (InputModel.AccountType == UserAccountType.Nurse && InputModel.IsNPIN)
+                    {
+                        <div class="input-field">
+                            <input type="ResHosp" placeholder="ID.Me" @bind="@InputModel.IdNumber">
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="input-field">
+                            <input type="ResHosp" placeholder="National Provider Identifier (NPI)" @bind="@InputModel.IdNumber">
+                        </div>
+                    }
                     <span class="subtext"><i>You can change this later</i></span>
 
                     <div class="dropdown-container">
@@ -139,13 +156,8 @@
                         <input type="City" placeholder="City" @bind="@InputModel.City">
                     </div>
 
-                    <div class="dropdown-container margtop arrow1">
-                        <select class="dropdown" placeholder="State" @bind="@InputModel.State">
-                            <option value="" disabled="" selected="">State</option>
-                            <option value="option1">Anesthesiology</option>
-                            <option value="option2">Colon and Rectal Surgery</option>
-                            <option value="option3">Dermatology</option>
-                        </select>
+                    <div class="input-field">
+                        <input type="State" placeholder="State" @bind="@InputModel.State">
                     </div>
                 </div>
 
@@ -153,13 +165,8 @@
                     <div class="input-field">
                         <input type="Zipcode" placeholder="Zipcode" @bind="@InputModel.Zipcode">
                     </div>
-                    <div class="dropdown-container margtop arrow2">
-                        <select class="dropdown" placeholder="Country" @bind="@InputModel.Country">
-                            <option value="" disabled="" selected="">Country</option>
-                            <option value="option1">Anesthesiology</option>
-                            <option value="option2">Colon and Rectal Surgery</option>
-                            <option value="option3">Dermatology</option>
-                        </select>
+                    <div class="input-field">
+                        <input type="City" placeholder="Country" @bind="@InputModel.Country">
                     </div>
                     <div class="input-field">
                         <input type="Num" placeholder="Phone Number" @bind="@InputModel.PhoneNumber">
@@ -284,7 +291,13 @@
         {
             hasError = true;
         }
-
-
     }
+
+    private void UserTypeSelected()
+    {
+        if (InputModel.AccountType >= UserAccountType.Nurse)
+            NextPage();
+    }
+
+
 }

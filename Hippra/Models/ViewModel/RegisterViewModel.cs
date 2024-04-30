@@ -26,7 +26,7 @@ namespace Hippra.Models.ViewModel
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        
+
         public string UserName { get; set; }
         [Required]
         public string FirstName { get; set; }
@@ -42,9 +42,14 @@ namespace Hippra.Models.ViewModel
 
         [Required]
         [Display(Name = "National Provider Identifier Number")]
-        public int NPIN { get; set; }
+        public int IdNumber { get; set; }
 
-   
+        public bool IsNPIN
+        {
+            get => IsNPINString == "True";
+            set => IsNPINString = value.ToString();
+        }
+        public string IsNPINString { get; set; }
 
         [Required]
         [Display(Name = "American Board Certified")]
@@ -62,19 +67,19 @@ namespace Hippra.Models.ViewModel
         [Display(Name = "Education/Degree")]
         public string EducationDegree { get; set; }
 
-  
+
         [Display(Name = "Address")]
         public string Address { get; set; }
 
-        
+
         [Display(Name = "Zipcode")]
         public string Zipcode { get; set; }
 
-        
+
         [Display(Name = "State")]
         public string State { get; set; }
 
-        
+
         [Display(Name = "City")]
         public string City { get; set; }
 

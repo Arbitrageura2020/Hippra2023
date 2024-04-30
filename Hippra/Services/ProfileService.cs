@@ -67,7 +67,7 @@ namespace Hippra.Services
                     Userid = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    NPIN = user.NPIN,
+                    NPIN = user.IdNumber,
                     MedicalSpecialty = user.MedicalSpecialty,
                     AmericanBoardCertified = user.AmericanBoardCertified,
 
@@ -397,7 +397,7 @@ namespace Hippra.Services
             {
                 user.FirstName = usr.FirstName;
                 user.LastName = usr.LastName;
-                user.NPIN = usr.NPIN;
+                user.IdNumber = user.IdNumber;
                 user.MedicalSpecialty = usr.MedicalSpecialty;
                 user.AmericanBoardCertified = usr.AmericanBoardCertified;
 
@@ -436,7 +436,8 @@ namespace Hippra.Services
                     AccountType = Input.AccountType,
                     FirstName = Input.FirstName,
                     LastName = Input.LastName,
-                    NPIN = Input.NPIN,
+                    IsNPIN = Input.IsNPIN,
+                    IdNumber = Input.IdNumber,
                     MedicalSpecialty = Input.MedicalSpecialty,
                     AmericanBoardCertified = Input.AmericanBoardCertified,
                     ResidencyHospital = Input.ResidencyHospital,
@@ -461,7 +462,8 @@ namespace Hippra.Services
                     PublicId = userWithlargestPublicID + 1,
                     FirstName = Input.FirstName,
                     LastName = Input.LastName,
-                    NPIN = Input.NPIN,
+                    IsNPIN = Input.IsNPIN,
+                    IdNumber = Input.IdNumber,
                     MedicalSpecialty = Input.MedicalSpecialty,
                     AmericanBoardCertified = Input.AmericanBoardCertified,
                     ResidencyHospital = Input.ResidencyHospital,

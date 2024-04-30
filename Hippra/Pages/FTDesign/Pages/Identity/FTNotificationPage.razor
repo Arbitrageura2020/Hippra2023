@@ -16,625 +16,444 @@
 @inject IJSRuntime JSRuntime
 @*@inject SignInManager<AppUser> SignInManager
 	@inject UserManager<AppUser> UserManager*@
-@inject Microsoft.AspNetCore.Components.NavigationManager  NavigationManager
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @inject HippraService hService
 @inject ProfileService pService
 @using Microsoft.AspNetCore.Mvc.Rendering;
 @using Hippra.Extensions
 @inject IAuthorizationService AuthorizationService
 
-<AuthorizeView>
-	<Authorized Context="ViewProfileContext">
-		@*        @if (userId == -1)
-  	{
-  	<FTSubHeaderBar HasSeparator="false">
-  	<div class="btn-group-toggle" data-toggle="buttons">
-  	<label class="btn  btn-outline-dark @cssNotification" @onclick="(e => ShowNotification())">
-  	<input type="radio" name="options" id="option1" autocomplete="off" checked> Notifications
-  	</label>
-  	</div>
-  	</FTSubHeaderBar>
-  	}
-  	else
-  	{
-  	<FTSubHeaderBar Title="Notifications" HasSeparator="false">
-  	</FTSubHeaderBar>
+        <div class="ft-main-px">
 
-  	}*@
-		<FTSubHeaderBar Title="Notifications" HasSeparator="false"> </FTSubHeaderBar>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="offset-md-2 col-md-8 offset-md-2 text-center">
+                            <br />
+                            <h4 class="display-4 text-center">Notifications</h4>
+                            <br />
+                            <div class="row py-2">
+                                <div class="col">
+                                    @{
+                                        var curDate = "";
+                                    }
+                                    @if (notificationList != null)
+                                    {
 
-		<div class="ft-main-px">
+                                        @foreach (var notification in notificationList)
+                                        {
+                                            @if (curDate == "" || notification.CreationDate.ToShortDateString() != curDate)
+                                            {
+                                                curDate = notification.CreationDate.ToShortDateString();
+                                                <div class="text-left">
+                                                    <h3>@notification.CreationDate.ToString("MMMM dd, yyyy")</h3>
+                                                </div>
 
-			<div class="card">
-				<div class="card-body">
-					<div class="row">
-						<div class="offset-md-2 col-md-8 offset-md-2 text-center">
-							<br />
-							<h4 class="display-4 text-center">Notifications</h4>
-							<br />
-							<div class="row py-2">
-								<div class="col">
-									@{
-										var curDate = "";
-									}
-									@if (notificationList != null)
-				{
+                                            }
+                                            @if (notification.HistoryTypes == "followed" || notification.HistoryTypes == "invited"
+                                           || notification.HistoryTypes == "connected with" || notification.HistoryTypes == "decline invitation")
+                                            {
+                                                <div class="border border-dark rounded p-4 mb-2 hover-class notif-card" style="background: @notification.IsRead">
+                                                    <button class="clear-notif" @onclick="(e => { ClearNotification(notification); })"><span class="far fa-times-circle"></span></button>
+                                                    <div class="row">
+                                                        <div class="col-md-9 align-self-center">
+                                                            <h4>@notification.UserDisplayName @notification.HistoryTypes you.</h4>
+                                                        </div>
+                                                    </div>
+                                                    @if (notification.HistoryTypes == "followed")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>@notification.Title</div>
+                                                                <div><strong></strong>@notification.Detail</div>
+                                                                <button class="notif-btn-v" @onclick="(e => { viewPage(notification); })">View Profile</button>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-user-check activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
 
-									@foreach (var notification in notificationList)
-									{
-										@if (curDate == "" || notification.CreationDate.ToShortDateString() != curDate)
-										{
-											curDate = notification.CreationDate.ToShortDateString();
-				 <div class="text-left">
-				  <h3>@notification.CreationDate.ToString("MMMM dd, yyyy")</h3>
-				 </div>
+                                                    }
+                                                    else if (notification.HistoryTypes == "invited")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>@notification.Title</div>
+                                                                <div><strong></strong>@notification.Detail</div>
+                                                                @if (notification.Detail == "")
+                                                                {
+                                                                    <button class="notif-btn-a" @onclick="(e => { AddToConnection(notification); })">accept</button>
 
-										}
-										@if (notification.HistoryTypes == "followed" || notification.HistoryTypes == "invited"
-												|| notification.HistoryTypes == "connected with" || notification.HistoryTypes == "decline invitation")
-										{
-				 <div class="border border-dark rounded p-4 mb-2 hover-class notif-card" style="background: @notification.IsRead">
-				  <button class="clear-notif" @onclick="(e => { ClearNotification(notification); })"><span class="far fa-times-circle"></span></button>
-				  <div class="row">
-				   <div class="col-md-9 align-self-center">
-					<h4>@notification.UserDisplayName @notification.HistoryTypes you.</h4>
-				   </div>
-				  </div>
-												@if (notification.HistoryTypes == "followed")
-												{
-					  <div class="row">
-					   <div class="col-md-9 align-self-center">
-						<div><strong></strong>@notification.Title</div>
-						<div><strong></strong>@notification.Detail</div>
-						<button class="notif-btn-v" @onclick="(e => { viewPage(notification); })">View Profile</button>
-					   </div>
-					   <div class="col-md-3 text-center">
-						<div class="fa fa-user-check activity-log-icon"></div>
-						<div>@notification.CreationDate.ToString("HH:mm")</div>
-					   </div>
-					  </div>
+                                                                    <button class="notif-btn-d" @onclick="(e => { Decline(notification); })">decline</button>
+                                                                }
+                                                                <button class="notif-btn-v" @onclick="(e => { viewPage(notification); })"> View Profile</button>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-envelope-open-text activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
 
-												}
-												else if (notification.HistoryTypes == "invited")
-												{
-					  <div class="row">
-					   <div class="col-md-9 align-self-center">
-						<div><strong></strong>@notification.Title</div>
-						<div><strong></strong>@notification.Detail</div>
-															@if (notification.Detail == "")
-															{
-							<button class="notif-btn-a" @onclick="(e => { AddToConnection(notification); })">accept</button><button class="notif-btn-d" @onclick="(e => { Decline(notification); })">decline</button>
-															}
-						<button class="notif-btn-v" @onclick="(e => { viewPage(notification); })"> View Profile</button>
-					   </div>
-					   <div class="col-md-3 text-center">
-						<div class="fa fa-envelope-open-text activity-log-icon"></div>
-						<div>@notification.CreationDate.ToString("HH:mm")</div>
-					   </div>
+                                                        </div>
 
-					  </div>
+                                                    }
+                                                    else if (notification.HistoryTypes == "connected with")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>@notification.Title</div>
+                                                                <div><strong></strong>@notification.Detail</div>
+                                                                <button class="notif-btn-v" @onclick="(e => { viewPage(notification); })"> View Profile</button>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-user-plus activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
 
-												}
-												else if (notification.HistoryTypes == "connected with")
-												{
-					  <div class="row">
-					   <div class="col-md-9 align-self-center">
-						<div><strong></strong>@notification.Title</div>
-						<div><strong></strong>@notification.Detail</div>
-						<button class="notif-btn-v" @onclick="(e => { viewPage(notification); })"> View Profile</button>
-					   </div>
-					   <div class="col-md-3 text-center">
-						<div class="fa fa-user-plus activity-log-icon"></div>
-						<div>@notification.CreationDate.ToString("HH:mm")</div>
-					   </div>
-					  </div>
+                                                    }
+                                                    else if (notification.HistoryTypes == "decline invitation")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>@notification.Title</div>
+                                                                <div><strong></strong>@notification.Detail</div>
+                                                                <button class="notif-btn-v" @onclick="(e => { viewPage(notification); })"> View Profile</button>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-user-times activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
 
-												}
-												else if (notification.HistoryTypes == "decline invitation")
-												{
-					  <div class="row">
-					   <div class="col-md-9 align-self-center">
-						<div><strong></strong>@notification.Title</div>
-						<div><strong></strong>@notification.Detail</div>
-						<button class="notif-btn-v" @onclick="(e => { viewPage(notification); })"> View Profile</button>
-					   </div>
-					   <div class="col-md-3 text-center">
-						<div class="fa fa-user-times activity-log-icon"></div>
-						<div>@notification.CreationDate.ToString("HH:mm")</div>
-					   </div>
-					  </div>
+                                                    }
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="border border-dark rounded p-4 mb-2 hover-class notif-card" style="background: @notification.IsRead" @onclick="(e => OpenViewModalFromNotification(notification))">
+                                                    <button class="clear-notif" @onclick="(e => { ClearNotification(notification); })"><span class="far fa-times-circle"></span></button>
+                                                    <div class="row">
+                                                        <div class="col-md-9 align-self-center">
+                                                            @if (notification.HistoryTypes == "added a comment on" || notification.HistoryTypes == "updated a comment on"
+                                                           || notification.HistoryTypes == "deleted a comment on" || notification.HistoryTypes == "added an up vote on"
+                                                           || notification.HistoryTypes == "added a down vote on")
+                                                            {
+                                                                @if (usrID == notification.PosterID)
+                                                                {
+                                                                    <h4>@notification.UserDisplayName @notification.HistoryTypes your post.</h4>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <h4>@notification.UserDisplayName @notification.HistoryTypes a post.</h4>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <h4>@notification.UserDisplayName @notification.HistoryTypes. </h4>
+                                                            }
 
-												}
-				 </div>
-										}
-										else
-										{
-				 <div class="border border-dark rounded p-4 mb-2 hover-class notif-card" style="background: @notification.IsRead" @onclick="(e => OpenViewModalFromNotification(notification))">
-				  <button class="clear-notif" @onclick="(e => { ClearNotification(notification); })"><span class="far fa-times-circle"></span></button>
-				  <div class="row">
-				   <div class="col-md-9 align-self-center">
-														@if (notification.HistoryTypes == "added a comment on" || notification.HistoryTypes == "updated a comment on"
-																|| notification.HistoryTypes == "deleted a comment on" || notification.HistoryTypes == "added an up vote on"
-																|| notification.HistoryTypes == "added a down vote on")
-														{
-															@if (usrID == notification.PosterID)
-															{
-							<h4>@notification.UserDisplayName @notification.HistoryTypes your post.</h4>
-															}
-															else
-															{
-							<h4>@notification.UserDisplayName @notification.HistoryTypes a post.</h4>
-															}
-														}
-														else
-														{
-						<h4>@notification.UserDisplayName @notification.HistoryTypes. </h4>
-														}
+                                                        </div>
+                                                    </div>
+                                                    @if (notification.HistoryTypes == "added a new case")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>Case Topic: @notification.Title</div>
+                                                                <div><strong></strong>Case Description: @notification.Detail</div>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <p><span class="fa fa-calendar-plus-o activity-log-icon"></span></p>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
 
-				   </div>
-				  </div>
-												@if (notification.HistoryTypes == "added a new case")
-												{
-					  <div class="row">
-					   <div class="col-md-9 align-self-center">
-						<div><strong></strong>Case Topic: @notification.Title</div>
-						<div><strong></strong>Case Description: @notification.Detail</div>
-					   </div>
-					   <div class="col-md-3 text-center">
-						<p><span class="fa fa-calendar-plus-o activity-log-icon"></span></p>
-						<div>@notification.CreationDate.ToString("HH:mm")</div>
-					   </div>
-					  </div>
+                                                    }
+                                                    else if (notification.HistoryTypes == "added a comment on")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>Case Topic: @notification.Title</div>
+                                                                <div><strong></strong>Case Description: @notification.Detail</div>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <p><span class="fa fa-commenting-o activity-log-icon"></span></p>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
 
-												}
-												else if (notification.HistoryTypes == "added a comment on")
-												{
-					  <div class="row">
-					   <div class="col-md-9 align-self-center">
-						<div><strong></strong>Case Topic: @notification.Title</div>
-						<div><strong></strong>Case Description: @notification.Detail</div>
-					   </div>
-					   <div class="col-md-3 text-center">
-						<p><span class="fa fa-commenting-o activity-log-icon"></span></p>
-						<div>@notification.CreationDate.ToString("HH:mm")</div>
-					   </div>
-					  </div>
+                                                    }
+                                                    else if (notification.HistoryTypes == "updated a comment on")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>Case Topic: @notification.Title</div>
+                                                                <div><strong></strong>Case Description: @notification.Detail</div>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-comments-o activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
 
-												}
-												else if (notification.HistoryTypes == "updated a comment on")
-												{
-					  <div class="row">
-					   <div class="col-md-9 align-self-center">
-						<div><strong></strong>Case Topic: @notification.Title</div>
-						<div><strong></strong>Case Description: @notification.Detail</div>
-					   </div>
-					   <div class="col-md-3 text-center">
-						<div class="fa fa-comments-o activity-log-icon"></div>
-						<div>@notification.CreationDate.ToString("HH:mm")</div>
-					   </div>
-					  </div>
+                                                    }
+                                                    else if (notification.HistoryTypes == "deleted a comment on")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>Case Topic: @notification.Title</div>
+                                                                <div><strong></strong>Case Description: @notification.Detail</div>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-comment-o activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
 
-												}
-												else if (notification.HistoryTypes == "deleted a comment on")
-												{
-					  <div class="row">
-					   <div class="col-md-9 align-self-center">
-						<div><strong></strong>Case Topic: @notification.Title</div>
-						<div><strong></strong>Case Description: @notification.Detail</div>
-					   </div>
-					   <div class="col-md-3 text-center">
-						<div class="fa fa-comment-o activity-log-icon"></div>
-						<div>@notification.CreationDate.ToString("HH:mm")</div>
-					   </div>
-					  </div>
+                                                    }
+                                                    else if (notification.HistoryTypes == "added an up vote on")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>Case Topic: @notification.Title</div>
+                                                                <div><strong></strong>Case Description: @notification.Detail</div>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-caret-square-o-up activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
 
-												}
-												else if (notification.HistoryTypes == "added an up vote on")
-												{
-					  <div class="row">
-					   <div class="col-md-9 align-self-center">
-						<div><strong></strong>Case Topic: @notification.Title</div>
-						<div><strong></strong>Case Description: @notification.Detail</div>
-					   </div>
-					   <div class="col-md-3 text-center">
-						<div class="fa fa-caret-square-o-up activity-log-icon"></div>
-						<div>@notification.CreationDate.ToString("HH:mm")</div>
-					   </div>
-					  </div>
+                                                    }
+                                                    else if (notification.HistoryTypes == "added a down vote on")
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-9 align-self-center">
+                                                                <div><strong></strong>Case Topic: @notification.Title</div>
+                                                                <div><strong></strong>Case Description: @notification.Detail</div>
+                                                            </div>
+                                                            <div class="col-md-3 text-center">
+                                                                <div class="fa fa-caret-square-o-down activity-log-icon"></div>
+                                                                <div>@notification.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </div>
 
-												}
-												else if (notification.HistoryTypes == "added a down vote on")
-												{
-					  <div class="row">
-					   <div class="col-md-9 align-self-center">
-						<div><strong></strong>Case Topic: @notification.Title</div>
-						<div><strong></strong>Case Description: @notification.Detail</div>
-					   </div>
-					   <div class="col-md-3 text-center">
-						<div class="fa fa-caret-square-o-down activity-log-icon"></div>
-						<div>@notification.CreationDate.ToString("HH:mm")</div>
-					   </div>
-					  </div>
+                                                    }
+                                                </div>
+                                            }
 
-												}
-				 </div>
-										}
+                                        }
+                                    }
+                                </div>
 
-									}
-									@if (CountN > PageSize)
-									{
-			 <div class="mb-3 text-left">
-			  <br />
-			  <hr />
-			  <br />
-			  <FTPagination paginationData="paginationNotifData" ChangePage="ChangePageNotif" />
-			  <br />
-			 </div>
-
-									}
-		 <br />
-									}
-								</div>
-
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
-	</Authorized>
-	<NotAuthorized>
-		<div class="ft-main-px">
-			<div class="card">
-				<div class="card-body">
-					<div class="row">
-						<div class="offset-md-3 col-md-6 offset-md-3 text-center">
-							<br /><br />
-							<div class="mb-3 ms-fontWeight-semibold ms-fontSize-24 ">Need To Sign In!</div>
-							<br /><br />
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</NotAuthorized>
-</AuthorizeView>
+//new design
+
 
 
 @code {
-	[Parameter]
-	public int userId { get; set; } = -1; // public ID
-	[Parameter]
-	public int actionOptions { get; set; } = 2; // 0 = profile, 1 = activity log, 2 = Notification
-	[CascadingParameter]
-	private Task<AuthenticationState> authenticationStateTask { get; set; }
-	private AuthenticationState authState { get; set; }
-	private ClaimsPrincipal user { get; set; }
-	@*private AppUser usr { get; set; }*@
-	@*private FTRegisterModel profile { get; set; } = new FTRegisterModel();*@
-	public List<FTPaginationModel> paginationData = new List<FTPaginationModel>();
-	public List<FTPaginationModel> paginationNotifData = new List<FTPaginationModel>();
-	public int PageSize { get; set; } = 10;
-	public int Count { get; set; }
-	public int CountN { get; set; }
-	public int CurrentPage { get; set; } = 1;
-	public int CurrentNotifPage { get; set; } = 1;
-	public int TotalPages => (int)Math.Ceiling(decimal.Divide(Count, PageSize));
-	public int TotalNotifPages => (int)Math.Ceiling(decimal.Divide(CountN, PageSize));
-	private string medicalSpecialty = "";
-	private string boardCertified = "No";
-	private string cssProfile { get; set; } = "";
-	private string cssActivityLog { get; set; } = "";
-	private string cssNotification { get; set; } = "active";
-	private string historyDate = "";
-	private int usrID { get; set; }
-	private int lastHistoryID = -1;
+    [Parameter]
+    public int userId { get; set; } = -1; // public ID
+    [Parameter]
+    public int actionOptions { get; set; } = 2; // 0 = profile, 1 = activity log, 2 = Notification
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private AuthenticationState authState { get; set; }
+    private ClaimsPrincipal user { get; set; }
+    @*private AppUser usr { get; set; }*@
+    @*private FTRegisterModel profile { get; set; } = new FTRegisterModel();*@
+    public List<FTPaginationModel> paginationData = new List<FTPaginationModel>();
+    public List<FTPaginationModel> paginationNotifData = new List<FTPaginationModel>();
+    public int PageSize { get; set; } = 10;
+    public int Count { get; set; }
+    public int CountN { get; set; }
+    public int CurrentPage { get; set; } = 1;
+    public int CurrentNotifPage { get; set; } = 1;
+    public int TotalPages => (int)Math.Ceiling(decimal.Divide(Count, PageSize));
+    public int TotalNotifPages => (int)Math.Ceiling(decimal.Divide(CountN, PageSize));
+    private string medicalSpecialty = "";
+    private string boardCertified = "No";
+    private string cssProfile { get; set; } = "";
+    private string cssActivityLog { get; set; } = "";
+    private string cssNotification { get; set; } = "active";
+    private string historyDate = "";
+    private int usrID { get; set; }
+    private int lastHistoryID = -1;
 
-	List<PostHistory> activityLog = new List<PostHistory>();
-	List<PostHistory> notificationList = new List<PostHistory>();
-	List<Notification> notifications = new List<Notification>();
+    List<PostHistory> activityLog = new List<PostHistory>();
+    List<PostHistory> notificationList = new List<PostHistory>();
+    List<Notification> notifications = new List<Notification>();
 
-	protected override async Task OnInitializedAsync()
-	{
-		authState = await authenticationStateTask;
-		user = authState.User;
-		@*AppUser usr = new AppUser();*@
-		if (user.Identity.IsAuthenticated)
-		{
+    protected override async Task OnInitializedAsync()
+    {
+        authState = await authenticationStateTask;
+        user = authState.User;
+        @*AppUser usr = new AppUser();*@
+        if (user.Identity.IsAuthenticated)
+        {
 
-			@*                usr = await UserManager.GetUserAsync(user);
+            @*                usr = await UserManager.GetUserAsync(user);
 				usrID = usr.PublicId;*@
 
-			try
-			{
+            try
+            {
 
-				usrID = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
-			
-			}
-			catch (FormatException e)
-			{
-				Console.WriteLine(e.Message);
-			}
+                usrID = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
 
-
-
-			await GetHistoryResults(usrID, CurrentPage);
-			if (Count > PageSize)
-			{
-				for (int i = 1; i <= TotalPages; i++)
-				{
-					paginationData.Add(new FTPaginationModel()
-					{
-						id = i
-					});
-				}
-				var pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
-				pg.isActive = true;
-			}
-			await GetNotificationResults(usrID, CurrentNotifPage);
-			if (CountN > PageSize)
-			{
-				for (int i = 1; i <= TotalNotifPages; i++)
-				{
-					paginationNotifData.Add(new FTPaginationModel()
-					{
-						id = i
-					});
-				}
-				var pg = paginationNotifData.FirstOrDefault(s => s.id == CurrentNotifPage);
-				pg.isActive = true;
-			}
-
-			@*			if (usr == null)
-				{
-				NavigationManager.NavigateTo("/");
-				}*@
-
-			@*profile = new FTRegisterModel()
-			{
-				UserName = usr.UserName,
-				Email = usr.Email,
-
-				FirstName = usr.FirstName,
-				LastName = usr.LastName,
-				NPIN = usr.NPIN,
-				MedicalSpecialty = usr.MedicalSpecialty,
-				AmericanBoardCertified = usr.AmericanBoardCertified,
-				ResidencyHospital = usr.ResidencyHospital,
-				MedicalSchoolAttended = usr.MedicalSchoolAttended,
-				EducationDegree = usr.EducationDegree,
-				Address = usr.Address,
-				Zipcode = usr.Zipcode,
-				State = usr.State,
-				City = usr.City,
-				PhoneNumber = usr.PhoneNumber
-			};
-			if (usr.AmericanBoardCertified)
-			{
-				boardCertified = "Yes";
-			}
-			switch ((MedicalSpecialtyType)usr.MedicalSpecialty)
-			{
-				case MedicalSpecialtyType.Anesthesiology:
-					medicalSpecialty = "Anesthesiology";
-					break;
-				case MedicalSpecialtyType.AnatomicPathologyAndClinicalPathology:
-					medicalSpecialty = "Anatomic Pathology And Clinical Pathology";
-					break;
-				case MedicalSpecialtyType.ColonAndRectalSurgery:
-					medicalSpecialty = "Colon And Rectal Surgery";
-					break;
-				case MedicalSpecialtyType.Dermatology:
-					medicalSpecialty = "Dermatology";
-					break;
-				case MedicalSpecialtyType.EmergencyMedicine:
-					medicalSpecialty = "Emergency Medicine";
-					break;
-				case MedicalSpecialtyType.FamilyMedicine:
-					medicalSpecialty = "Family Medicine";
-					break;
-				case MedicalSpecialtyType.HospiceAndPalliativeMedicine:
-					medicalSpecialty = "Hospice And Palliative Medicine";
-					break;
-				case MedicalSpecialtyType.InternalMedicine:
-					medicalSpecialty = "Internal Medicine";
-					break;
-				case MedicalSpecialtyType.MedicalGenetics:
-					medicalSpecialty = "Medical Genetics";
-					break;
-				case MedicalSpecialtyType.MedicalNuclearPhysics:
-					medicalSpecialty = "Medical Nuclear Physics";
-					break;
-
-				case MedicalSpecialtyType.Neurology:
-					medicalSpecialty = "Neurology";
-					break;
-				case MedicalSpecialtyType.Neurosurgery:
-					medicalSpecialty = "Neurosurgery";
-					break;
-				case MedicalSpecialtyType.NuclearMedicine:
-					medicalSpecialty = "NuclearMedicine";
-					break;
-				case MedicalSpecialtyType.ObstetricsAndGynecology:
-					medicalSpecialty = "Obstetrics And Gynecology";
-					break;
-				case MedicalSpecialtyType.Ophthalmology:
-					medicalSpecialty = "Ophthalmology";
-					break;
-				case MedicalSpecialtyType.OrthopedicSurgery:
-					medicalSpecialty = "Orthopedic Surgery";
-					break;
-				case MedicalSpecialtyType.Otolaryngology:
-					medicalSpecialty = "Otolaryngology";
-					break;
-				case MedicalSpecialtyType.Pediatrics:
-					medicalSpecialty = "Pediatrics";
-					break;
-				case MedicalSpecialtyType.PhysicalMedicineAndRehibilitation:
-					medicalSpecialty = "Physical Medicine And Rehibilitation";
-					break;
-				case MedicalSpecialtyType.PlasticSurgery:
-					medicalSpecialty = "PlasticSurgery";
-					break;
-				case MedicalSpecialtyType.Psychiatry:
-					medicalSpecialty = "Psychiatry";
-					break;
-				case MedicalSpecialtyType.PublicHealthAndGeneralPreventive:
-					medicalSpecialty = "Public Health And General Preventive";
-					break;
-				case MedicalSpecialtyType.Radiology:
-					medicalSpecialty = "Radiology";
-					break;
-				case MedicalSpecialtyType.Surgery:
-					medicalSpecialty = "Surgery";
-					break;
-				case MedicalSpecialtyType.ThoracicSurgery:
-					medicalSpecialty = "Thoracic Surgery";
-					break;
-				case MedicalSpecialtyType.Urology:
-					medicalSpecialty = "Urology";
-					break;
-				case MedicalSpecialtyType.VascularSurgery:
-					medicalSpecialty = "Vascular Surgery";
-					break;
-				default:
-					break;
-			}*@
-		}
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
 
-	}
-	
-	private async Task ChangePage(int targetPage)
-	{
 
-		await GetHistoryResults(usrID, targetPage);
+            await GetHistoryResults(usrID, CurrentPage);
 
-		var pg = paginationData.FirstOrDefault(s => s.isActive);
-		pg.isActive = false;
-		CurrentPage = targetPage;
-		pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
-		pg.isActive = true;
-		this.StateHasChanged();
-	}
-	private async Task ChangePageNotif(int targetPage)
-	{
+            await GetNotificationResults(usrID, CurrentNotifPage);
 
-		await GetHistoryResults(usrID, targetPage);
 
-		var pg = paginationNotifData.FirstOrDefault(s => s.isActive);
-		pg.isActive = false;
-		CurrentNotifPage = targetPage;
-		pg = paginationNotifData.FirstOrDefault(s => s.id == CurrentNotifPage);
-		pg.isActive = true;
-		this.StateHasChanged();
-	}
-	private async Task GetHistoryResults(int id, int targetPage)
-	{
-		var result = await hService.GetPostHistories(id, targetPage, PageSize);
-		activityLog = result.Histories;
-		Count = result.TotalCount;
-	}
-	private async Task GetNotificationResults(int id, int targetPage)
-	{
-		var result = await hService.GetAllNotifications(id, targetPage, PageSize);
-		notifications = result.Notifications;
-		CountN = result.TotalCount;
-		foreach (var notif in notifications)
-		{
-			PostHistory ph = new PostHistory();
-			ph = await hService.GetHistoryByIDs(notif.NotificationID);
-			if (notif.IsRead == 2)
-			{
-				ph.IsRead = "";
-			}
-			else
-			{
-				ph.IsRead = "antiquewhite";
-			}
-			ph.NotificationID = notif.ID;
-			notificationList.Add(ph);
-		}
-		StateHasChanged();
-	}
-	private async Task OpenViewModal(int postID)
-	{
-		NavigationManager.NavigateTo("/viewcase/" + postID);
-	}
-	private async Task OpenViewModalFromNotification(PostHistory p)
-	{
-		await hService.NotificationRead(p.NotificationID);
-		p.IsRead = "";
-		NavigationManager.NavigateTo("/viewcase/" + p.PostID);
-	}
-	private async Task viewPage(PostHistory p)
-	{
-		await hService.NotificationRead(p.NotificationID);
-		p.IsRead = "";
-		NavigationManager.NavigateTo("/PersonalPage/" + p.PosterID);
-	}
-	private async Task ClearNotification(PostHistory h)
-	{
-		await hService.DeleteNotification(h.ID);
-		notificationList.Remove(h);
-		StateHasChanged();
+        }
 
-	}
-	private async Task AddToConnection(PostHistory p)
-	{
-		p.Detail = "invite accepted";
-		await hService.ChangeConnectionStatus(p.PosterID, usrID);
-		await addToHistory("connected with", p);
-		await Notify(-1, p.PosterID);
-		await hService.NotificationRead(p.NotificationID);
-		await GetNotificationResults(usrID, CurrentNotifPage);
-		StateHasChanged();
-		// add history here
-	}
-	private async Task Decline(PostHistory p)
-	{
-		p.Detail = "invite declined";
-		await addToHistory("decline invitation", p);
-		await Notify(-1, p.PosterID);
-		await hService.NotificationRead(p.NotificationID);
-		await GetNotificationResults(usrID, CurrentNotifPage);
-	}
-	private async Task addToHistory(string historyType, PostHistory p)
-	{
-		//history stuffs
-		PostHistory newHistory = new PostHistory();
-		newHistory.ID = 0;
-		newHistory.PostID = usrID;
-		newHistory.PosterID = usrID;
-		newHistory.CreationDate = DateTime.Now;
-		newHistory.UserID = p.PosterID;
-		newHistory.UserDisplayName = user.Claims.FirstOrDefault(s => s.Type == "FirstName")?.Value + " " + user.Claims.FirstOrDefault(s => s.Type == "LastName")?.Value; //usr.FirstName + " " + usr.LastName;
-		newHistory.UserDisplayName2 = p.UserDisplayName;
-		newHistory.Title = "on Hippra";
-		if (historyType == "connected with")
-		{
-			newHistory.Detail = "invite accepted";
-		}
-		else
-		{
-			newHistory.Detail = "invite declined";
-		}
-		newHistory.HistoryTypes = historyType;
-		lastHistoryID = await hService.AddHistory(newHistory);
-	}
-	private async Task Notify(int type, int receiverID)
-	{
-		//    int id = await hService.GetHistoryID(userId, usr.PublicId);
-		Notification newNotifs = new Notification();
-		newNotifs.ID = 0;
-		newNotifs.SenderID = usrID;//usr.PublicId;
-		newNotifs.ReceiverID = receiverID;
-		newNotifs.NotificationID = lastHistoryID;
-		newNotifs.IsRead = -1;
-		newNotifs.IsResponseNeeded = -1;
-		newNotifs.CreationDate = DateTime.Now;
-		await hService.AddNotification(newNotifs);
-	}
+
+    }
+
+    private async Task ChangePage(int targetPage)
+    {
+
+        await GetHistoryResults(usrID, targetPage);
+
+        var pg = paginationData.FirstOrDefault(s => s.isActive);
+        pg.isActive = false;
+        CurrentPage = targetPage;
+        pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
+        pg.isActive = true;
+        this.StateHasChanged();
+    }
+
+    private async Task ChangePageNotif(int targetPage)
+    {
+
+        await GetHistoryResults(usrID, targetPage);
+
+        var pg = paginationNotifData.FirstOrDefault(s => s.isActive);
+        pg.isActive = false;
+        CurrentNotifPage = targetPage;
+        pg = paginationNotifData.FirstOrDefault(s => s.id == CurrentNotifPage);
+        pg.isActive = true;
+        this.StateHasChanged();
+    }
+    private async Task GetHistoryResults(int id, int targetPage)
+    {
+        var result = await hService.GetPostHistories(id);
+        activityLog = result.Histories;
+        Count = result.TotalCount;
+    }
+    private async Task GetNotificationResults(int id, int targetPage)
+    {
+        var result = await hService.GetAllNotifications(id);
+        notifications = result.Notifications;
+        CountN = result.TotalCount;
+        foreach (var notif in notifications)
+        {
+            PostHistory ph = new PostHistory();
+            ph = await hService.GetHistoryByIDs(notif.NotificationID);
+            if (notif.IsRead == 2)
+            {
+                ph.IsRead = "";
+            }
+            else
+            {
+                ph.IsRead = "antiquewhite";
+            }
+            ph.NotificationID = notif.ID;
+            notificationList.Add(ph);
+        }
+        StateHasChanged();
+    }
+    private async Task OpenViewModal(int postID)
+    {
+        NavigationManager.NavigateTo("/viewcase/" + postID);
+    }
+    private async Task OpenViewModalFromNotification(PostHistory p)
+    {
+        await hService.NotificationRead(p.NotificationID);
+        p.IsRead = "";
+        NavigationManager.NavigateTo("/viewcase/" + p.PostID);
+    }
+    private async Task viewPage(PostHistory p)
+    {
+        await hService.NotificationRead(p.NotificationID);
+        p.IsRead = "";
+        NavigationManager.NavigateTo("/PersonalPage/" + p.PosterID);
+    }
+    private async Task ClearNotification(PostHistory h)
+    {
+        await hService.DeleteNotification(h.ID);
+        notificationList.Remove(h);
+        StateHasChanged();
+
+    }
+    private async Task AddToConnection(PostHistory p)
+    {
+        p.Detail = "invite accepted";
+        await hService.ChangeConnectionStatus(p.PosterID, usrID);
+        await addToHistory("connected with", p);
+        await Notify(-1, p.PosterID);
+        await hService.NotificationRead(p.NotificationID);
+        await GetNotificationResults(usrID, CurrentNotifPage);
+        StateHasChanged();
+        // add history here
+    }
+    private async Task Decline(PostHistory p)
+    {
+        p.Detail = "invite declined";
+        await addToHistory("decline invitation", p);
+        await Notify(-1, p.PosterID);
+        await hService.NotificationRead(p.NotificationID);
+        await GetNotificationResults(usrID, CurrentNotifPage);
+    }
+    private async Task addToHistory(string historyType, PostHistory p)
+    {
+        //history stuffs
+        PostHistory newHistory = new PostHistory();
+        newHistory.ID = 0;
+        newHistory.PostID = usrID;
+        newHistory.PosterID = usrID;
+        newHistory.CreationDate = DateTime.Now;
+        newHistory.UserID = p.PosterID;
+        newHistory.UserDisplayName = user.Claims.FirstOrDefault(s => s.Type == "FirstName")?.Value + " " + user.Claims.FirstOrDefault(s => s.Type == "LastName")?.Value; //usr.FirstName + " " + usr.LastName;
+        newHistory.UserDisplayName2 = p.UserDisplayName;
+        newHistory.Title = "on Hippra";
+        if (historyType == "connected with")
+        {
+            newHistory.Detail = "invite accepted";
+        }
+        else
+        {
+            newHistory.Detail = "invite declined";
+        }
+        newHistory.HistoryTypes = historyType;
+        lastHistoryID = await hService.AddHistory(newHistory);
+    }
+    private async Task Notify(int type, int receiverID)
+    {
+        //    int id = await hService.GetHistoryID(userId, usr.PublicId);
+        Notification newNotifs = new Notification();
+        newNotifs.ID = 0;
+        newNotifs.SenderID = usrID;//usr.PublicId;
+        newNotifs.ReceiverID = receiverID;
+        newNotifs.NotificationID = lastHistoryID;
+        newNotifs.IsRead = -1;
+        newNotifs.IsResponseNeeded = -1;
+        newNotifs.CreationDate = DateTime.Now;
+        await hService.AddNotification(newNotifs);
+    }
 }

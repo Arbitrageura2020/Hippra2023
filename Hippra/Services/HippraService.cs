@@ -1342,6 +1342,19 @@ namespace Hippra.Services
             result.TotalCount = await _context.PostHistories.AsNoTracking().CountAsync(s => s.PosterID == posterID);
             return result;
         }
+
+        public async Task<HistoryResultModel> GetPostHistories(int posterID)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            List<PostHistory> histories = await _context.PostHistories.Where(c => c.PosterID == posterID).OrderByDescending(s => s.CreationDate).ToListAsync();
+            //var h = histories.OrderByDescending(h => h.CreationDate);
+            HistoryResultModel result = new HistoryResultModel();
+            result.Histories = histories;
+            result.TotalCount = await _context.PostHistories.AsNoTracking().CountAsync(s => s.PosterID == posterID);
+            return result;
+        }
+
         public async Task<PostHistory> GetHistoryByIDs(int id)
         {
             using var _context = DbFactory.CreateDbContext();
@@ -1493,6 +1506,19 @@ namespace Hippra.Services
             result.TotalCount = await _context.Notifications.AsNoTracking().CountAsync(s => s.ReceiverID == userID);
             return result;
         }
+
+        public async Task<NotificationResultModel> GetAllNotifications(int userID)
+        { 
+            using var _context = DbFactory.CreateDbContext();
+
+            List<Notification> ListNotifs = await _context.Notifications.Where(n => n.ReceiverID == userID).OrderByDescending(n => n.CreationDate).ToListAsync();
+            //var h = histories.OrderByDescending(h => h.CreationDate);
+            NotificationResultModel result = new NotificationResultModel();
+            result.Notifications = ListNotifs;
+            result.TotalCount = await _context.Notifications.AsNoTracking().CountAsync(s => s.ReceiverID == userID);
+            return result;
+        }
+
         public async Task<int> CountMyNotification(int userID)
         {
             using var _context = DbFactory.CreateDbContext();

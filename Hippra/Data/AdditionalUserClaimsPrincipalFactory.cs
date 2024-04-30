@@ -51,7 +51,7 @@ namespace Hippra.Data
 			claims.Add(new Claim("City", user.City ?? ""));
 			claims.Add(new Claim("PhoneNumber", user.PhoneNumber ?? ""));
 
-			claims.Add(new Claim("NPIN", user.NPIN.ToString("G", CultureInfo.InvariantCulture)));
+			claims.Add(new Claim("NPIN", user.IdNumber.ToString("G", CultureInfo.InvariantCulture)));
 			claims.Add(new Claim("AmericanBoardCertified", user.AmericanBoardCertified ? "1" : "0"));
 
 			//if (user.IsAdmin)
