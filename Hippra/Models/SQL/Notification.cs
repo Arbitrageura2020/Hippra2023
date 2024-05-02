@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hippra.Models.Enums;
+using System;
 namespace Hippra.Models.SQL
 {
     public class Notification
@@ -11,6 +12,9 @@ namespace Hippra.Models.SQL
         public int IsRead { get; set; }
         public int NotificationID { get; set; }
         public int IsResponseNeeded { get; set; }
+        public NotificationType Type { get; set; } = NotificationType.AddedComment;
+        public bool IsNotificationRead { get; set; }
         public DateTime CreationDate { get; set; }
+        public int PostID { get; set; }
     }
 }

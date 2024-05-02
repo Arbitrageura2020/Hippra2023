@@ -110,10 +110,10 @@
                             {
                                 @foreach (var tag in @pCase.Tags)
                                 {
-                                    <li><a href="">@tag.Tag</a></li>
+                                    <li><a @onclick="(e => { searchCasesContainTag(tag.Tag); })">@tag.Tag</a></li>
                                 }
                             }
-                            <li><a href="">Diseases &amp; Disorders of the Blood</a></li>
+                            <li></li>
 
                         </ul>
                     </div>

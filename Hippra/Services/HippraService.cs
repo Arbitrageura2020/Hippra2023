@@ -88,7 +88,7 @@ namespace Hippra.Services
         {
             using var _context = DbFactory.CreateDbContext();
 
-            List<Case> cases = await _context.Cases.Where(x=>x.Type==type).Include(c => c.MedicalSubCategory).Include(c => c.Tags).Include(x=>x.User).OrderByDescending(s => s.DateCreated).AsNoTracking().ToListAsync();
+            List<Case> cases = await _context.Cases.Where(x => x.Type == type).Include(c => c.MedicalSubCategory).Include(c => c.Tags).Include(x => x.User).OrderByDescending(s => s.DateCreated).AsNoTracking().ToListAsync();
             SearchResultModel result = new SearchResultModel();
             result.TotalCount = cases.Count;
             result.Cases = cases;
@@ -975,7 +975,7 @@ namespace Hippra.Services
             newCase.MedicalCategory = inputCase.MedicalCategory;
             newCase.MedicalSubCategoryId = inputCase.MedicalSubCategoryId;
             newCase.PatientAge = inputCase.PatientAge;
-      
+
             newCase.Gender = inputCase.Gender;
             newCase.Race = inputCase.Race;
             newCase.Ethnicity = inputCase.Ethnicity;
@@ -1201,6 +1201,25 @@ namespace Hippra.Services
 
             return result;
         }
+
+        public async Task<List<Case>> GetCasesByTag(string tag)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var CaseTag = await _context.CaseTags.AsNoTracking().Where(t => t.Tag == tag).Include(x => x.Case).ThenInclude(x => x.User).ToListAsync();
+            List<Case> result = new List<Case>();
+            if (CaseTag != null)
+            {
+
+                foreach (var item in CaseTag)
+                {
+                    result.Add(item.Case);
+                }
+            }
+
+            return result;
+        }
+
         // comments
         public async Task<List<CaseComment>> GetComments(int caseId)
         {
@@ -1507,8 +1526,16 @@ namespace Hippra.Services
             return result;
         }
 
+        public async Task<IList<Notification>> GetAllNotificationsForUser(string userID)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            List<Notification> result = await _context.Notifications.Where(n => n.ReceiverUserID == userID).OrderByDescending(n => n.CreationDate).AsNoTracking().ToListAsync();
+            return result;
+        }
+
         public async Task<NotificationResultModel> GetAllNotifications(int userID)
-        { 
+        {
             using var _context = DbFactory.CreateDbContext();
 
             List<Notification> ListNotifs = await _context.Notifications.Where(n => n.ReceiverID == userID).OrderByDescending(n => n.CreationDate).ToListAsync();

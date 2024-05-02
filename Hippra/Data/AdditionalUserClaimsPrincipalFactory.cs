@@ -29,7 +29,8 @@ namespace Hippra.Data
 
 			var claims = new List<Claim>();
 			claims.Add(new Claim("PublicId", user.PublicId.ToString("G", CultureInfo.InvariantCulture)));
-			claims.Add(new Claim("FirstName", user.FirstName ?? ""));
+            claims.Add(new Claim("UserId", user.Id));
+            claims.Add(new Claim("FirstName", user.FirstName ?? ""));
 			claims.Add(new Claim("LastName", user.LastName ?? ""));
 			claims.Add(new Claim("MedicalSpecialty", user.MedicalSpecialty.ToString("G", CultureInfo.InvariantCulture)));
 
