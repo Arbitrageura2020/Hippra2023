@@ -21,6 +21,11 @@ namespace Hippra.Extensions
         {
             return await um?.Users?.AsNoTracking().SingleOrDefaultAsync(x => x.PublicId == profileId);
         }
+
+        public static async Task<AppUser> FindByIdAsync(this UserManager<AppUser> um, string userId)
+        {
+            return await um?.Users?.AsNoTracking().SingleOrDefaultAsync(x => x.Id == userId);
+        }
         public static async Task<AppUser> FindByEmail(this UserManager<AppUser> um, string email)
         {
             return await um?.Users?.FirstOrDefaultAsync(x => x.NormalizedUserName == email.ToUpper());

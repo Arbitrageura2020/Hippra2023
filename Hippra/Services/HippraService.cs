@@ -95,6 +95,17 @@ namespace Hippra.Services
             return result;
         }
 
+        public async Task<SearchResultModel> GetMyCases(string userId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            List<Case> cases = await _context.Cases.Where(x => x.UserId == userId).Include(c => c.MedicalSubCategory).Include(c => c.Tags).Include(x => x.User).OrderByDescending(s => s.DateCreated).AsNoTracking().ToListAsync();
+            SearchResultModel result = new SearchResultModel();
+            result.TotalCount = cases.Count;
+            result.Cases = cases;
+            return result;
+        }
+
         public async Task<List<Case>> GetCases(int CurrentPage, int PageSize, int id)
         {
             using var _context = DbFactory.CreateDbContext();
@@ -962,7 +973,7 @@ namespace Hippra.Services
 
             newCase.UserId = userInfo!.Id;
             newCase.PosterName = userInfo.FirstName;
-            newCase.PosterSpecialty = Enums.GetDisplayName(userInfo.MedicalSpecialty);
+            newCase.PosterSpecialty = EnumsHelper.GetDisplayName(userInfo.MedicalSpecialty);
             newCase.Status = true;
             newCase.DateLastUpdated = DateTime.Now;
             newCase.DateCreated = DateTime.Now;
@@ -1248,7 +1259,7 @@ namespace Hippra.Services
         }
 
         [Authorize]
-        public async Task<bool> AddComment(int caseId, string comment, string? img)
+        public async Task<bool> AddComment(int caseId, string comment, string userId, string? img)
         {
             using var _context = DbFactory.CreateDbContext();
             var userInfo = await _userManager.GetUserAsync(WebContext.User);
@@ -1257,7 +1268,7 @@ namespace Hippra.Services
             addComment.PosterName = userInfo.FullName;
             addComment.PostedDate = DateTime.Now;
             addComment.LastUpdatedDate = DateTime.Now;
-            addComment.posterSpeciality = Enums.GetDisplayName(userInfo.MedicalSpecialty);
+            addComment.posterSpeciality = EnumsHelper.GetDisplayName(userInfo.MedicalSpecialty);
             addComment.CaseID = caseId;
             addComment.Comment = comment;
             addComment.UserId = userInfo.Id;
@@ -1276,6 +1287,28 @@ namespace Hippra.Services
 
             return true;
         }
+
+        [Authorize]
+        public async Task<bool> UpdateComment(int commentId, string comment, string? img)
+        {
+            using var _context = DbFactory.CreateDbContext();
+            var caseComment = await _context.CaseComments.FirstOrDefaultAsync(m => m.ID == commentId);
+
+            if (caseComment == null)
+            {
+                return false;
+            }
+
+            caseComment.LastUpdatedDate = DateTime.Now;
+            caseComment.Comment = comment;
+            caseComment.imgUrl = img;
+            _context.CaseComments.Update(caseComment);
+            await _context.SaveChangesAsync();
+
+
+            return true;
+        }
+
         public async Task<bool> EditComment(CaseComment EditedCaseComment, int type)
         {
             using var _context = DbFactory.CreateDbContext();

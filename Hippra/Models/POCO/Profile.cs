@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Hippra.Models.Enums;
 using Microsoft.AspNetCore.Identity;
+using Hippra.Models.DTO;
+using Hippra.Models.SQL;
+using System.Globalization;
 
 namespace Hippra.Models.POCO
 {
@@ -62,5 +65,41 @@ namespace Hippra.Models.POCO
         public string ProfileUrl { get; set; }
         public string BackgroundUrl { get; set; }
         public string Bio { get; set; }
+
+        public static Profile FromEntity(AppUser user)
+        {
+
+            Profile result = new Profile
+            {
+                Userid = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                NPIN = user.IdNumber,
+                MedicalSpecialty = user.MedicalSpecialty,
+                AmericanBoardCertified = user.AmericanBoardCertified,
+                Email = user.Email,
+                Status = user.Status,
+                UserName = user.UserName,
+                ResidencyHospital = user.ResidencyHospital,
+                MedicalSchoolAttended = user.MedicalSchoolAttended,
+                EducationDegree = user.EducationDegree,
+                Address = user.Address,
+                Zipcode = user.Zipcode,
+                State = user.State,
+                City = user.City,
+                PhoneNumber = user.PhoneNumber,
+                DateJoined = user.DateJoined.ToString("MMMM dd, yyyy", CultureInfo.CreateSpecificCulture("en-US")),
+                PublicId = user.PublicId,
+                ProfileUrl = user.ProfileUrl,
+                BackgroundUrl = user.BackgroundUrl,
+                Bio = user.Bio
+            };
+            return result;
+        }
+
+        public static IList<Profile> FromEntityList(ICollection<AppUser> items)
+        {
+            return items.Select(x => FromEntity(x)).ToList();
+        }
     }
 }

@@ -38,7 +38,7 @@
                     <option value="0" disabled selected>I'm a ...</option>
                     @foreach (UserAccountType i in Enum.GetValues(typeof(UserAccountType)))
                     {
-                        <option value="@i">@Enums.GetDisplayName(i)</option>
+                        <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
                     }
                 </select>
             </div>
@@ -100,7 +100,7 @@
                             <option value="0" disabled="" selected="">Medical Specialty</option>
                             @foreach (MedicalSpecialtyType i in Enum.GetValues(typeof(MedicalSpecialtyType)))
                             {
-                                <option value="@i">@Enums.GetDisplayName(i)</option>
+                                <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
                             }
                         </select>
                     </div>

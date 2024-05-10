@@ -17,29 +17,35 @@ using Hippra.Areas.Identity;
 using Hippra.Services.Email;
 using Hippra.Services;
 using Microsoft.AspNetCore.Components.Authorization;
+using Hippra.Components.Account;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var Configuration = builder.Configuration;
 // Add services to the container.
 
 
-builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<IdentityUserAccessor>();
+builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString), ServiceLifetime.Transient);
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddTransient<ApplicationDbContext>(p =>
-        p.GetRequiredService<IDbContextFactory<ApplicationDbContext>>()
-        .CreateDbContext());
 
-//services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-//    .AddEntityFrameworkStores<ApplicationDbContext>();
+//builder.Services.AddTransient<ApplicationDbContext>(p =>
+//        p.GetRequiredService<IDbContextFactory<ApplicationDbContext>>()
+//        .CreateDbContext());
+
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
@@ -48,6 +54,11 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 })
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+////builder.Services.AddTransient<IUserStore<AppUser>, UserStore<AppUser>>();
+//builder.Services.AddTransient<UserManager<AppUser>>();
+
+
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<AppUser>, AdditionalUserClaimsPrincipalFactory>();
 
 builder.Services.AddAutoMapper(typeof(Startup));
@@ -63,11 +74,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LogoutPath = $"/Identity/Account/Logout";
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
-
-
-// can't believe this worked! basically override the built configuration with value from azure, then everything is the same
-//Configuration.GetSection("AppSettings").GetSection("StorageConnectionString").Value = Configuration["StorageConnectionString"];
-//Configuration.GetSection("AppSettings").GetSection("StorageRootContainer").Value = Configuration["StorageRootContainer"];
 
 builder.Services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
@@ -92,6 +98,8 @@ builder.Services.AddScoped<IEmailService, SendgridEmailService>(client =>
     var appKey = Configuration["SendgridAppKey"];
     return new SendgridEmailService(appKey);
 });
+
+
 
 var app = builder.Build();
 

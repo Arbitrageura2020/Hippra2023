@@ -37,9 +37,10 @@ namespace Hippra.Models.ViewModel
         [Required]
         public string Description { get; set; }
         //[MinLength(1,ErrorMessage ="Please select urgency")]
-        public CaseResponseLevelType ResponseNeeded { get; set; } 
+        public CaseResponseLevelType ResponseNeeded { get; set; }
 
         //[MinLength(1, ErrorMessage = "Please medical category")]
+        [EnumDataType(typeof(MedicalCategory), ErrorMessage = "Please enter a valid category")]
         public MedicalCategory MedicalCategory { get; set; }
         //[MinLength(1, ErrorMessage = "Please select medical subcategory")]
         public int MedicalSubCategoryId { get; set; } = 1;

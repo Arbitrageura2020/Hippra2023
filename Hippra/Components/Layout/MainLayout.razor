@@ -1,10 +1,10 @@
 ﻿@using Hippra.Models.SQL
 @using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
-@inject UserManager<AppUser> UserManager
-@inject IHttpContextAccessor httpContextAccessor
+@inject AuthenticationStateProvider AuthenticationStateProvider
 <HeadContent>
     <!-- Globle CSS  -->
     <link rel="stylesheet" href="./css/main.css">
@@ -49,7 +49,7 @@
                     <div class="nav-profile">
                         <button class="profile-btn" @onclick="ToggleProfileDropdown">
                             <img class="profile-img"
-                                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU"
+                                 src="@ProfileUrl"
                                  alt="">
                             <img class="profile-icon" src="./img/icons/chevron-down.svg" alt="">
                         </button>
@@ -64,14 +64,14 @@
                                                  alt="">
                                         </div>
                                         <div class="nav-dropdown-user-info">
-                                            <h4>Mary Kate</h4>
-                                            <p>Nurse Practitioner</p>
+                                            <h4>@FullUserName</h4>
+                                            <p>@UserType</p>
                                         </div>
                                     </div>
                                     <div class="nav-dropdown-links">
                                         <ul>
                                             <li>
-                                                <a href="PersonalPage/@publicId">
+                                                <a href="PersonalPage/@userId">
                                                     <img src="./img/icons/profile-settings.svg" alt=""> <span>
                                                         Profile
                                                         Settings
@@ -124,19 +124,38 @@
 @code {
 
     public bool HasSidebar = false;
-
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
     public bool ShowProfileDropdown = false;
     private string userId = "";
     private int publicId = 0;
+    private string ProfileUrl { get; set; } = "/img/hippra/blank-profile.png";
+    private string FullUserName { get; set; }
+    private string UserType { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        var user = httpContextAccessor.HttpContext.User;
-        if (user.Identity.IsAuthenticated)
+        await GetClaimsPrincipalData();
+    }
+
+    private async Task GetClaimsPrincipalData()
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
         {
-            // var userInfo = await UserManager.GetUserAsync(httpContextAccessor.HttpContext.User);
             // userId = userInfo!.Id.ToString();
             publicId = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
-            //publicId = userInfo.PublicId;
+
+            ProfileUrl = user.FindFirst(c => c.Type == "ProfilePicture")?.Value;
+            userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            FullUserName = user.FindFirst(c => c.Type == "FullName")?.Value; 
+            UserType = user.FindFirst(c => c.Type == "AccountType")?.Value;
+        }
+        else
+        {
+            //  authMessage = "The user is NOT authenticated.";
         }
     }
 

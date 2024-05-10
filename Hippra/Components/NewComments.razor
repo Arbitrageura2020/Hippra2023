@@ -37,29 +37,53 @@
         {
             @foreach (var c in CommentList)
             {
-                <div class="case-comment-item">
-                    <div class="comment-author">
-                        @if (c.User != null)
-                        {
-                            <img src="@c.User.ProfileUrl" alt="@c.User.FirstName">
-                        }
-                        else
-                        {
-                            <img src="/img/hippra/blank-profile.png" />
-                        }
+                if (c.ID != EditThis)
+                {
+                    <div class="case-comment-item">
+                        <div class="comment-author">
+                            @if (c.User != null)
+                            {
+                                <img src="@c.User.ProfileUrl" alt="@c.User.FirstName">
+                            }
+                            else
+                            {
+                                <img src="/img/hippra/blank-profile.png" />
+                            }
+                        </div>
+                        <div class="comment-info">
+                            <h6>@c.LastUpdatedDate</h6>
+                            <p> @c.Comment</p>
+                            @if (!string.IsNullOrWhiteSpace(c.imgUrl))
+                            {
+                                <label class="label-img">
+                                    <input type="checkbox">
+                                    <img id="caseImg" src="@c.imgUrl" width="20%" height="20%" />
+                                </label>
+                            }
+                            @if (dataReady && c.UserId == userId)
+                            {
+                                <button class="comment-button" @onclick="(e => { EditComment(c.ID); })">Edit</button>
+                                <button class="comment-button" @onclick="(e => { DeleteComment(c); })">Delete</button>
+                            }
+                        </div>
                     </div>
-                    <div class="comment-info">
-                        <h6>@c.LastUpdatedDate</h6>
-                        <p> @c.Comment</p>
-                        @if (!string.IsNullOrWhiteSpace(c.imgUrl))
-                        {
-                            <label class="label-img">
-                                <input type="checkbox">
-                                <img id="caseImg" src="@c.imgUrl" width="20%" height="20%" />
-                            </label>
-                        }
+                }
+                else
+                {
+                    <div class="case-comment-item">
+                        <EditForm Model="@editComment" OnValidSubmit="UpdateComment" FormName="EditCommentForm">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+                            <div class="comment-form-box">
+                                <input type="text" placeholder="Write a Comment" @bind="@c.Comment" required></input>
+                                <button type="submit">Update Comment</button>
+                            </div>
+                            <div class="border">
+                                <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="editComment.imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
+                            </div>
+                        </EditForm>
                     </div>
-                </div>
+                }
             }
         }
 
@@ -72,12 +96,13 @@
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
-
+    private AuthenticationState authState { get; set; }
 
     public List<CaseComment> CommentList { get; set; }
     [Parameter]
     public bool isOpened { get; set; }
     private CaseComment newComment = new CaseComment();
+    private CaseComment editComment = new CaseComment();
     private int EditThis = -1;
     private string fileName;
     private string imgUrl;
@@ -86,10 +111,27 @@
     private Case caseInfo = new Case();
     private int lastHistoryID = -1;
     private bool dataReady = false;
-    private int userId { get; set; }
+    private string userId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+
+        authState = await authenticationStateTask;
+        var user = authState.User;
+
+
+
+        if (user.Identity.IsAuthenticated)
+        {
+            try
+            {
+                userId = user.Claims.FirstOrDefault(s => s.Type == "UserId")?.Value;
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
 
         caseInfo = await hService.GetCase(caseId);
         CommentList = await hService.GetCommentsNoTracking(caseId);
@@ -99,16 +141,46 @@
         // OpenComment();
     }
 
+    public async Task EditComment(int ID)
+    {
+        EditThis = ID;
+        editComment = CommentList.Where(x => x.ID == ID).FirstOrDefault();
+        this.StateHasChanged();
+    }
+
+    private async Task UpdateComment()
+    {
+        isSubmitted = false;
+        if (!string.IsNullOrWhiteSpace(imgUrl))
+        {
+            editComment.imgUrl = imgUrl;
+        }
+
+        await hService.UpdateComment(EditThis, editComment.Comment, editComment.imgUrl);
+
+        isSubmitted = true;
+
+
+        EditThis = -1;
+        newComment.Comment = "";
+
+        imgUrl = "";
+        newComment.imgUrl = "";
+        newComment.ProfileUrl = "";
+        isOpened = true;
+        this.StateHasChanged();
+    }
+
     public async Task DeleteComment(CaseComment c)
     {
 
         isSubmitted = false;
 
 
-       
-            await hService.DeleteComment(c.ID);
 
-            isSubmitted = true;
+        await hService.DeleteComment(c.ID);
+
+        isSubmitted = true;
 
         CommentList = await hService.GetCommentsNoTracking(caseId);
 
@@ -126,7 +198,7 @@
         isSubmitted = false;
         CaseComment addComment = new CaseComment();
 
-        await hService.AddComment(caseId, newComment.Comment, imgUrl);
+        await hService.AddComment(caseId, newComment.Comment, userId, imgUrl);
 
         isSubmitted = true;
 

@@ -243,7 +243,7 @@
                 Topic = i.Topic,
                 Description = i.Description,
                 DateCreated = i.DateCreated,
-                Priority = Enums.GetDisplayName(i.ResponseNeeded),
+                Priority = EnumsHelper.GetDisplayName(i.ResponseNeeded),
                 // ParsedCategory = Enums.GetDisplayName(i.MedicalCategory),
                 // ParsedSubCategory = Enums.(i.MedicalCategory)
             }).ToList();

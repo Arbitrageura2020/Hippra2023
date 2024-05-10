@@ -106,7 +106,7 @@
                             </div>
 
                             <div>
-                                @if (dataReady && c.PosterId == userId)
+                                @if (c.PosterId == userId)
                                 {
                                     <button class="comment-button" @onclick="(e => { EditComment(c.ID); })">Edit</button>
                                     <button class="comment-button" @onclick="(e => { DeleteComment(c); })">Delete</button>
@@ -284,11 +284,9 @@
     private async Task AddComment()
     {
         isSubmitted = false;
-        authState = await authenticationStateTask;
-        user = authState.User;
+    
         CaseComment addComment = new CaseComment();
-        if (user.Identity.IsAuthenticated)
-        {
+        
             @*usr = await UserManager.GetUserAsync(user);
 			if (usr != null)
 			{*@
@@ -316,8 +314,8 @@
           //  await hService.AddComment(addComment);
 
             isSubmitted = true;
-            @*}*@
-        }
+       
+       
         newComment.Comment = "";
         CommentList = await hService.GetCommentsNoTracking(postId);
         await getProfilePic();

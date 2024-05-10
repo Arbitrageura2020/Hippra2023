@@ -55,6 +55,7 @@ namespace Hippra.Services
 
         }
 
+
         public async Task<Profile> GetProfile(int id)
         {
             Profile rProfile;
@@ -70,7 +71,9 @@ namespace Hippra.Services
                     NPIN = user.IdNumber,
                     MedicalSpecialty = user.MedicalSpecialty,
                     AmericanBoardCertified = user.AmericanBoardCertified,
-
+                    Email=user.Email,
+                    Status=user.Status,
+                    UserName=user.UserName,
                     ResidencyHospital = user.ResidencyHospital,
                     MedicalSchoolAttended = user.MedicalSchoolAttended,
                     EducationDegree = user.EducationDegree,
@@ -94,6 +97,25 @@ namespace Hippra.Services
 
             return rProfile;
         }
+
+        public async Task<Profile> GetProfileById(string userId)
+        {
+            Profile rProfile;
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                rProfile = Profile.FromEntity(user);
+
+            }
+            else
+            {
+                rProfile = new Profile();
+            }
+
+            return rProfile;
+        }
+
         public async Task<List<AppUser>> GetProfiles()
         {
             return await UserManagerExtensions.GetNotApprovedUsers(_userManager);

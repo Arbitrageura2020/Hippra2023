@@ -83,7 +83,7 @@
                                             <select class="form-select mini" name="" @bind="@CaseModel.Race">
                                                 @foreach (RaceType i in Enum.GetValues(typeof(RaceType)))
                                                 {
-                                                    <option value="@i">@Enums.GetDisplayName(i)</option>
+                                                    <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
                                                 }
 
                                             </select>
@@ -93,7 +93,7 @@
                                             <select class="form-select mini" name="" @bind="@CaseModel.Gender" placeholder="Gender">
                                                 @foreach (GenderType i in Enum.GetValues(typeof(GenderType)))
                                                 {
-                                                    <option value="@i">@Enums.GetDisplayName(i)</option>
+                                                    <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
                                                 }
 
                                             </select>
@@ -103,7 +103,7 @@
                                             <select class="form-select mini" name="" @bind="@CaseModel.Ethnicity" placeholder="Ethnicity">
                                                 @foreach (EthnicityType i in Enum.GetValues(typeof(EthnicityType)))
                                                 {
-                                                    <option value="@i">@Enums.GetDisplayName(i)</option>
+                                                    <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
                                                 }
 
                                             </select>
@@ -116,7 +116,7 @@
                                                 <option value="0" selected>Select category</option>
                                                 @foreach (MedicalCategory i in Enum.GetValues(typeof(MedicalCategory)))
                                                 {
-                                                    <option value="@i">@Enums.GetDisplayName(i)</option>
+                                                    <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
                                                 }
                                             </select>
                                             <img src="./img/icons/chevron-down.svg" alt="">
@@ -159,7 +159,7 @@
                                             <option value="0" selected="" hidden="">Urgency</option>
                                             @foreach (CaseResponseLevelType i in Enum.GetValues(typeof(CaseResponseLevelType)))
                                             {
-                                                <option value="@i">@Enums.GetDisplayName(i)</option>
+                                                <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
                                             }
                                         </select>
                                         <img src="./img/icons/chevron-down.svg" alt="">

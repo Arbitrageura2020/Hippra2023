@@ -1,6 +1,7 @@
 ﻿@page "/settings"
 
 @using System.ComponentModel.DataAnnotations
+@using Hippra.Components.Account
 @using Hippra.Models.DTO
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authorization
@@ -14,7 +15,6 @@
 @using Hippra.Models.Enums
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor httpContextAccessor
 @inject IJSRuntime JSRuntime
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @inject HippraService hService
@@ -23,12 +23,12 @@
 @using Microsoft.AspNetCore.Mvc.Rendering;
 @using Hippra.Extensions
 @inject IAuthorizationService AuthorizationService
-@inject UserManager<AppUser> UserManager
-@inject IHttpContextAccessor httpContextAccessor
+@inherits OwningComponentBase
+
 
 <div class="main-layout">
     <section class="settings-content">
-        <div class="container">
+        <div>
             <div class="settings-layout">
                 <div class="settings-nav">
                     <div class="settings-nav-item active">
@@ -44,8 +44,8 @@
                 </div>
 
                 <div class="settings-profile">
-                    <div class="settings-profile-form inside-scroll" style="max-height: 374px; padding-bottom: 20px;">
-                        <form action="" method="post">
+                    <div class="settings-profile-form inside-scroll" style="max-height: 574px; padding-bottom: 20px;">
+                        <EditForm  Model="UserProfile" OnValidSubmit="SaveProfile">
                             <!-- Profile Picture -->
                             <div class="settings-title">
                                 <h4>Profile</h4>
@@ -54,24 +54,26 @@
 
                                 <div class="settings-profile-picture">
                                     <label for="uploadProfilePicture">Your Profile Picture</label>
-                                    <input id="uploadProfilePictureInput" type="file" hidden="">
+                                    @*   <input id="uploadProfilePictureInput" type="file" hidden=""> *@
                                     <div class="settings-profile-preview">
-                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt="">
+                                        <img style="background-image: url('@DisplayProfileUrl');background-size: 100%;" alt="">
 
                                     </div>
-                                    <button id="uploadProfilePictureBtn" type="button">
+                                    <button id="uploadProfilePictureBtn" type="button" @onclick="OpenFileClick">
                                         <img src="./img/icons/edit.svg" alt="">
                                         <span>Edit</span>
+                                        <InputFile id="uploadProfilePictureInput" hidden="" type="file" OnChange="@HandleUploadProf" @ref="_filePicker" />
                                     </button>
+                                  @*   @ref="_filePicker" *@
                                 </div>
                                 <div class="settings-profile-inputs">
                                     <div class="form-group">
                                         <label for="">First Name</label>
-                                        <input type="text" class="form-control" placeholder="First Name">
+                                        <input type="text" class="form-control" placeholder="First Name" @bind="UserProfile.FirstName">
                                     </div>
                                     <div class="form-group">
                                         <label for="">Last Name</label>
-                                        <input type="text" class="form-control" placeholder="Last Name">
+                                        <input type="text" class="form-control" placeholder="Last Name" @bind="UserProfile.LastName">
                                     </div>
                                 </div>
                             </div>
@@ -92,24 +94,17 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="">Medical Specialty</label>
-                                        <div class="form-select-wrapper">
-                                            <select class="form-select main" name="">
-                                                <option value="" selected="" disabled="" hidden="">Please select your country of residence</option>
-                                                <option value="option1">Option 1</option>
-                                                <option value="option2">Option 2</option>
-                                                <option value="option3">Option 3</option>
-                                            </select>
-                                            <img src="./img/icons/chevron-down.svg" alt="">
-                                        </div>
+                                        <input type="text" class="form-control" placeholder="First Name" @bind="UserProfile.State">
                                     </div>
                                     <div class="form-group">
-                                        <label for="">Country</label>
+                                        <label for="">Medical Specialty</label>
                                         <div class="form-select-wrapper">
-                                            <select class="form-select main" name="">
-                                                <option value="" selected="" disabled="" hidden="">Please select your medical specialty</option>
-                                                <option value="option1">Option 1</option>
-                                                <option value="option2">Option 2</option>
-                                                <option value="option3">Option 3</option>
+                                            <select class="form-select main" name="" @bind="UserProfile.MedicalSpecialty">
+                                                <option value="0" disabled="" selected="">Please select your medical specialty</option>
+                                                @foreach (MedicalSpecialtyType i in Enum.GetValues(typeof(MedicalSpecialtyType)))
+                                                {
+                                                    <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
+                                                }
                                             </select>
                                             <img src="./img/icons/chevron-down.svg" alt="">
                                         </div>
@@ -128,7 +123,7 @@
                                     </div>
                                     <div class="form-group settings-single">
                                         <label for="">Bio</label>
-                                        <textarea class="form-control bio-textarea" placeholder="Tell us a bit about yourself"></textarea>
+                                        <textarea class="form-control bio-textarea" placeholder="Tell us a bit about yourself" @bind="UserProfile.Bio"></textarea>
                                     </div>
                                 </div>
                                 <!-- Contact Settings -->
@@ -139,19 +134,19 @@
                                     <div class="settings-row">
                                         <div class="form-group phone">
                                             <label for="">Phone Number</label>
-                                            <input type="number" class="form-control phone" placeholder="Please enter your phone number">
+                                            <input type="number" class="form-control phone" placeholder="Please enter your phone number" @bind="UserProfile.PhoneNumber">
                                         </div>
                                         <div class="form-group">
                                             <label for="">Email</label>
-                                            <input type="text" class="form-control" placeholder="Please enter your email">
+                                            <input type="text" class="form-control" placeholder="Please enter your email" @bind="UserProfile.Email">
                                         </div>
                                         <div class="form-group">
                                             <label for="">State</label>
-                                            <input type="text" class="form-control" placeholder="Please enter your state">
+                                            <input type="text" class="form-control" placeholder="Please enter your state" @bind="UserProfile.City">
                                         </div>
                                         <div class="form-group">
                                             <label for="">City</label>
-                                            <input type="text" class="form-control" placeholder="Please enter your city">
+                                            <input type="text" class="form-control" placeholder="Please enter your city" @bind="UserProfile.State">
                                         </div>
                                     </div>
                                 </div>
@@ -159,7 +154,7 @@
                             <div class="form-submit">
                                 <button type="submit" class="btn btn-lg btn-green">Update</button>
                             </div>
-                        </form>
+                        </EditForm>
                     </div>
                 </div>
             </div>
@@ -167,385 +162,99 @@
     </section>
 </div>
 
+
 @code {
-    [Parameter]
-    public int userId { get; set; } = -1;
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private AuthenticationState authState { get; set; }
-    private ClaimsPrincipal user { get; set; }
-    @*private AppUser usr { get; set; }*@
-    private Stats stats = new Stats();
-    private List<ParsedCase> SearchResults { get; set; } = new List<ParsedCase>();
-    private List<Connection> connList { get; set; } = new List<Connection>();
-    public List<FTPaginationModel> paginationConnData = new List<FTPaginationModel>();
-    public int PageSize { get; set; } = 10;
-    public int CountConn { get; set; }
-    public int TotalConnPages => (int)Math.Ceiling(decimal.Divide(CountConn, PageSize));
-    public int CurrentConnPage { get; set; } = 1;
     private string fileName = "";
     private string imgUrl = "";
     private string savedImgUrl = "";
     private string displayImgUrl = "";
     private bool isDeleted { get; set; } = false;
-    private Profile profile { get; set; } = new Profile();
+    private Profile UserProfile { get; set; } = new Profile();
     private string DisplayProfileUrl = "";
-    private string DisplayBackgroundUrl = "";
-    private string DisplayBadgeUrl = "";
-    private string DisplayRankUrl = "";
-    private string DisplayRankBg = "";
-    private string DisplayHonorbg = "";
-    private string badgeType = "";
     private string guid { get; set; }
-    private bool isSubmitted = false;
-    private string connectStatus = "";
-    private bool isFollowed = false;
+
     private int lastHistoryID = -1;
 
-    private int usrID { get; set; }
-    private int posterSpeciality = 0;
-    private int NPIN = 0;
-    private bool AmericanBoardCertified = false;
-    private string fullName = "";
+    private string userId { get; set; }
 
-
-    private AppUser CurrentUser { get; set; }
-    private string CurrentUserId { get; set; }
-    private bool CanEdit { get; set; } = false;
-
-    private bool IsEditBio { get; set; }
+    private bool Dataloaded = false;
+    public ProfileService profileService;
     protected override async Task OnInitializedAsync()
     {
-        var user = httpContextAccessor.HttpContext.User;
-        CurrentUser = await UserManager.GetUserAsync(httpContextAccessor.HttpContext.User);
-        CurrentUserId = CurrentUser!.Id;
-        // usrID = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
-        // NPIN = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "NPIN")?.Value);
-        // if (user.Claims.FirstOrDefault(s => s.Type == "AmericanBoardCertified")?.Value == "1")
-        // {
-        //     AmericanBoardCertified = true;
-        // }
-
-        // fullName = user.Claims.FirstOrDefault(s => s.Type == "FirstName")?.Value + " " + user.Claims.FirstOrDefault(s => s.Type == "LastName")?.Value;
-
-        if (userId == -1)
-        {
-            userId = CurrentUser.PublicId;
-            //current user own profile
-        }
-        profile = await pService.GetProfile(userId);
-
-        if (CurrentUser.Id == profile.Userid)
-        {
-            CanEdit = true;
-        }
-
-        savedImgUrl = hService.GetImgStorageUrl() + "img";
 
 
-        await GetStats(userId);
-
-        if (profile.ProfileUrl != null)
-        {
-            DisplayProfileUrl = profile.ProfileUrl;
-        }
-        else
-        {
-            DisplayProfileUrl = "/img/hippra/blank-profile.png";
-        }
-        if (profile.BackgroundUrl != null)
-        {
-            DisplayBackgroundUrl = profile.BackgroundUrl;
-        }
-        else
-        {
-            DisplayBackgroundUrl = "/img/hippra/blank-background.jpg";
-        }
-
-        if (usrID != userId)
-        {
-            connectStatus = await hService.CheckConnection(usrID, userId);
-            isFollowed = await hService.CheckFollower(usrID, userId);
-        }
-
-        await GetConnResults(userId, CurrentConnPage);
-        if (CountConn > PageSize)
-        {
-            for (int i = 1; i <= TotalConnPages; i++)
-            {
-                paginationConnData.Add(new FTPaginationModel()
-                    {
-                        id = i
-                    });
-            }
-            var pg = paginationConnData.FirstOrDefault(s => s.id == CurrentConnPage);
-            pg.isActive = true;
-        }
-        foreach (var c in connList)
-        {
-            Profile prof = new Profile();
-            if (c.FriendID == profile.PublicId)
-            {
-                prof = await pService.GetProfile(c.UserID);
-            }
-            else
-            {
-                prof = await pService.GetProfile(c.FriendID);
-            }
-            c.FullName = prof.FirstName + " " + prof.LastName;
-            c.CurrentPosition = Enums.GetDisplayName(prof.MedicalSpecialty);
-            c.Location = prof.State;
-            if (prof.ProfileUrl != null)
-            {
-                c.FProfileUrl = prof.ProfileUrl;
-            }
-            else
-            {
-                c.FProfileUrl = "/img/hippra/blank-profile.png";
-            }
-        }
-
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
         authState = await authenticationStateTask;
-        user = authState.User;
+        var user = authState.User;
+
+        profileService = (ProfileService)ScopedServices.GetService(typeof(ProfileService));
+
         if (user.Identity.IsAuthenticated)
         {
-            @*usr = await UserManager.GetUserAsync(user);*@
             try
             {
-
-                usrID = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
-                posterSpeciality = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "MedicalSpecialty")?.Value);
-                NPIN = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "NPIN")?.Value);
+                userId = user.Claims.FirstOrDefault(s => s.Type == "UserId")?.Value;
+                if (!Dataloaded)
+                {
+                    UserProfile = await profileService.GetProfileById(userId);
+                    Dataloaded = true;
+                }
             }
             catch (FormatException e)
             {
                 Console.WriteLine(e.Message);
             }
-            fullName = user.Claims.FirstOrDefault(s => s.Type == "FirstName")?.Value + " " + user.Claims.FirstOrDefault(s => s.Type == "LastName")?.Value;
-            if (user.Claims.FirstOrDefault(s => s.Type == "AmericanBoardCertified")?.Value == "1")
-            {
-                AmericanBoardCertified = true;
-            }
-            if (userId == -1)
-            {
-                profile = new Profile();
-                profile = await pService.GetProfile(usrID);
-
-                userId = profile.PublicId;
-                @*if (usr != null)
-				{
-					profile = new Profile();
-					profile = await pService.GetProfile(usr.PublicId);
-
-					userId = profile.PublicId;
-				}
-				else
-				{
-					NavigationManager.NavigateTo("/");
-				}*@
-            }
-
-            savedImgUrl = hService.GetImgStorageUrl() + "img";
-
         }
 
-        await GetStats(userId);
-        //profile
-        profile = new Profile();
-        profile = await pService.GetProfile(userId);
-        if (profile.ProfileUrl != null)
+        savedImgUrl = hService.GetImgStorageUrl() + "img";
+
+
+
+        if (UserProfile.ProfileUrl != null)
         {
-            DisplayProfileUrl = profile.ProfileUrl;
+            DisplayProfileUrl = UserProfile.ProfileUrl;
         }
         else
         {
             DisplayProfileUrl = "/img/hippra/blank-profile.png";
         }
-        if (profile.BackgroundUrl != null)
-        {
-            DisplayBackgroundUrl = profile.BackgroundUrl;
-        }
-        else
-        {
-            DisplayBackgroundUrl = "/img/hippra/blank-background.jpg";
-        }
 
-        if (usrID != userId)
-        {
-            connectStatus = await hService.CheckConnection(usrID, userId);
-            isFollowed = await hService.CheckFollower(usrID, userId);
-        }
-        await GetConnResults(userId, CurrentConnPage);
-        if (CountConn > PageSize)
-        {
-            for (int i = 1; i <= TotalConnPages; i++)
-            {
-                paginationConnData.Add(new FTPaginationModel()
-                    {
-                        id = i
-                    });
-            }
-            var pg = paginationConnData.FirstOrDefault(s => s.id == CurrentConnPage);
-            pg.isActive = true;
-        }
-        foreach (var c in connList)
-        {
-            Profile prof = new Profile();
-            if (c.FriendID == profile.PublicId)
-            {
-                prof = await pService.GetProfile(c.UserID);
-            }
-            else
-            {
-                prof = await pService.GetProfile(c.FriendID);
-            }
-            c.FullName = prof.FirstName + " " + prof.LastName;
-            c.CurrentPosition = Enums.GetDisplayName(prof.MedicalSpecialty);
-            c.Location = prof.State;
-            if (prof.ProfileUrl != null)
-            {
-                c.FProfileUrl = prof.ProfileUrl;
-            }
-            else
-            {
-                c.FProfileUrl = "/img/hippra/blank-profile.png";
-            }
-        }
     }
 
-
-    private async Task GetStats(int userId)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        stats = new Stats();
-        var searchResults = await hService.GetCasesNoTracking("", false, false, -1, -1, 1, 10, userId, null);
-
-        stats.NumCase = searchResults.TotalCount;
-        foreach (var i in searchResults.Cases)
-        {
-            SearchResults.Add(i.ToParsedCase());
-        }
-
-        // count comment
-        // count Votes form others for me
-        // count my vote for others
-        var result = await hService.GetStats(userId);
-        stats.Answers = result.Answers;
-        stats.UpVote = result.UpVote;
-        stats.Votes = result.Votes;
-        stats.Reputation = stats.UpVote * 5;
-        stats.Rank = GetRank(stats.UpVote);
-        //  stats.Badge = GetBadge(stats.UpVote);
-
+      
     }
 
-    public string GetRank(int rep)
+    private async Task OpenFileClick()
     {
-        if (rep < 25)
-        {
-            DisplayRankUrl = "/img/hippra/rank-D.jpg";
-            return "D";
-        }
-        else if (rep >= 25 && rep < 100)
-        {
-            DisplayRankUrl = "/img/hippra/Rank-C.jpg";
-            return "C";
-        }
-        else if (rep >= 100 && rep < 500)
-        {
-            DisplayRankUrl = "/img/hippra/Rank-B.jpg";
-            return "B";
-        }
-        else if (rep >= 500 && rep < 10000)
-        {
-            DisplayRankUrl = "/img/hippra/Rank-A.jpg";
-            return "A";
-        }
-        else
-        {
-            DisplayRankUrl = "/img/hippra/Rank-S.jpg";
-            return "S";
-        }
-
+        await JSRuntime.InvokeVoidAsync("HandleUploadButtonClick");
     }
+    
 
-    // public string GetBadge(int rep)
-    // {
-    //     ResidencyPosition = "";
-    //     badgeType = "badge-pic";
-    //     DisplayRankBg = "repeating-linear-gradient(45deg, black, transparent 100px)";
-    //     if (rep >= 5 && rep < 10 || rep >= 40 && rep < 50 || rep >= 150 && rep < 250 || rep >= 3700 && rep < 6000 || rep >= 20000 && rep < 40000)
-    //     {
-    //         DisplayBadgeUrl = "/img/hippra/bronze-badge.png";
-    //         DisplayHonorbg = "saddlebrown";
-    //         return "Bronze";
-
-    //     }
-    //     else if (rep >= 10 && rep < 20 || rep >= 50 && rep < 65 || rep >= 250 && rep < 300 || rep >= 6000 && rep < 8000 || rep >= 40000 && rep < 80000)
-    //     {
-    //         DisplayBadgeUrl = "/img/hippra/silver-badge.png";
-    //         DisplayHonorbg = "cornflowerblue";
-    //         return "Silver";
-    //     }
-    //     else if (rep >= 20 && rep < 25 || rep >= 65 && rep < 85 || rep >= 300 && rep < 400 || rep >= 8000 && rep < 10000 || rep >= 80000 && rep < 160000)
-    //     {
-    //         DisplayBadgeUrl = "/img/hippra/gold-badge.png";
-    //         DisplayHonorbg = "forestgreen";
-    //         return "Gold";
-    //     }
-    //     else if (rep >= 160000 && rep < 500000)
-    //     {
-    //         DisplayBadgeUrl = "/img/hippra/platinum-badge.png";
-    //         DisplayHonorbg = "orange";
-    //         return "Platinum";
-    //     }
-    //     else if (rep >= 500000)
-    //     {
-    //         DisplayBadgeUrl = "/img/hippra/diamon-badge.png";
-    //         DisplayHonorbg = "maroon";
-    //         badgeType = "badge-pic-diamon";
-    //         return "Diamon";
-    //     }
-    //     else
-    //     {
-    //         DisplayBadgeUrl = "/img/hippra/green-badge.png";
-    //         DisplayHonorbg = "mintcream";
-    //         ResidencyPosition = "bottom: 20%";
-    //         DisplayRankBg = "repeating-linear-gradient(45deg, lightgrey, transparent 100px)";
-    //         return "Residency";
-    //     }
-    // }
-
-    public async Task HandleUploadBg(InputFileChangeEventArgs e)
-    {
-        if (profile.ProfileUrl != null)
-        {
-            var deleteFile = profile.ProfileUrl.Substring(57, profile.ProfileUrl.Length - 57);
-            var response = await hService.DeleteImage(deleteFile);
-        }
-        profile.BackgroundUrl = await HandleFileSelected(e);
-        DisplayBackgroundUrl = profile.BackgroundUrl;
-        await SaveProfile();
-        await commonService.addToHistory("updated background picture", CurrentUser);
-        StateHasChanged();
-    }
+    private InputFile _filePicker;
+    private async Task OpenFilePicker()
+        => await JSRuntime.InvokeVoidAsync("HTMLElement.prototype.click.call",
+            _filePicker.Element);
 
     public async Task HandleUploadProf(InputFileChangeEventArgs e)
     {
-        if (profile.ProfileUrl != null)
+        if (UserProfile.ProfileUrl != null)
         {
-            var deleteFile = profile.ProfileUrl.Substring(57, profile.ProfileUrl.Length - 57);
+            var deleteFile = UserProfile.ProfileUrl.Substring(57, UserProfile.ProfileUrl.Length - 57);
             var response = await hService.DeleteImage(deleteFile);
         }
-        profile.ProfileUrl = await HandleFileSelected(e);
-        DisplayProfileUrl = profile.ProfileUrl;
+        UserProfile.ProfileUrl = await HandleFileSelected(e);
+        DisplayProfileUrl = UserProfile.ProfileUrl;
         await SaveProfile();
-        await commonService.addToHistory("updated background picture", CurrentUser);
+        //  await commonService.addToHistory("updated background picture", CurrentUser);
         StateHasChanged();
     }
+
     public async Task<string> HandleFileSelected(InputFileChangeEventArgs e)
     {
         var maxAllowedFiles = 1;
@@ -585,34 +294,13 @@
     }
     private async Task SaveProfile()
     {
-        AppUser usr = new AppUser();
-        usr.PublicId = usrID;
-
-        usr.FirstName = profile.FirstName;
-        usr.LastName = profile.LastName;
-        usr.IdNumber = profile.NPIN;
-        usr.MedicalSpecialty = profile.MedicalSpecialty;
-        usr.AmericanBoardCertified = profile.AmericanBoardCertified;
-
-        usr.ResidencyHospital = profile.ResidencyHospital;
-        usr.MedicalSchoolAttended = profile.MedicalSchoolAttended;
-        usr.EducationDegree = profile.EducationDegree;
-        usr.Address = profile.Address;
-        usr.Zipcode = profile.Zipcode;
-        usr.State = profile.State;
-        usr.City = profile.City;
-        usr.PhoneNumber = profile.PhoneNumber; // check this
-        usr.ProfileUrl = profile.ProfileUrl;
-        usr.BackgroundUrl = profile.BackgroundUrl;
-        usr.Bio = profile.Bio;
         try
         {
-            @*await UserManagerExtensions.UpdateUserProfile(UserManager, user, usr);*@
-            await pService.UpdateUserProfile(profile);
+            await pService.UpdateUserProfile(UserProfile);
         }
         catch (Exception e)
         {
-            IsEditBio = false;
+
             this.StateHasChanged();
             return;
         }
@@ -627,8 +315,8 @@
 			newHistory.Detail = "Profile updated";
 			newHistory.HistoryTypes = "edited profile";
 			await hService.AddHistory(newHistory);*@
-        IsEditBio = false;
-        NavigationManager.NavigateTo("FTRefreshSignIn?returnUrl=PersonalPage/-1", true);
+
+     //   NavigationManager.NavigateTo("FTRefreshSignIn?returnUrl=PersonalPage/-1", true);
         this.StateHasChanged();
         return;
 
@@ -647,120 +335,12 @@
     }
 
 
-
-   
-    private async Task EditBio()
-    {
-        IsEditBio = true;
-        StateHasChanged();
-    }
-    private async Task SaveBio()
-    {
-        if (isSubmitted)
-        {
-            await commonService.addToHistory("updated background picture", CurrentUser);
-            SaveProfile();
-        }
-    }
-
-    private async Task AddToBio()
-    {
-
-    }
-    private async Task Cancel()
-    {
-        IsEditBio = false;
-        StateHasChanged();
-    }
-    private async Task Submitted()
-    {
-        isSubmitted = true;
-    }
-
-    private async Task RemoveConnection()
-    {
-        await hService.RemoveConnection(usrID, userId);
-        connectStatus = "NC";
-        await commonService.addToHistory("updated background picture", CurrentUser);
-        await GetConnResults(userId, CurrentConnPage);
-        StateHasChanged();
-    }
     private async Task viewPage(int id)
     {
         NavigationManager.NavigateTo("/");
-        NavigationManager.NavigateTo("/PersonalPage/" + id);
-
-    }
-    private async Task SendAnInvitation()
-    {
-        Connection newConn = new Connection();
-        newConn.ID = 0;
-        newConn.UserID = usrID;
-        newConn.FriendID = userId;
-        newConn.Status = -1;
-        connectStatus = "P";
-        await hService.AddConnection(newConn);
-        await commonService.addToHistory("updated background picture", CurrentUser);
-        await Notify(1);
-        StateHasChanged();
-    }
-    private async Task AddToFollowerList()
-    {
-        Follow newF = new Follow();
-        newF.ID = 0;
-        newF.FollowerUserID = usrID;
-        newF.FollowingUserID = userId;
-        await hService.AddFollower(newF);
-        isFollowed = true;
-        await commonService.addToHistory("updated background picture", CurrentUser);
-        await Notify(-1);
-        StateHasChanged();
-    }
-    private async Task RemoveFromFollowerList()
-    {
-        await hService.RemoveFollower(usrID, userId);
-        isFollowed = false;
-        await commonService.addToHistory("updated background picture", CurrentUser);
-        StateHasChanged();
-    }
-    private async Task Notify(int type)
-    {
-        //    int id = await hService.GetHistoryID(userId, usr.PublicId);
-        Notification newNotifs = new Notification();
-        newNotifs.ID = 0;
-        newNotifs.SenderID = usrID;
-        newNotifs.ReceiverID = userId;
-        newNotifs.NotificationID = lastHistoryID;
-        newNotifs.IsRead = -1;
-        if (type == 1)
-        {
-            newNotifs.IsResponseNeeded = 1;
-        }
-        else
-        {
-            newNotifs.IsResponseNeeded = -1;
-        }
-        newNotifs.CreationDate = DateTime.Now;
-        await hService.AddNotification(newNotifs);
+        NavigationManager.NavigateTo("/Settings");
     }
 
-    private async Task ChangePageConn(int targetPage)
-    {
-
-        await GetConnResults(userId, targetPage);
-
-        var pg = paginationConnData.FirstOrDefault(s => s.isActive);
-        pg.isActive = false;
-        CurrentConnPage = targetPage;
-        pg = paginationConnData.FirstOrDefault(s => s.id == CurrentConnPage);
-        pg.isActive = true;
-        this.StateHasChanged();
-    }
-    private async Task GetConnResults(int id, int targetPage)
-    {
-        var result = await hService.GetAllConnections(id, targetPage, PageSize);
-        connList = result.Connections;
-        CountConn = result.TotalCount;
-    }
+  
 }
 

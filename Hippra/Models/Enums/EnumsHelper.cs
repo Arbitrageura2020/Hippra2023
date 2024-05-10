@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Hippra.Models.Enums
 {
-    public static class Enums
+    public static class EnumsHelper
     {
 
         // Helper method to display the name of the enum values.
