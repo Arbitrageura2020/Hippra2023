@@ -21,6 +21,7 @@ using System.Security.Claims;
 using Newtonsoft.Json;
 using Hippra.Services.Email;
 using Hippra.Models.ViewModel;
+using SQLitePCL;
 
 namespace Hippra.Services
 {
@@ -28,7 +29,7 @@ namespace Hippra.Services
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-
+        private readonly RoleManager<IdentityRole> _roleManager;
         //private readonly FriendManagerService _fmService;
         //private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailService _emailSender;
@@ -43,13 +44,15 @@ namespace Hippra.Services
            //FriendManagerService fmService,
            IEmailService emailSender,
             ApplicationDbContext context,
-            IOptions<AppSettings> settings)
+            IOptions<AppSettings> settings,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             //_fmService = fmService;
             _emailSender = emailSender;
             AppSettings = settings?.Value;
+            _roleManager = roleManager;
             //Storage = new AzureStorage(settings);
             //UserDataHelper = new UserDataHelper(_context, Storage, _userManager);
 
@@ -68,12 +71,12 @@ namespace Hippra.Services
                     Userid = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    NPIN = user.IdNumber,
+                    NPIN = user.NPIN,
                     MedicalSpecialty = user.MedicalSpecialty,
                     AmericanBoardCertified = user.AmericanBoardCertified,
-                    Email=user.Email,
-                    Status=user.Status,
-                    UserName=user.UserName,
+                    Email = user.Email,
+                    Status = user.Status,
+                    UserName = user.UserName,
                     ResidencyHospital = user.ResidencyHospital,
                     MedicalSchoolAttended = user.MedicalSchoolAttended,
                     EducationDegree = user.EducationDegree,
@@ -419,7 +422,7 @@ namespace Hippra.Services
             {
                 user.FirstName = usr.FirstName;
                 user.LastName = usr.LastName;
-                user.IdNumber = user.IdNumber;
+                user.NPIN = user.NPIN;
                 user.MedicalSpecialty = usr.MedicalSpecialty;
                 user.AmericanBoardCertified = usr.AmericanBoardCertified;
 
@@ -443,69 +446,41 @@ namespace Hippra.Services
 
         public async Task<int> RegisterUser(RegisterViewModel Input, string callbackUrl)
         {
+            //await _roleManager.CreateAsync(new IdentityRole() { Name = "Nurse" });
+            //await _roleManager.CreateAsync(new IdentityRole() { Name = "Physician" });
             //var user = new AppUser { UserName = Input.Email, Email = Input.Email };
             var userWithlargestPublicID = await UserManagerExtensions.GetLastPID(_userManager);
 
-            AppUser user;
+            AppUser user = new AppUser
+            {
+                UserName = Input.Email,
+                Email = Input.Email,
+                PublicId = userWithlargestPublicID + 1,
+                FirstName = Input.FirstName,
+                LastName = Input.LastName,
 
-            if (Input.Email.ToUpper() == AppSettings.FTManagerUsr.ToUpper())
-            {
-                user = new AppUser
-                {
-                    UserName = Input.Email,
-                    Email = Input.Email,
-                    PublicId = userWithlargestPublicID + 1,
-                    AccountType = Input.AccountType,
-                    FirstName = Input.FirstName,
-                    LastName = Input.LastName,
-                    IsNPIN = Input.IsNPIN,
-                    IdNumber = Input.IdNumber,
-                    MedicalSpecialty = Input.MedicalSpecialty,
-                    AmericanBoardCertified = Input.AmericanBoardCertified,
-                    ResidencyHospital = Input.ResidencyHospital,
-                    MedicalSchoolAttended = Input.MedicalSchoolAttended,
-                    EducationDegree = Input.EducationDegree,
-                    Address = Input.Address,
-                    Zipcode = Input.Zipcode,
-                    State = Input.State,
-                    City = Input.City,
-                    PhoneNumber = Input.PhoneNumber,
-                    Country = Input.Country,
-                    DateJoined = DateTime.Now,
-                    isApproved = true
-                };
-            }
-            else
-            {
-                user = new AppUser
-                {
-                    UserName = Input.Email,
-                    Email = Input.Email,
-                    PublicId = userWithlargestPublicID + 1,
-                    FirstName = Input.FirstName,
-                    LastName = Input.LastName,
-                    IsNPIN = Input.IsNPIN,
-                    IdNumber = Input.IdNumber,
-                    MedicalSpecialty = Input.MedicalSpecialty,
-                    AmericanBoardCertified = Input.AmericanBoardCertified,
-                    ResidencyHospital = Input.ResidencyHospital,
-                    MedicalSchoolAttended = Input.MedicalSchoolAttended,
-                    EducationDegree = Input.EducationDegree,
-                    Address = Input.Address,
-                    Zipcode = Input.Zipcode,
-                    State = Input.State,
-                    City = Input.City,
-                    PhoneNumber = Input.PhoneNumber,
-                    DateJoined = DateTime.Now,
-                    isApproved = true
-                };
-                // temporary approve all sign up
-            }
+
+                MedicalSpecialty = Input.MedicalSpecialty,
+                AmericanBoardCertified = Input.AmericanBoardCertified,
+                ResidencyHospital = Input.ResidencyHospital,
+                MedicalSchoolAttended = Input.MedicalSchoolAttended,
+                EducationDegree = Input.EducationDegree,
+                Address = Input.Address,
+                Zipcode = Input.Zipcode,
+                State = Input.State,
+                City = Input.City,
+                PhoneNumber = Input.PhoneNumber,
+                DateJoined = DateTime.Now,
+                isApproved = true
+            };
+            // temporary approve all sign up
+
 
 
             var result = await _userManager.CreateAsync(user, Input.Password);
             if (result.Succeeded)
             {
+               
                 if (Input.AccountType == Models.Enums.UserAccountType.Nurse)
                 {
                     await _userManager.AddToRoleAsync(user, "Nurse");

@@ -38,7 +38,7 @@ namespace Hippra.Extensions
 
             user.FirstName = usr.FirstName;
             user.LastName = usr.LastName;
-            user.IdNumber = usr.IdNumber;
+            user.NPIN = usr.NPIN;
             user.MedicalSpecialty = usr.MedicalSpecialty;
             user.AmericanBoardCertified = usr.AmericanBoardCertified;
 

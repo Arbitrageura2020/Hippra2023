@@ -23,9 +23,9 @@ namespace Hippra.Models.SQL
         [Required]
         [PersonalData]
         [Display(Name = "National Provider Identifier Number")]
-        public int IdNumber { get; set; }
+        public int NPIN { get; set; }
 
-        public bool IsNPIN { get; set; } = true;
+        public int IDMe { get; set; }
 
         [Required]
         [PersonalData]

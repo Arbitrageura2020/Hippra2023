@@ -44,12 +44,9 @@ namespace Hippra.Models.ViewModel
         [Display(Name = "National Provider Identifier Number")]
         public int IdNumber { get; set; }
 
-        public bool IsNPIN
-        {
-            get => IsNPINString == "True";
-            set => IsNPINString = value.ToString();
-        }
-        public string IsNPINString { get; set; }
+          [Display(Name = "ID.Me")]
+        public int IdMe { get; set; }
+
 
         [Required]
         [Display(Name = "American Board Certified")]

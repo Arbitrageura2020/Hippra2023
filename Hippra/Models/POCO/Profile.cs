@@ -74,7 +74,7 @@ namespace Hippra.Models.POCO
                 Userid = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                NPIN = user.IdNumber,
+                NPIN = user.NPIN,
                 MedicalSpecialty = user.MedicalSpecialty,
                 AmericanBoardCertified = user.AmericanBoardCertified,
                 Email = user.Email,

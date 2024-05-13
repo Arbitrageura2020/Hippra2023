@@ -64,6 +64,12 @@
             <form class="two-column-form">
                 <div class="column column-1 login-container">
                     <div class="input-field">
+                        <input  placeholder="Email" @bind="@InputModel.Email">
+                    </div>
+                    <div class="input-field">
+                        <input  placeholder="Password" @bind="@InputModel.Password">
+                    </div>
+                    <div class="input-field">
                         <input type="FirstName" placeholder="First Name" @bind="@InputModel.FirstName">
                     </div>
                     <div class="input-field">
@@ -71,28 +77,16 @@
                     </div>
                     @if (InputModel.AccountType == UserAccountType.Nurse)
                     {
-                        <div class="dropdown-container symbol">
-                            <select class="dropdown" placeholder="Credential Type" @bind="InputModel.IsNPINString">
-                                <option value="False" disabled="" selected="">Credential Type</option>
-                                <option value="True">
-                                    National Provider Identifier (NPI)
-                                </option>
-                                <option value="false">ID.Me</option>
-                            </select>
-                        </div>
-                    }
-                    @if (InputModel.AccountType == UserAccountType.Nurse && InputModel.IsNPIN)
-                    {
+
                         <div class="input-field">
-                            <input type="ResHosp" placeholder="ID.Me" @bind="@InputModel.IdNumber">
+                            <input type="ResHosp" placeholder="ID.Me" @bind="@InputModel.IdMe">
                         </div>
                     }
-                    else
-                    {
-                        <div class="input-field">
-                            <input type="ResHosp" placeholder="National Provider Identifier (NPI)" @bind="@InputModel.IdNumber">
-                        </div>
-                    }
+
+                    <div class="input-field">
+                        <input type="ResHosp" placeholder="National Provider Identifier (NPI)" @bind="@InputModel.IdNumber">
+                    </div>
+
                     <span class="subtext"><i>You can change this later</i></span>
 
                     <div class="dropdown-container">
@@ -147,7 +141,7 @@
         <div class="profile">Contact</div>
 
         <div class="form-container">
-            <form class="two-column-form" action="/submit-form-url" method="post">
+        
                 <div class="column column-1 login-container">
                     <div class="input-field">
                         <input type="Address" placeholder="Address" @bind="@InputModel.Address">
@@ -174,9 +168,9 @@
                 </div>
 
                 <div class="sub-btn">
-                    <a href="#" class="submit-btn btn">Submit</a>
+                    <button type="submit" class="submit-btn btn">Submit</button>
                 </div>
-            </form>
+            
         </div>
         <div class="check-box-agreement">
             <input type="checkbox" id="lolremember" name="lolremember" @bind="@InputModel.AgreedTerm">
