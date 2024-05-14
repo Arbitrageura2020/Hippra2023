@@ -16,26 +16,26 @@ function HandleUploadButtonClick() {
 }
 
 // Handle Password Change Password
-const newPassword = document.querySelector("#newPassword");
-const confirmPassword = document.querySelector("#confirmPassword");
+//const newPassword = document.querySelector("#newPassword");
+//const confirmPassword = document.querySelector("#confirmPassword");
 
-if (newPassword && confirmPassword) {
-    newPassword.addEventListener("input", () => {
-        if (newPassword.value !== confirmPassword.value) {
-            confirmPassword.classList.add("is-invalid");
-        } else {
-            confirmPassword.classList.remove("is-invalid");
-        }
-    });
+//if (newPassword && confirmPassword) {
+//    newPassword.addEventListener("input", () => {
+//        if (newPassword.value !== confirmPassword.value) {
+//            confirmPassword.classList.add("is-invalid");
+//        } else {
+//            confirmPassword.classList.remove("is-invalid");
+//        }
+//    });
 
-    confirmPassword.addEventListener("input", () => {
-        if (newPassword.value !== confirmPassword.value) {
-            confirmPassword.classList.add("is-invalid");
-        } else {
-            confirmPassword.classList.remove("is-invalid");
-        }
-    });
-}
+//    confirmPassword.addEventListener("input", () => {
+//        if (newPassword.value !== confirmPassword.value) {
+//            confirmPassword.classList.add("is-invalid");
+//        } else {
+//            confirmPassword.classList.remove("is-invalid");
+//        }
+//    });
+//}
 
 // Handle Edit Input
 

@@ -22,6 +22,8 @@ using Newtonsoft.Json;
 using Hippra.Services.Email;
 using Hippra.Models.ViewModel;
 using SQLitePCL;
+using Hippra.Models.DTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hippra.Services
 {
@@ -33,9 +35,7 @@ namespace Hippra.Services
         //private readonly FriendManagerService _fmService;
         //private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailService _emailSender;
-        private readonly ApplicationDbContext _context;
-        //private AzureStorage Storage;
-        //private UserDataHelper UserDataHelper;
+        private IDbContextFactory<ApplicationDbContext> DbFactory;
 
         private AppSettings AppSettings { get; set; }
         public ProfileService(
@@ -45,7 +45,8 @@ namespace Hippra.Services
            IEmailService emailSender,
             ApplicationDbContext context,
             IOptions<AppSettings> settings,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IDbContextFactory<ApplicationDbContext> dbFactory)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -53,6 +54,7 @@ namespace Hippra.Services
             _emailSender = emailSender;
             AppSettings = settings?.Value;
             _roleManager = roleManager;
+            DbFactory = dbFactory;
             //Storage = new AzureStorage(settings);
             //UserDataHelper = new UserDataHelper(_context, Storage, _userManager);
 
@@ -414,6 +416,12 @@ namespace Hippra.Services
             return await Hippra.Extensions.UserManagerExtensions.GetUserReport(_userManager);
         }
 
+        public async Task<bool> IsEmailUsedInTheSystem(string email)
+        {
+            using var _context = DbFactory.CreateDbContext();
+            return await _context.Users.AnyAsync(x => x.Email == email.ToLower());
+        }
+
         public async Task UpdateUserProfile(Profile usr)
         {
             var user = await _userManager.FindByIdAsync(usr.Userid);
@@ -444,11 +452,9 @@ namespace Hippra.Services
 
         }
 
-        public async Task<int> RegisterUser(RegisterViewModel Input, string callbackUrl)
+        public async Task<int> RegisterUser(CreateUserRequestDto Input, string callbackUrl)
         {
-            //await _roleManager.CreateAsync(new IdentityRole() { Name = "Nurse" });
-            //await _roleManager.CreateAsync(new IdentityRole() { Name = "Physician" });
-            //var user = new AppUser { UserName = Input.Email, Email = Input.Email };
+
             var userWithlargestPublicID = await UserManagerExtensions.GetLastPID(_userManager);
 
             AppUser user = new AppUser
@@ -480,7 +486,7 @@ namespace Hippra.Services
             var result = await _userManager.CreateAsync(user, Input.Password);
             if (result.Succeeded)
             {
-               
+
                 if (Input.AccountType == Models.Enums.UserAccountType.Nurse)
                 {
                     await _userManager.AddToRoleAsync(user, "Nurse");

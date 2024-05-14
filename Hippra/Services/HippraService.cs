@@ -36,7 +36,6 @@ namespace Hippra.Services
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        // private readonly ApplicationDbContext _context;
         private AppSettings AppSettings { get; set; }
 
         private AzureStorage Storage;
@@ -46,7 +45,6 @@ namespace Hippra.Services
         public HippraService(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            ApplicationDbContext context,
             IOptions<AppSettings> settings,
             IDbContextFactory<ApplicationDbContext> dbFactory,
             IHttpContextAccessor httpContextAccessor)
@@ -54,7 +52,6 @@ namespace Hippra.Services
             _userManager = userManager;
             _signInManager = signInManager;
             AppSettings = settings?.Value;
-            // _context = context;
             Storage = new AzureStorage(settings);
             ImageHelper = new ImageHelper(Storage);
             DbFactory = dbFactory;

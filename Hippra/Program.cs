@@ -55,8 +55,8 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-////builder.Services.AddTransient<IUserStore<AppUser>, UserStore<AppUser>>();
-//builder.Services.AddTransient<UserManager<AppUser>>();
+//builder.Services.AddTransient<IUserStore<AppUser>, UserStore<AppUser>>();
+builder.Services.AddTransient<UserManager<AppUser>>();
 
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<AppUser>, AdditionalUserClaimsPrincipalFactory>();
