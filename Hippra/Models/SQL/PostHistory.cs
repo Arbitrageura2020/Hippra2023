@@ -15,7 +15,7 @@ namespace Hippra.Models.SQL
         public string Detail { get; set; }
         public string HistoryTypes { get; set; }
         public string IsRead = ""; //for notification
-        public int NotificationID = -1;
+        public long NotificationID { get; set; }
 
     }
 }

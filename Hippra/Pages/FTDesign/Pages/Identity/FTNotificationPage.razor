@@ -315,9 +315,9 @@
 
 
 
-            await GetHistoryResults(usrID, CurrentPage);
+            // await GetHistoryResults(usrID, CurrentPage);
 
-            await GetNotificationResults(usrID, CurrentNotifPage);
+            // await GetNotificationResults(usrID, CurrentNotifPage);
 
 
         }
@@ -356,25 +356,25 @@
         activityLog = result.Histories;
         Count = result.TotalCount;
     }
-    private async Task GetNotificationResults(int id, int targetPage)
+    private async Task GetNotificationResults(string id, int targetPage)
     {
         var result = await hService.GetAllNotifications(id);
         notifications = result.Notifications;
         CountN = result.TotalCount;
         foreach (var notif in notifications)
         {
-            PostHistory ph = new PostHistory();
-            ph = await hService.GetHistoryByIDs(notif.NotificationID);
-            if (notif.IsRead == 2)
-            {
-                ph.IsRead = "";
-            }
-            else
-            {
-                ph.IsRead = "antiquewhite";
-            }
-            ph.NotificationID = notif.ID;
-            notificationList.Add(ph);
+            // PostHistory ph = new PostHistory();
+            // ph = await hService.GetHistoryByIDs(notif.NotificationID);
+            // if (notif.IsRead == 2)
+            // {
+            //     ph.IsRead = "";
+            // }
+            // else
+            // {
+            //     ph.IsRead = "antiquewhite";
+            // }
+            // ph.NotificationID = notif.ID;
+            // notificationList.Add(ph);
         }
         StateHasChanged();
     }
@@ -408,7 +408,7 @@
         await addToHistory("connected with", p);
         await Notify(-1, p.PosterID);
         await hService.NotificationRead(p.NotificationID);
-        await GetNotificationResults(usrID, CurrentNotifPage);
+      //  await GetNotificationResults(usrID, CurrentNotifPage);
         StateHasChanged();
         // add history here
     }
@@ -418,7 +418,7 @@
         await addToHistory("decline invitation", p);
         await Notify(-1, p.PosterID);
         await hService.NotificationRead(p.NotificationID);
-        await GetNotificationResults(usrID, CurrentNotifPage);
+      //  await GetNotificationResults(usrID, CurrentNotifPage);
     }
     private async Task addToHistory(string historyType, PostHistory p)
     {
@@ -448,10 +448,10 @@
         //    int id = await hService.GetHistoryID(userId, usr.PublicId);
         Notification newNotifs = new Notification();
         newNotifs.ID = 0;
-        newNotifs.SenderID = usrID;//usr.PublicId;
-        newNotifs.ReceiverID = receiverID;
-        newNotifs.NotificationID = lastHistoryID;
-        newNotifs.IsRead = -1;
+        // newNotifs.SenderID = usrID;//usr.PublicId;
+        // newNotifs.ReceiverID = receiverID;
+        // newNotifs.NotificationID = lastHistoryID;
+        // newNotifs.IsRead = -1;
         newNotifs.IsResponseNeeded = -1;
         newNotifs.CreationDate = DateTime.Now;
         await hService.AddNotification(newNotifs);

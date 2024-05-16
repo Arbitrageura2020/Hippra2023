@@ -104,10 +104,10 @@ namespace Hippra.Services
             {
                 Notification newNotifs = new Notification();
                 newNotifs.ID = 0;
-                newNotifs.SenderID = follower.FollowingUserID;
-                newNotifs.ReceiverID = follower.FollowerUserID;
-                newNotifs.NotificationID = lastHistoryId;
-                newNotifs.IsRead = -1;
+                //newNotifs.SenderID = follower.FollowingUserID;
+                //newNotifs.ReceiverID = follower.FollowerUserID;
+                //newNotifs.NotificationID = lastHistoryId;
+                //newNotifs.IsRead = -1;
                 newNotifs.IsResponseNeeded = -1;
                 newNotifs.CreationDate = DateTime.Now;
                 await hService.AddNotification(newNotifs);
@@ -187,10 +187,10 @@ namespace Hippra.Services
                 }
                 Notification newNotifs = new Notification();
                 newNotifs.ID = 0;
-                newNotifs.SenderID = follower.FollowingUserID;
-                newNotifs.ReceiverID = follower.FollowerUserID;
-               // newNotifs.NotificationID = lastHistoryID;
-                newNotifs.IsRead = -1;
+               // newNotifs.SenderID = follower.FollowingUserID;
+               // newNotifs.ReceiverID = follower.FollowerUserID;
+               //// newNotifs.NotificationID = lastHistoryID;
+               // newNotifs.IsRead = -1;
                 newNotifs.IsResponseNeeded = -1;
                 newNotifs.CreationDate = DateTime.Now;
                 await hService.AddNotification(newNotifs);
@@ -199,10 +199,10 @@ namespace Hippra.Services
             {
                 Notification newNotifs = new Notification();
                 newNotifs.ID = 0;
-                newNotifs.SenderID = userInfo.PublicId;
-                newNotifs.ReceiverID = caseInfo.PosterID;
-              //  newNotifs.NotificationID = lastHistoryID;
-                newNotifs.IsRead = -1;
+              //  newNotifs.SenderID = userInfo.PublicId;
+              //  newNotifs.ReceiverID = caseInfo.PosterID;
+              ////  newNotifs.NotificationID = lastHistoryID;
+              //  newNotifs.IsRead = -1;
                 newNotifs.IsResponseNeeded = -1;
                 newNotifs.CreationDate = DateTime.Now;
                 await hService.AddNotification(newNotifs);

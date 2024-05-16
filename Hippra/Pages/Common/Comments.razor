@@ -238,7 +238,7 @@
         CommentList = await hService.GetCommentsNoTracking(postId);
         await getProfilePic();
         await addToHistory("deleted a comment on", c);
-        await addNotification();
+       // await addNotification();
         this.StateHasChanged();
     }
     public async Task DeleteFile(CaseComment c)
@@ -323,7 +323,7 @@
         newComment.imgUrl = "";
         isOpened = true;
         await addToHistory("added a comment on", newComment);
-        await addNotification();
+      //  await addNotification();
         this.StateHasChanged();
     }
     private async Task UpdateComment(CaseComment c, int updateType)
@@ -356,7 +356,7 @@
                 addComment.VoteUp = c.VoteUp;
                 addComment.VoteDown = c.VoteDown;
                 await addToHistory("updated a comment on", c);
-                await addNotification();
+              //  await addNotification();
                 await hService.EditComment(addComment, updateType);
             }
             else if ((updateType == -3 || updateType == -4) && userId != c.PosterId)
@@ -368,13 +368,13 @@
                     {
                         addComment.VoteUp = c.VoteUp + 1;
                         await addToHistory("added an up vote on", c);
-                        await addNotification();
+                     //   await addNotification();
                     }
                     else
                     {
                         addComment.VoteDown = c.VoteDown + 1;
                         await addToHistory("added a down vote on", c);
-                        await addNotification();
+                      //  await addNotification();
                     }
                     Vote newVote = new Vote();
                     newVote.ID = 0;
@@ -417,40 +417,40 @@
         newHistory.HistoryTypes = historyType;
         lastHistoryID = await hService.AddHistory(newHistory);
     }
-    private async Task addNotification()
-    {
-        bool hasPoster = false;
-        List<Follow> followerList = new List<Follow>();
-        followerList = await hService.GetAllFollowers(userId);
-        foreach (var follower in followerList)
-        {
-            if (follower.FollowerUserID == caseInfo.PosterID || userId != caseInfo.PosterID)
-            {
-                hasPoster = true;
-            }
-            Notification newNotifs = new Notification();
-            newNotifs.ID = 0;
-            newNotifs.SenderID = follower.FollowingUserID;
-            newNotifs.ReceiverID = follower.FollowerUserID;
-            newNotifs.NotificationID = lastHistoryID;
-            newNotifs.IsRead = -1;
-            newNotifs.IsResponseNeeded = -1;
-            newNotifs.CreationDate = DateTime.Now;
-            await hService.AddNotification(newNotifs);
-        }
-        if (!hasPoster && userId != caseInfo.PosterID)
-        {
-            Notification newNotifs = new Notification();
-            newNotifs.ID = 0;
-            newNotifs.SenderID = userId;
-            newNotifs.ReceiverID = caseInfo.PosterID;
-            newNotifs.NotificationID = lastHistoryID;
-            newNotifs.IsRead = -1;
-            newNotifs.IsResponseNeeded = -1;
-            newNotifs.CreationDate = DateTime.Now;
-            await hService.AddNotification(newNotifs);
-        }
-    }
+    // private async Task addNotification()
+    // {
+    //     bool hasPoster = false;
+    //     List<Follow> followerList = new List<Follow>();
+    //     followerList = await hService.GetAllFollowers(userId);
+    //     foreach (var follower in followerList)
+    //     {
+    //         if (follower.FollowerUserID == caseInfo.PosterID || userId != caseInfo.PosterID)
+    //         {
+    //             hasPoster = true;
+    //         }
+    //         Notification newNotifs = new Notification();
+    //         newNotifs.ID = 0;
+    //         newNotifs.SenderID = follower.FollowingUserID;
+    //         newNotifs.ReceiverID = follower.FollowerUserID;
+    //         newNotifs.NotificationID = lastHistoryID;
+    //         newNotifs.IsRead = -1;
+    //         newNotifs.IsResponseNeeded = -1;
+    //         newNotifs.CreationDate = DateTime.Now;
+    //         await hService.AddNotification(newNotifs);
+    //     }
+    //     if (!hasPoster && userId != caseInfo.PosterID)
+    //     {
+    //         Notification newNotifs = new Notification();
+    //         newNotifs.ID = 0;
+    //         newNotifs.SenderID = userId;
+    //         newNotifs.ReceiverID = caseInfo.PosterID;
+    //         newNotifs.NotificationID = lastHistoryID;
+    //         newNotifs.IsRead = -1;
+    //         newNotifs.IsResponseNeeded = -1;
+    //         newNotifs.CreationDate = DateTime.Now;
+    //         await hService.AddNotification(newNotifs);
+    //     }
+    // }
     private async Task viewPage(int id)
     {
         NavigationManager.NavigateTo("/PersonalPage/" + id);

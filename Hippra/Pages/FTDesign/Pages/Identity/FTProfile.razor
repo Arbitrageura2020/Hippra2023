@@ -1187,24 +1187,24 @@
 	}
 	private async Task GetNotificationResults(int id, int targetPage)
 	{
-		var result = await hService.GetAllNotifications(id, targetPage, PageSize);
-		notifications = result.Notifications;
-		CountN = result.TotalCount;
-		foreach (var notif in notifications)
-		{
-			PostHistory ph = new PostHistory();
-			ph = await hService.GetHistoryByIDs(notif.NotificationID);
-			if (notif.IsRead == 2)
-			{
-				ph.IsRead = "";
-			}
-			else
-			{
-				ph.IsRead = "antiquewhite";
-			}
-			ph.NotificationID = notif.ID;
-			notificationList.Add(ph);
-		}
+		// var result = await hService.GetAllNotifications(id, targetPage, PageSize);
+		// notifications = result.Notifications;
+		// CountN = result.TotalCount;
+		// foreach (var notif in notifications)
+		// {
+		// 	PostHistory ph = new PostHistory();
+		// 	// ph = await hService.GetHistoryByIDs(notif.NotificationID);
+		// 	// // if (notif.IsRead == 2)
+		// 	// // {
+		// 	// // 	ph.IsRead = "";
+		// 	// // }
+		// 	// // else
+		// 	// // {
+		// 	// // 	ph.IsRead = "antiquewhite";
+		// 	// // }
+		// 	// ph.NotificationID = notif.ID;
+		// 	// notificationList.Add(ph);
+		// }
 		StateHasChanged();
 	}
 	private async Task OpenViewModal(int postID)
@@ -1277,10 +1277,10 @@
 		//    int id = await hService.GetHistoryID(userId, usr.PublicId);
 		Notification newNotifs = new Notification();
 		newNotifs.ID = 0;
-		newNotifs.SenderID = usrID;
-		newNotifs.ReceiverID = receiverID;
-		newNotifs.NotificationID = lastHistoryID;
-		newNotifs.IsRead = -1;
+		// newNotifs.SenderID = usrID;
+		// newNotifs.ReceiverID = receiverID;
+		// newNotifs.NotificationID = lastHistoryID;
+		// newNotifs.IsRead = -1;
 		newNotifs.IsResponseNeeded = -1;
 		newNotifs.CreationDate = DateTime.Now;
 		await hService.AddNotification(newNotifs);

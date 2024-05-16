@@ -1535,6 +1535,8 @@ namespace Hippra.Services
             }
             return false;
         }
+
+
         //Notification
         public async Task<bool> AddNotification(Notification notif)
         {
@@ -1544,15 +1546,15 @@ namespace Hippra.Services
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<NotificationResultModel> GetAllNotifications(int userID, int targetPage, int PageSize)
+        public async Task<NotificationResultModel> GetAllNotifications(string userID, int targetPage, int PageSize)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            List<Notification> ListNotifs = await _context.Notifications.Where(n => n.ReceiverID == userID).OrderByDescending(n => n.CreationDate).Skip((targetPage - 1) * PageSize).Take(PageSize).ToListAsync();
+            List<Notification> ListNotifs = await _context.Notifications.Where(n => n.ReceiverUserID == userID).OrderByDescending(n => n.CreationDate).Skip((targetPage - 1) * PageSize).Take(PageSize).ToListAsync();
             //var h = histories.OrderByDescending(h => h.CreationDate);
             NotificationResultModel result = new NotificationResultModel();
             result.Notifications = ListNotifs;
-            result.TotalCount = await _context.Notifications.AsNoTracking().CountAsync(s => s.ReceiverID == userID);
+            result.TotalCount = await _context.Notifications.AsNoTracking().CountAsync(s => s.ReceiverUserID == userID);
             return result;
         }
 
@@ -1564,30 +1566,30 @@ namespace Hippra.Services
             return result;
         }
 
-        public async Task<NotificationResultModel> GetAllNotifications(int userID)
+        public async Task<NotificationResultModel> GetAllNotifications(string userID)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            List<Notification> ListNotifs = await _context.Notifications.Where(n => n.ReceiverID == userID).OrderByDescending(n => n.CreationDate).ToListAsync();
+            List<Notification> ListNotifs = await _context.Notifications.Where(n => n.ReceiverUserID == userID).OrderByDescending(n => n.CreationDate).ToListAsync();
             //var h = histories.OrderByDescending(h => h.CreationDate);
             NotificationResultModel result = new NotificationResultModel();
             result.Notifications = ListNotifs;
-            result.TotalCount = await _context.Notifications.AsNoTracking().CountAsync(s => s.ReceiverID == userID);
+            result.TotalCount = await _context.Notifications.AsNoTracking().CountAsync(s => s.ReceiverUserID == userID);
             return result;
         }
 
-        public async Task<int> CountMyNotification(int userID)
+        public async Task<int> CountMyNotification(string userID)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            int count = await _context.Notifications.AsNoTracking().CountAsync(s => s.ReceiverID == userID && s.IsRead == -1);
+            int count = await _context.Notifications.AsNoTracking().CountAsync(s => s.ReceiverUserID == userID &&!s.IsNotificationRead);
             return count;
         }
-        public async Task<bool> DeleteNotification(int nID)
+        public async Task<bool> DeleteNotification(long nID)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            Notification notif = await _context.Notifications.FirstOrDefaultAsync(n => n.NotificationID == nID);
+            Notification notif = await _context.Notifications.FirstOrDefaultAsync(n => n.ID == nID);
             if (notif != null)
             {
                 _context.Notifications.Remove(notif);
@@ -1596,7 +1598,7 @@ namespace Hippra.Services
             }
             return false;
         }
-        public async Task<bool> NotificationRead(int id)
+        public async Task<bool> NotificationRead(long id)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -1607,7 +1609,7 @@ namespace Hippra.Services
                 return false;
             }
 
-            notif.IsRead = 2;
+            notif.IsNotificationRead = true;
             try
             {
                 _context.Update(notif);
@@ -1627,12 +1629,14 @@ namespace Hippra.Services
 
             return true;
         }
-        private bool NotificationExists(int id)
+        private bool NotificationExists(long id)
         {
             using var _context = DbFactory.CreateDbContext();
 
             return _context.Notifications.AsNoTracking().Any(n => n.ID == id);
         }
+
+
         //Follow
         public async Task<bool> AddFollower(Follow newFollower)
         {
