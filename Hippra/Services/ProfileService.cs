@@ -452,7 +452,7 @@ namespace Hippra.Services
 
         }
 
-        public async Task<int> RegisterUser(CreateUserRequestDto Input, string callbackUrl)
+        public async Task<(bool, IList<string>)> RegisterUser(CreateUserRequestDto Input, string callbackUrl)
         {
 
             var userWithlargestPublicID = await UserManagerExtensions.GetLastPID(_userManager);
@@ -515,30 +515,10 @@ namespace Hippra.Services
                 // create azure storage for contact management
                 //await UserDataHelper.InitUserData(user.PublicId);
 
-                if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                {
-                    return 2;// RedirectToPage("RegisterConfirmation", new { email = Input.Email });
-                }
-                else
-                {
-                    if (user.isApproved)
-                    {
-                        // NOTE: THIS WILL FAIL AS OF ASPNETCORE 3.1 blazor due to fact that cannot update cookie directly
-                        //await _signInManager.SignInAsync(user, isPersistent: false);
-                        return 0;// LocalRedirect(returnUrl);
-                    }
-                    else
-                    {
-                        return 1;// LocalRedirect("/PendingApproval");
-                    }
-
-                }
+                return new(true, null);
             }
-            return -1;
-            //foreach (var error in result.Errors)
-            //{
-            //    ModelState.AddModelError(string.Empty, error.Description);
-            //}
+            return new(false, result.Errors.Select(x=>x.Description).ToList());
+      
         }
 
     }

@@ -48,11 +48,11 @@
 
         gtag('config', 'UA-150898941-4');
     </script>
-        <HeadOutlet />
+    <HeadOutlet @rendermode="new InteractiveServerRenderMode(prerender: false)" />
 </head>
 <body >
 
-    <Routes @rendermode="InteractiveServer"   />
+    <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
 
     <div id="blazor-error-ui">
  @*        @if (Env.IsDevelopment())
