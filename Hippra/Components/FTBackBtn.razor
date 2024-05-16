@@ -9,10 +9,15 @@
 }
 else
 {
-    <div>
-        <a class="" href="" @onclick="wBack" @onclick:preventDefault><i class="ms-Icon ms-Icon--CaretLeftSolid8" aria-hidden="true"></i></a><span class="ml-1 mr-2"> @BackTitle</span>
-    </div>
-
+ @*    <div>
+        <button  @onclick:preventDefault><i class="ms-Icon ms-Icon--CaretLeftSolid8" aria-hidden="true"></i></button><span class="ml-1 mr-2"> @BackTitle</span>
+    </div> *@
+    <button @onclick="wBack">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.136 16.364L5.77208 10L12.136 3.63604" stroke="#1DA39D" stroke-width="1.7" stroke-linecap="round"></path>
+        </svg>
+        <span>Back</span>
+    </button>
 }
 
 @code {

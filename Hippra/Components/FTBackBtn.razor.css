@@ -1,0 +1,21 @@
+﻿.case-top-action button {
+    display: flex;
+    align-items: center;
+    gap: 0 2px;
+    color: var(--green);
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    background-color: #ffffff;
+    border: none;
+    cursor: pointer;
+}
+
+.main-layout.orange .case-top-action button {
+    color: var(--orange);
+}
+
+    .main-layout.orange .case-top-action button svg path {
+        stroke: var(--orange);
+    }

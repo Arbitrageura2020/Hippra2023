@@ -31,12 +31,13 @@
 <div class="case-layout">
     <div class="case-top">
         <div class="case-top-action">
-            <button>
+          @*   <button>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12.136 16.364L5.77208 10L12.136 3.63604" stroke="#1DA39D" stroke-width="1.7" stroke-linecap="round"></path>
                 </svg>
                 <span>Back</span>
-            </button>
+            </button> *@
+            <FTBackBtn BackTitle="Back" UseRedirect="false"></FTBackBtn>
         </div>
     </div>
     <section class="case-content no-pad">
@@ -313,11 +314,11 @@
     private async Task PopulateModel(Case tCase)
     {
         pCase = tCase.ToParsedCase();
-      
+
 
         priorityRadio = new PriorityModel();
         priorityRadio.Priority = tCase.ResponseNeeded;
-   //     bCategory = ParseCategoryValueFromSub(tCase.MedicalCategory);
+        //     bCategory = ParseCategoryValueFromSub(tCase.MedicalCategory);
         bSubCategory = tCase.MedicalCategory.ToString();
         // await SwitchSubCategory(bCategory);
         bGender = tCase.Gender.ToString();

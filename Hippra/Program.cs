@@ -91,6 +91,7 @@ builder.Services.AddTransient<ProfileService>();
 // means run this service in background
 builder.Services.AddTransient<HippraService>();
 builder.Services.AddTransient<CommonService>();
+builder.Services.AddTransient<INotificationsService, NotificationsService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AppUser>>();
 builder.Services.AddScoped<IEmailService, SendgridEmailService>(client =>

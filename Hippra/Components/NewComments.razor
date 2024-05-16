@@ -1,4 +1,5 @@
-﻿@using Hippra.Models.SQL
+﻿@using Hippra.Models.DTO
+@using Hippra.Models.SQL
 @using Hippra.Models.POCO
 @using Hippra.Pages.Common
 @using Hippra.Services
@@ -17,7 +18,7 @@
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService
 @inject CommonService commonService;
-
+@inject INotificationsService notificationsService;
 <section class="case-comment">
     <div class="case-comment-form">
         <EditForm Model="@newComment" OnValidSubmit="@AddComment" FormName="AddCommentForm">
@@ -25,7 +26,7 @@
             <ValidationSummary />
             <div class="comment-form-box">
                 <input type="text" placeholder="Write a Comment" @bind="@newComment.Comment" required></input>
-                <button type="submit">Comment</button>
+                <button type="submit" disabled="@(!isSubmitted)"> @(isSubmitted ? "Comment" : "Sending ...") </button>
             </div>
             <div class="border">
                 <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
@@ -40,6 +41,22 @@
                 if (c.ID != EditThis)
                 {
                     <div class="case-comment-item">
+                        <div class="col vote-bar">
+                            <div class="row-md-1 wrap-button-up">
+                                <button class="btn vote-button-up bg-light" @onclick="(e => { AddVote(c); })"><span class="fa fa-caret-square-o-up"></span></button>
+                                <div class="up-content"><p>This answer is useful.</p></div>
+                            </div>
+                            <div class="row-md-1" style="color:red">
+                                @c.VoteUp
+                            </div>
+                            <div class="row-md-1" style="color:black">
+                                @c.VoteDown
+                            </div>
+                            <div class="row-md-1 wrap-button-down">
+                                <button class="btn vote-button-down bg-light" @onclick="(e => { AddVote(c); })"><span class="fa fa-caret-square-o-down"></span></button>
+                                <div class="down-content">This answer is not useful.</div>
+                            </div>
+                        </div>
                         <div class="comment-author">
                             @if (c.User != null)
                             {
@@ -79,7 +96,23 @@
                                 <button type="submit">Update Comment</button>
                             </div>
                             <div class="border">
-                                <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="editComment.imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
+                                @if (!string.IsNullOrWhiteSpace(c.imgUrl))
+                                {
+                                    <label class="label-img">
+                                        <input type="checkbox">
+                                        <img id="caseImg" src="@c.imgUrl" width="20%" height="20%" />
+                                    </label>
+                                    <div class="btn btn-outline-danger" @onclick="(e => { DeleteFile(c); })">
+                                        delete
+                                    </div>
+                                }
+                                else
+                                {
+                                    <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="editComment.imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
+                                    @* <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload> *@
+
+                                }
+                   
                             </div>
                         </EditForm>
                     </div>
@@ -106,7 +139,7 @@
     private int EditThis = -1;
     private string fileName;
     private string imgUrl;
-    private bool isSubmitted;
+    private bool isSubmitted = true;
     private string[] imgUrls;
     private Case caseInfo = new Case();
     private int lastHistoryID = -1;
@@ -185,7 +218,7 @@
         CommentList = await hService.GetCommentsNoTracking(caseId);
 
         await commonService.addToHistoryComment("deleted a comment on", caseInfo);
-        await commonService.addNotification(caseInfo);
+
         this.StateHasChanged();
     }
     public async Task DeleteFile(CaseComment c)
@@ -200,7 +233,7 @@
 
         await hService.AddComment(caseId, newComment.Comment, userId, imgUrl);
 
-        isSubmitted = true;
+
 
         newComment.Comment = "";
         CommentList = await hService.GetCommentsNoTracking(caseId);
@@ -208,8 +241,48 @@
         imgUrl = "";
         isOpened = true;
         await commonService.addToHistoryComment("added a comment on", caseInfo);
-        await commonService.addNotification(caseInfo);
+
+
+        //add notification
+        AddNotificationDto request = new AddNotificationDto()
+            {
+                SenderUserID = userId,
+                Type = NotificationType.AddedComment,
+                PostID = caseId
+            };
+
+        await notificationsService.AddNotification(request);
+        isSubmitted = true;
+
         this.StateHasChanged();
     }
 
+    private async Task AddVote(CaseComment c)
+    {
+        // bool isVoted = await hService.CheckVoter(c.PosterId, userId, c.ID);
+        // if (!isVoted)
+        // {
+        //     if (updateType == -3)
+        //     {
+        //         addComment.VoteUp = c.VoteUp + 1;
+        //         await addToHistory("added an up vote on", c);
+        //         //   await addNotification();
+        //     }
+        //     else
+        //     {
+        //         addComment.VoteDown = c.VoteDown + 1;
+        //         await addToHistory("added a down vote on", c);
+        //         //  await addNotification();
+        //     }
+        //     Vote newVote = new Vote();
+        //     newVote.ID = 0;
+        //     newVote.CID = c.ID;
+        //     newVote.VoteType = updateType;
+        //     newVote.PosterID = c.PosterId;
+        //     newVote.VoterID = userId;
+        //     newVote.VoteDate = DateTime.Now;
+        //     await hService.AddVote(newVote);
+        //     await hService.EditComment(addComment, updateType);
+        // }
+    }
 }

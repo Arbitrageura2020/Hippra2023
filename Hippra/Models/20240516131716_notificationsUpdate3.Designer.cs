@@ -4,6 +4,7 @@ using Hippra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hippra.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240516131716_notificationsUpdate3")]
+    partial class notificationsUpdate3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -398,9 +401,6 @@ namespace Hippra.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
-                    b.Property<int>("CaseId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CommentId")
                         .HasColumnType("int");
 
@@ -413,20 +413,19 @@ namespace Hippra.Migrations
                     b.Property<int>("IsResponseNeeded")
                         .HasColumnType("int");
 
+                    b.Property<int>("PostID")
+                        .HasColumnType("int");
+
                     b.Property<string>("ReceiverUserID")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SenderUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("SenderUserID")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("CaseId");
-
-                    b.HasIndex("SenderUserId");
 
                     b.ToTable("Notifications");
                 });
@@ -681,23 +680,6 @@ namespace Hippra.Migrations
                         .IsRequired();
 
                     b.Navigation("Case");
-                });
-
-            modelBuilder.Entity("Hippra.Models.SQL.Notification", b =>
-                {
-                    b.HasOne("Hippra.Models.SQL.Case", "Case")
-                        .WithMany()
-                        .HasForeignKey("CaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Hippra.Models.SQL.AppUser", "SenderUser")
-                        .WithMany()
-                        .HasForeignKey("SenderUserId");
-
-                    b.Navigation("Case");
-
-                    b.Navigation("SenderUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
