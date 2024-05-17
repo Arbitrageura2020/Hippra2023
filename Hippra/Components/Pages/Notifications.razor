@@ -67,7 +67,7 @@
                         @foreach (var notification in notifications)
                         {
                             <li>
-                                <a href="@notification.NavigationLink" class="notification-item">
+                                <a href="@notification.NavigationLink" class="notification-item" @onclick="()=>ReadNotification(notification)">
                                     <div class="notification-avatar">
                                         <img src="@notification.SenderImage" alt="">
                                     </div>
@@ -284,23 +284,11 @@
         StateHasChanged();
     }
 
-    private async Task OpenViewModal(int postID)
+    private async Task ReadNotification(NotificationViewModel notification)
     {
-        NavigationManager.NavigateTo("/viewcase/" + postID);
-    }
-
-    private async Task OpenViewModalFromNotification(PostHistory p)
-    {
-        await notificationService.NotificationRead(p.NotificationID);
-        p.IsRead = "";
-        NavigationManager.NavigateTo("/viewcase/" + p.PostID);
-    }
-
-    private async Task viewPage(PostHistory p)
-    {
-        await notificationService.NotificationRead(p.NotificationID);
-        p.IsRead = "";
-        NavigationManager.NavigateTo("/PersonalPage/" + p.PosterID);
+        await notificationService.NotificationRead(notification.ID);
+        notification.IsNotificationRead = true;
+        //  NavigationManager.NavigateTo(notification.NavigationLink);
     }
 
     // private async Task ClearNotification(PostHistory h)
