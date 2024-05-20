@@ -15,8 +15,6 @@
 @using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor httpContextAccessor
 @inject IJSRuntime JSRuntime
-@*@inject SignInManager<AppUser> SignInManager
-	@inject UserManager<AppUser> UserManager*@
 @inject Microsoft.AspNetCore.Components.NavigationManager  NavigationManager
 @inject HippraService hService
 @inject ProfileService pService
@@ -25,6 +23,7 @@
 @using Microsoft.Extensions.Options
 @inject IAuthorizationService AuthorizationService
 @inject IOptions<AppSettings> settings
+@inject INotificationsService notificationService
 
 
 <AuthorizeView>
@@ -1213,19 +1212,19 @@
 	}
 	private async Task OpenViewModalFromNotification(PostHistory p)
 	{
-		await hService.NotificationRead(p.NotificationID);
+		await notificationService.NotificationRead(p.NotificationID);
 		p.IsRead = "";
 		NavigationManager.NavigateTo("/viewcase/" + p.PostID);
 	}
 	private async Task viewPage(PostHistory p)
 	{
-		await hService.NotificationRead(p.NotificationID);
+		await notificationService.NotificationRead(p.NotificationID);
 		p.IsRead = "";
 		NavigationManager.NavigateTo("/PersonalPage/" + p.PosterID);
 	}
 	private async Task ClearNotification(PostHistory h)
 	{
-		await hService.DeleteNotification(h.ID);
+		await notificationService.DeleteNotification(h.ID);
 		notificationList.Remove(h);
 		StateHasChanged();
 
@@ -1236,7 +1235,7 @@
 		await hService.ChangeConnectionStatus(p.PosterID, usrID);
 		await addToHistory("connected with", p);
 		await Notify(-1, p.PosterID);
-		await hService.NotificationRead(p.NotificationID);
+		await notificationService.NotificationRead(p.NotificationID);
 		await GetNotificationResults(usrID, CurrentNotifPage);
 		StateHasChanged();
 		// add history here
@@ -1246,7 +1245,7 @@
 		p.Detail = "invite declined";
 		await addToHistory("decline invitation", p);
 		await Notify(-1, p.PosterID);
-		await hService.NotificationRead(p.NotificationID);
+		await notificationService.NotificationRead(p.NotificationID);
 		await GetNotificationResults(usrID, CurrentNotifPage);
 	}
 	private async Task addToHistory(string historyType, PostHistory p)
@@ -1283,6 +1282,6 @@
 		// newNotifs.IsRead = -1;
 		newNotifs.IsResponseNeeded = -1;
 		newNotifs.CreationDate = DateTime.Now;
-		await hService.AddNotification(newNotifs);
+		// await notificationService.AddNotification(newNotifs);
 	}
 }

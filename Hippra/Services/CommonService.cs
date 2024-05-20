@@ -82,37 +82,37 @@ namespace Hippra.Services
         }
 
 
-        public async Task AddHistoryPost(Case pCase)
-        {
-            var userInfo = await _userManager.GetUserAsync(WebContext.User);
-            PostHistory newHistory = new PostHistory();
-            List<Follow> followerList = new List<Follow>();
-            int lastHistoryId = -1;
-            //history stuffs
-            newHistory.ID = 0;
-            newHistory.PostID = pCase.ID;
-            newHistory.CreationDate = DateTime.Now;
-            newHistory.PosterID = userInfo.PublicId;
-            newHistory.UserDisplayName = userInfo.FirstName;
-            newHistory.Title = pCase.Topic;
-            newHistory.Detail = pCase.Description;
-            newHistory.HistoryTypes = "added a new case";
-            lastHistoryId = await hService.AddHistory(newHistory);
-            //follow
-            followerList = await hService.GetAllFollowers(userInfo.PublicId);
-            foreach (var follower in followerList)
-            {
-                Notification newNotifs = new Notification();
-                newNotifs.ID = 0;
-                //newNotifs.SenderID = follower.FollowingUserID;
-                //newNotifs.ReceiverID = follower.FollowerUserID;
-                //newNotifs.NotificationID = lastHistoryId;
-                //newNotifs.IsRead = -1;
-                newNotifs.IsResponseNeeded = -1;
-                newNotifs.CreationDate = DateTime.Now;
-                await hService.AddNotification(newNotifs);
-            }
-        }
+        //public async Task AddHistoryPost(Case pCase)
+        //{
+        //    var userInfo = await _userManager.GetUserAsync(WebContext.User);
+        //    PostHistory newHistory = new PostHistory();
+        //    List<Follow> followerList = new List<Follow>();
+        //    int lastHistoryId = -1;
+        //    //history stuffs
+        //    newHistory.ID = 0;
+        //    newHistory.PostID = pCase.ID;
+        //    newHistory.CreationDate = DateTime.Now;
+        //    newHistory.PosterID = userInfo.PublicId;
+        //    newHistory.UserDisplayName = userInfo.FirstName;
+        //    newHistory.Title = pCase.Topic;
+        //    newHistory.Detail = pCase.Description;
+        //    newHistory.HistoryTypes = "added a new case";
+        //    lastHistoryId = await hService.AddHistory(newHistory);
+        //    //follow
+        //    followerList = await hService.GetAllFollowers(userInfo.PublicId);
+        //    foreach (var follower in followerList)
+        //    {
+        //        Notification newNotifs = new Notification();
+        //        newNotifs.ID = 0;
+        //        //newNotifs.SenderID = follower.FollowingUserID;
+        //        //newNotifs.ReceiverID = follower.FollowerUserID;
+        //        //newNotifs.NotificationID = lastHistoryId;
+        //        //newNotifs.IsRead = -1;
+        //        newNotifs.IsResponseNeeded = -1;
+        //        newNotifs.CreationDate = DateTime.Now;
+        //        await hService.AddNotification(newNotifs);
+        //    }
+        //}
 
 
         public async Task AddToHistory(string historyType, AddEditCaseViewModel caseItem)
@@ -173,41 +173,41 @@ namespace Hippra.Services
             await hService.AddHistory(newHistory);
         }
 
-        public async Task addNotification(Case caseInfo)
-        {
-            var userInfo = await _userManager.GetUserAsync(WebContext.User);
-            bool hasPoster = false;
-            List<Follow> followerList = new List<Follow>();
-            followerList = await hService.GetAllFollowers(userInfo.PublicId);
-            foreach (var follower in followerList)
-            {
-                if (follower.FollowerUserID == caseInfo.PosterID || userInfo.PublicId != caseInfo.PosterID)
-                {
-                    hasPoster = true;
-                }
-                Notification newNotifs = new Notification();
-                newNotifs.ID = 0;
-               // newNotifs.SenderID = follower.FollowingUserID;
-               // newNotifs.ReceiverID = follower.FollowerUserID;
-               //// newNotifs.NotificationID = lastHistoryID;
-               // newNotifs.IsRead = -1;
-                newNotifs.IsResponseNeeded = -1;
-                newNotifs.CreationDate = DateTime.Now;
-                await hService.AddNotification(newNotifs);
-            }
-            if (!hasPoster && userInfo.PublicId != caseInfo.PosterID)
-            {
-                Notification newNotifs = new Notification();
-                newNotifs.ID = 0;
-              //  newNotifs.SenderID = userInfo.PublicId;
-              //  newNotifs.ReceiverID = caseInfo.PosterID;
-              ////  newNotifs.NotificationID = lastHistoryID;
-              //  newNotifs.IsRead = -1;
-                newNotifs.IsResponseNeeded = -1;
-                newNotifs.CreationDate = DateTime.Now;
-                await hService.AddNotification(newNotifs);
-            }
-        }
+        //public async Task addNotification(Case caseInfo)
+        //{
+        //    var userInfo = await _userManager.GetUserAsync(WebContext.User);
+        //    bool hasPoster = false;
+        //    List<Follow> followerList = new List<Follow>();
+        //    followerList = await hService.GetAllFollowers(userInfo.PublicId);
+        //    foreach (var follower in followerList)
+        //    {
+        //        if (follower.FollowerUserID == caseInfo.PosterID || userInfo.PublicId != caseInfo.PosterID)
+        //        {
+        //            hasPoster = true;
+        //        }
+        //        Notification newNotifs = new Notification();
+        //        newNotifs.ID = 0;
+        //       // newNotifs.SenderID = follower.FollowingUserID;
+        //       // newNotifs.ReceiverID = follower.FollowerUserID;
+        //       //// newNotifs.NotificationID = lastHistoryID;
+        //       // newNotifs.IsRead = -1;
+        //        newNotifs.IsResponseNeeded = -1;
+        //        newNotifs.CreationDate = DateTime.Now;
+        //        await hService.AddNotification(newNotifs);
+        //    }
+        //    if (!hasPoster && userInfo.PublicId != caseInfo.PosterID)
+        //    {
+        //        Notification newNotifs = new Notification();
+        //        newNotifs.ID = 0;
+        //      //  newNotifs.SenderID = userInfo.PublicId;
+        //      //  newNotifs.ReceiverID = caseInfo.PosterID;
+        //      ////  newNotifs.NotificationID = lastHistoryID;
+        //      //  newNotifs.IsRead = -1;
+        //        newNotifs.IsResponseNeeded = -1;
+        //        newNotifs.CreationDate = DateTime.Now;
+        //        await hService.AddNotification(newNotifs);
+        //    }
+        //}
 
         public bool ContainsOnlyAlphaNumericCharacters(string inputString)
         {

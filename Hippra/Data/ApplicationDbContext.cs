@@ -33,6 +33,8 @@ namespace Hippra.Data
 
         public DbSet<Follow> Follows { get; set; }
 
-		public DbSet<MedicalSubCategory> MedicalSubCategories { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+
+        public DbSet<MedicalSubCategory> MedicalSubCategories { get; set; }
 	}
 }

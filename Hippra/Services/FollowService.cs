@@ -31,7 +31,7 @@ using Hippra.Components;
 
 namespace Hippra.Services
 {
-    public class FollowService
+    public class FollowService: IFollowService
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
@@ -160,7 +160,7 @@ namespace Hippra.Services
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> RemoveFollower(int follower, int following)
+        public async Task<bool> RemoveFollower(string follower, string following)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -173,43 +173,24 @@ namespace Hippra.Services
             }
             return false;
         }
-        public async Task<List<Follow>> GetAllFollowers(int my_Id)
+        public async Task<List<Follow>> GetAllFollowers(string userId)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            List<Follow> followers = await _context.Follows.Where(c => c.FollowingUserID == my_Id).ToListAsync();
+            List<Follow> followers = await _context.Follows.Where(c => c.FollowingUserID == userId).ToListAsync();
             return followers;
         }
-        public async Task<bool> CheckFollower(int my_Id, int f_Id)
+        public async Task<bool> CheckFollower(string myId, string followingId)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var follow = await _context.Follows.FirstOrDefaultAsync(f => f.FollowerUserID == my_Id && f.FollowingUserID == f_Id);
+            var follow = await _context.Follows.FirstOrDefaultAsync(f => f.FollowerUserID == myId && f.FollowingUserID == followingId);
             if (follow != null)
             {
                 return true;
             }
             return false;
         }
-        // image upload
-        public async Task<string> UploadImgToAzureAsync(Stream fileStream, string fileName)
-        {
-            return await ImageHelper.UploadImageToStorage(fileStream, fileName);
-        }
-
-        public async Task<bool> DeleteImage(string filename)
-        {
-            await ImageHelper.DeleteImageToStorage(filename);
-            return true;
-        }
-        public string GetImgStorageUrl()
-        {
-            return AppSettings.StorageUrl;
-        }
-        public async Task<bool> ImageUploadFunc(Stream file, string name)
-        {
-            string filename = await ImageHelper.UploadImageToStorage(file, name).ConfigureAwait(true);
-            return true;
-        }
+        
     }
 }

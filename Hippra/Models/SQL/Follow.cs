@@ -3,8 +3,8 @@ namespace Hippra.Models.SQL
 {
     public class Follow
     {
-        public int ID { get; set; }
-        public int FollowerUserID { get; set; }
-        public int FollowingUserID { get; set; }
+        public long ID { get; set; }
+        public string FollowerUserID { get; set; }
+        public string FollowingUserID { get; set; }
     }
 }
