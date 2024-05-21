@@ -114,14 +114,14 @@
                             <div class="col-md-8">
                                 @if (pCase.Tags != null)
                                 {
-                                    foreach (var tag in pCase.Tags)
+                                   @*  foreach (var tag in pCase.Tags)
                                     {
                                         <div class="around-tag-button">
                                             <button class="tag-button" @onclick="(e => { searchCasesContainTag(tag.Tag); })">
                                                 @tag.Tag
                                             </button>
                                         </div>
-                                    }
+                                    } *@
                                 }
                             </div>
                         </div>

@@ -10,8 +10,9 @@ namespace Hippra.Models.ViewModel
     {
         public AddEditCaseViewModel()
         {
-            this.Tags = new List<string>();
+            this.SelectedTags = Array.Empty<int>();
         }
+
         public int ID { get; set; }
 
         public int PosterID { get; set; }
@@ -45,6 +46,10 @@ namespace Hippra.Models.ViewModel
         //[MinLength(1, ErrorMessage = "Please select medical subcategory")]
         public int MedicalSubCategoryId { get; set; } = 1;
         public MedicalSubCategory MedicalSubCategory { get; set; }
+
+        [MinLength(1, ErrorMessage = "Please select at least one tag")]
+        public int[]? SelectedTags { get; set; } 
+
         [Required]
 
         public int PatientAge { get; set; }
@@ -56,8 +61,6 @@ namespace Hippra.Models.ViewModel
         public string CurrentTreatmentAdministered { get; set; }
         public string TreatmentOutcomes { get; set; }
         public string imgUrl { get; set; }
-        public List<string> Tags { get; set; }
-        public List<CaseComment> Comments { get; set; }
 
     }
 }

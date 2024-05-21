@@ -4,6 +4,7 @@ using Hippra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hippra.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240521150124_added_tags")]
+    partial class added_tags
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -312,6 +315,24 @@ namespace Hippra.Migrations
                     b.ToTable("CaseComments");
                 });
 
+            modelBuilder.Entity("Hippra.Models.SQL.CaseTags", b =>
+                {
+                    b.Property<DateTime>("ID")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CaseID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tag")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CaseID");
+
+                    b.ToTable("CaseTags");
+                });
+
             modelBuilder.Entity("Hippra.Models.SQL.Connection", b =>
                 {
                     b.Property<int>("ID")
@@ -454,29 +475,6 @@ namespace Hippra.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("PostHistories");
-                });
-
-            modelBuilder.Entity("Hippra.Models.SQL.PostTags", b =>
-                {
-                    b.Property<long>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
-
-                    b.Property<int>("CaseID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TagId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("CaseID");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("PostTags");
                 });
 
             modelBuilder.Entity("Hippra.Models.SQL.Tag", b =>
@@ -693,6 +691,17 @@ namespace Hippra.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Hippra.Models.SQL.CaseTags", b =>
+                {
+                    b.HasOne("Hippra.Models.SQL.Case", "Case")
+                        .WithMany("Tags")
+                        .HasForeignKey("CaseID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Case");
+                });
+
             modelBuilder.Entity("Hippra.Models.SQL.Notification", b =>
                 {
                     b.HasOne("Hippra.Models.SQL.Case", "Case")
@@ -708,25 +717,6 @@ namespace Hippra.Migrations
                     b.Navigation("Case");
 
                     b.Navigation("SenderUser");
-                });
-
-            modelBuilder.Entity("Hippra.Models.SQL.PostTags", b =>
-                {
-                    b.HasOne("Hippra.Models.SQL.Case", "Case")
-                        .WithMany("Tags")
-                        .HasForeignKey("CaseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Hippra.Models.SQL.Tag", "Tag")
-                        .WithMany()
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Case");
-
-                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

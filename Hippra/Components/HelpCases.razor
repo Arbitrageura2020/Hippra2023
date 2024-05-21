@@ -25,7 +25,7 @@
                 <div class="dashboard-case-item">
                     <div class="case-tags">
                         <!-- Case Item Tags Loop Here -->
-                        @if (item.Tags != null)
+                     @*    @if (item.Tags != null)
                         {
                             <ul>
                                 @foreach (var tag in item.Tags)
@@ -33,7 +33,7 @@
                                     <li><a href="">@tag.Tag</a></li>
                                 }
                             </ul>
-                        }
+                        } *@
                     </div>
                     <div class="case-caption">
                         <a href=@($"/viewcase/{item.ID}")>@item.Topic</a>

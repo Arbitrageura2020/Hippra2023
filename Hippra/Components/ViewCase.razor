@@ -105,13 +105,13 @@
                     <div class="case-patient-tags">
                         <h6>Tags: </h6>
                         <ul>
-                            @if (pCase.Tags != null)
+                         @*    @if (pCase.Tags != null)
                             {
                                 @foreach (var tag in @pCase.Tags)
                                 {
                                     <li><a @onclick="(e => { searchCasesContainTag(tag.Tag); })">@tag.Tag</a></li>
                                 }
-                            }
+                            } *@
                             <li></li>
 
                         </ul>

@@ -338,12 +338,12 @@
     private async Task GetSearchResults()
     {
 
-        var allCases = await hService.GetCasesByTag(searchString);
-        if (allCases != null)
-        {
-            AskHelpCases = allCases.Where(x => x.Type == CaseType.AskForHelp).ToList();
-            KnowledgeCases = allCases.Where(x => x.Type == CaseType.ClinicalKnowledge).ToList();
-        }
+        // var allCases = await hService.GetCasesByTag(searchString);
+        // if (allCases != null)
+        // {
+        //     AskHelpCases = allCases.Where(x => x.Type == CaseType.AskForHelp).ToList();
+        //     KnowledgeCases = allCases.Where(x => x.Type == CaseType.ClinicalKnowledge).ToList();
+        // }
 
         // int tSubCategory = -1;
         // int tPriority = -1;

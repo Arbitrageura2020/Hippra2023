@@ -79,14 +79,14 @@ namespace Hippra.Extensions
             viewModel.PosterSpecialty = @case.PosterSpecialty;
             viewModel.MedicalSubCategory = @case.MedicalSubCategory;
             viewModel.MedicalSubCategoryId = @case.MedicalSubCategoryId;
-            if (@case.Tags != null)
-            {
-                viewModel.Tags = @case.Tags.Select(x => x.Tag).ToList();
-            }
-            if (@case.Comments != null)
-            {
-                viewModel.Comments = @case.Comments;
-            }
+            //if (@case.Tags != null)
+            //{
+            //    viewModel.Tags = @case.Tags.Select(x => x.Tag).ToList();
+            //}
+            //if (@case.Comments != null)
+            //{
+            //    viewModel.Comments = @case.Comments;
+            //}
             viewModel.imgUrl = @case.imgUrl;
             viewModel.PatientAge = @case.PatientAge;
             viewModel.CurrentStageOfDisease = @case.CurrentStageOfDisease;

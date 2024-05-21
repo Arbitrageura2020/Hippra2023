@@ -81,6 +81,14 @@ namespace Hippra.Services
 
         }
 
+        public async Task<List<Tag>> GetAllTags()
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            return await _context.Tags.AsNoTracking().ToListAsync();
+
+        }
+
 
         //public async Task AddHistoryPost(Case pCase)
         //{
