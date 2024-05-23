@@ -105,13 +105,13 @@
                     <div class="case-patient-tags">
                         <h6>Tags: </h6>
                         <ul>
-                         @*    @if (pCase.Tags != null)
+                            @if (pCase.Tags != null)
                             {
                                 @foreach (var tag in @pCase.Tags)
                                 {
-                                    <li><a @onclick="(e => { searchCasesContainTag(tag.Tag); })">@tag.Tag</a></li>
+                                    <li><a @onclick="(e => { searchCasesContainTag(tag.Tag.Name); })">@tag.Tag.Name</a></li>
                                 }
-                            } *@
+                            }
                             <li></li>
 
                         </ul>
@@ -278,9 +278,9 @@
                 // didn't find it, should flag for error
                 return;
             }
-            await PopulateModel(tCase);
+            pCase = tCase.ToParsedCase();
             pCase.Comments = await hService.GetCommentsNoTracking(caseId);
-            pCase.Tags = await hService.GetTagsNoTracking(pCase.ID);
+           // pCase.Tags = await hService.GetTagsNoTracking(pCase.ID);
             pCase.imgUrl = tCase.imgUrl;
             //deserialize
             if (!string.IsNullOrWhiteSpace(@pCase.imgUrl))
@@ -309,23 +309,6 @@
 
 
 
-
-
-    private async Task PopulateModel(Case tCase)
-    {
-        pCase = tCase.ToParsedCase();
-
-
-        priorityRadio = new PriorityModel();
-        priorityRadio.Priority = tCase.ResponseNeeded;
-        //     bCategory = ParseCategoryValueFromSub(tCase.MedicalCategory);
-        bSubCategory = tCase.MedicalCategory.ToString();
-        // await SwitchSubCategory(bCategory);
-        bGender = tCase.Gender.ToString();
-        bEthnicity = tCase.Ethnicity.ToString();
-        bRace = tCase.Race.ToString();
-
-    }
     private async Task searchCasesContainTag(string tag)
     {
         NavigationManager.NavigateTo("/tagsearch/" + caseId + "/" + tag);

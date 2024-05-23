@@ -143,33 +143,15 @@
                                         <img src="./img/icons/chevron-down.svg" alt="">
                                     </div>
                                 </div>
-                                <div class="ask-4-file">
-                                    @if (tagList != null)
-                                    {
-                                        <div>
-                                            @foreach (var tag in tagList)
-                                            {
-                                                <div class="tag-item">
-                                                    @tag <button class="x" type="button" @onclick="(e => { deleteTag(tag); })">
-                                                        x
-                                                    </button>
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                                <div class="ask-4-file">
-
-                                    <div class="input-group">
-                                        <InputText name="tagField" class="form-control" id="" placeholder="Add tag(s) to your post" @bind-Value="newTag" aria-label="Tags" aria-describedby="Add tags" @onkeydown="@enterPressHandle" />
-                                        <div class="input-group-append">
-                                            <button id="comment-button" type="button" class="btn btn-primary" @onclick="@addNewTag">Add</button>
-                                        </div>
-                                    </div>
-
-                                    <div class="tag-error">
-                                        @TagFieldErrorMessage
-                                    </div>
+                                <div class="form-select-wrapper">
+                                    <InputSelect class="form-select mini" @bind-Value="@CaseModel.SelectedTags">
+                                        @foreach (var i in AllTags)
+                                        {
+                                            <option value="@i.ID">@i.Name</option>
+                                        }
+                                    </InputSelect>
+                                    <img src="./img/icons/chevron-down.svg" alt="">
+                                    <ValidationMessage For="() => CaseModel.SelectedTags" />
 
                                 </div>
                                 <div class="ask-4-file">
@@ -219,7 +201,7 @@
 
     private List<MedicalSubCategory> CurrentSubCategoryList { get; set; } = new List<MedicalSubCategory>();
     private List<MedicalSubCategory> AllSubCategoryList { get; set; } = new List<MedicalSubCategory>();
-
+    private List<Tag> AllTags { get; set; } = new List<Tag>();
     private string debug { get; set; } = "";
     private const int MAXTAGS = 25;
     private bool isSubmitted = false;
@@ -242,91 +224,10 @@
         }
     }
 
-    private async Task addNewTag()
-    {
-        if (tagList.Count == MAXTAGS)
-        {
-            await displayErrorMessage("Warning: Too many tags, the limit is 25 tags");
-        }
-
-        else if (!string.IsNullOrWhiteSpace(newTag))
-        {
-
-            if (!commonService.ContainsOnlyAlphaNumericCharacters(newTag))
-            {
-                await displayErrorMessage("Warning: A Tag should begin with a letter and can only contain letters, numbers, and underscores (_), no special characters");
-            }
-            else
-            {
-                foreach (var item in tagList)
-                {
-                    if (item == newTag)
-                    {
-                        string text = "Warning: Tag [" + newTag + "] already exist. Please add a different tag.";
-                        isTagOk = false;
-                        await displayErrorMessage(text);
-                        break;
-                    }
-                    else
-                    {
-                        isTagOk = true;
-                    }
-                }
-                if (tagList.Count == 0)
-                {
-                    isTagOk = true;
-                }
-                if (isTagOk)
-                {
-                    tagList.Add(newTag);
-
-                    newTag = "";
-                    isDeleteTag = true;
-                    TagFieldErrorMessage = "";
-                    this.StateHasChanged();
-                }
-            }
-        }
-        else
-        {
-            await displayErrorMessage("Warning: you cannot add empty tag");
-        }
-
-    }
-
-    private async Task deleteTag(string Tag)
-    {
-        if (tagList.Contains(Tag) && isDeleteTag)
-        {
-            tagList.Remove(Tag);
-            //await hService.DeleteTag(Tag);
-
-        }
-        else if (!isDeleteTag)
-        {
-            addNewTag();
-        }
-        isDeleteTag = true;
-
-    }
-
-    private async Task enterPressHandle(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            isDeleteTag = false;
-        }
-    }
-
-    private async Task displayErrorMessage(string message)
-    {
-        TagFieldErrorMessage = message;
-        this.StateHasChanged();
-    }
-
     protected override async Task OnInitializedAsync()
     {
         this.AllSubCategoryList = await commonService.GetAllSubcategories();
+        this.AllTags = await commonService.GetAllTags();
 
         returnUrl = returnUrl + caseId;
         var caseItem = await hService.GetCaseNoTracking(caseId);
