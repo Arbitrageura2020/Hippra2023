@@ -31,7 +31,7 @@ using Hippra.Components;
 
 namespace Hippra.Services
 {
-    public class FollowService: IFollowService
+    public class FollowService : IFollowService
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
@@ -58,7 +58,7 @@ namespace Hippra.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-      
+
         //Connections
         public async Task<bool> AddConnection(Connection conn)
         {
@@ -149,22 +149,22 @@ namespace Hippra.Services
         }
 
 
-       
+
 
         //Follow
-        public async Task<bool> AddFollower(Follow newFollower)
+        public async Task<bool> AddFollower(string followingId, string followerId)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            _context.Follows.Add(newFollower);
+            _context.Follows.Add(new Follow() { FollowerUserID = followerId, FollowingUserID = followingId });
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> RemoveFollower(string follower, string following)
+        public async Task<bool> RemoveFollower(string followingId, string followerId )
         {
             using var _context = DbFactory.CreateDbContext();
 
-            Follow f = await _context.Follows.FirstOrDefaultAsync(f => f.FollowerUserID == follower && f.FollowingUserID == following);
+            Follow f = await _context.Follows.FirstOrDefaultAsync(f => f.FollowerUserID == followerId && f.FollowingUserID == followingId);
             if (f != null)
             {
                 _context.Follows.Remove(f);
@@ -173,6 +173,7 @@ namespace Hippra.Services
             }
             return false;
         }
+
         public async Task<List<Follow>> GetAllFollowers(string userId)
         {
             using var _context = DbFactory.CreateDbContext();
@@ -180,6 +181,7 @@ namespace Hippra.Services
             List<Follow> followers = await _context.Follows.Where(c => c.FollowingUserID == userId).ToListAsync();
             return followers;
         }
+
         public async Task<bool> CheckFollower(string myId, string followingId)
         {
             using var _context = DbFactory.CreateDbContext();
@@ -191,6 +193,21 @@ namespace Hippra.Services
             }
             return false;
         }
-        
+
+        public async Task<int> GetNrOfFollowers(string userId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var followers = await _context.Follows.CountAsync(c => c.FollowingUserID == userId);
+            return followers;
+        }
+
+        public async Task<int> GetNrOfFollowing(string userId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var followers = await _context.Follows.CountAsync(c => c.FollowerUserID == userId);
+            return followers;
+        }
     }
 }

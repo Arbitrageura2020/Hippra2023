@@ -24,7 +24,7 @@
 @using Hippra.Extensions
 @inject IAuthorizationService AuthorizationService
 @inject IHttpContextAccessor httpContextAccessor
-
+@inject IFollowService followService;
 <div class="profile-layout">
     <!-- Profile Top Frame -->
     <section class="profile-frame no-pad">
@@ -51,11 +51,22 @@
                     <p>@profile.State</p>
                     <div class="profile-frame-social">
                         <div class="profile-social-item">
-                            <a href=""><strong>20</strong> Followers</a>
+                            <a href=""><strong>@NrOfFollowers</strong> Followers</a>
                         </div>
                         <div class="profile-social-item">
-                            <a href=""><strong>220</strong> Following</a>
+                            <a href=""><strong>@NrOfFollowing</strong> Following</a>
                         </div>
+                        @if(!IsMyOwnProfile)
+                        {
+                            @if (isFollowed)
+                            {
+                                <button class="prof-f-btn" @onclick="@RemoveFromFollowerList">Followed</button>
+                            }
+                            else
+                            {
+                                <button class="prof-f-btn" @onclick="@AddToFollowerList">Follow+</button>
+                            }
+                        }
                     </div>
                 </div>
             </div>
@@ -165,10 +176,32 @@
     private Profile profile { get; set; } = new Profile();
     private string DisplayProfileUrl = "";
     private bool IsLoading = true;
+    private string currentUserId { get; set; }
+    private bool isFollowed = false;
+    private int NrOfFollowers { get; set; }
+    private int NrOfFollowing { get; set; }
+    private bool IsMyOwnProfile { get; set; } = false;
     protected override async Task OnInitializedAsync()
     {
         authState = await authenticationStateTask;
         var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            try
+            {
+                currentUserId = user.Claims.FirstOrDefault(s => s.Type == "UserId")?.Value;
+                isFollowed = await followService.CheckFollower(currentUserId, userId);
+                NrOfFollowers = await followService.GetNrOfFollowers(userId);
+                NrOfFollowing = await followService.GetNrOfFollowing(userId);
+                if (userId == currentUserId)
+                    IsMyOwnProfile = true;
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
 
         //profile
         profile = new Profile();
@@ -201,6 +234,25 @@
         ListOfCases = ParsedCase.FromEntityList(searchResults.Cases).ToList();
 
         IsLoading = false;
+    }
+
+    private async Task AddToFollowerList()
+    {
+        await followService.AddFollower(userId, currentUserId);
+        isFollowed = true;
+        NrOfFollowers++;
+        // await addToHistory("followed");
+        // await Notify(-1);
+        StateHasChanged();
+    }
+
+    private async Task RemoveFromFollowerList()
+    {
+        await followService.RemoveFollower(userId, currentUserId);
+        isFollowed = false;
+        NrOfFollowers--;
+        // await addToHistory("unfollowed");
+        StateHasChanged();
     }
 
 }

@@ -34,10 +34,13 @@ namespace Hippra.Services
     public interface IFollowService
     {
         //Follow
-        Task<bool> AddFollower(Follow newFollower);
-        Task<bool> RemoveFollower(string follower, string following);
+        Task<bool> AddFollower(string followingId, string followerId);
+        Task<bool> RemoveFollower(string followingId, string followerId);
         Task<List<Follow>> GetAllFollowers(string userId);
         Task<bool> CheckFollower(string myId, string followingId);
-        
+
+        Task<int> GetNrOfFollowers(string userId);
+
+        Task<int> GetNrOfFollowing(string userId);
     }
 }
