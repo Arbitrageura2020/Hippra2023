@@ -19,6 +19,7 @@ using Hippra.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Hippra.Components.Account;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 var Configuration = builder.Configuration;
@@ -60,7 +61,8 @@ builder.Services.AddTransient<UserManager<AppUser>>();
 
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<AppUser>, AdditionalUserClaimsPrincipalFactory>();
-
+builder.Services.AddHttpClient();
+builder.Services.AddFluentUIComponents();
 builder.Services.AddAutoMapper(typeof(Startup));
 
 

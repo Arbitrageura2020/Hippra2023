@@ -21,6 +21,7 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Http
 @using System.Text.RegularExpressions
+@using Microsoft.FluentUI.AspNetCore.Components
 
 @inject IJSRuntime JSRuntime
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
@@ -166,16 +167,31 @@
                                     </div>
                                 </div>
                                 <div class="form-select-wrapper">
-                                    <InputSelect class="form-select mini" @bind-Value="@CaseModel.SelectedTags">
+                                @*     <InputSelect class="form-select mini" @bind-Value="@CaseModel.SelectedTags">
                                         @foreach (var i in AllTags)
                                         {
                                             <option value="@i.ID">@i.Name</option>
                                         }
                                     </InputSelect>
-                                    <img src="./img/icons/chevron-down.svg" alt="">
-                                    <ValidationMessage For="() => CaseModel.SelectedTags" />
+                                    <img src="./img/icons/chevron-down.svg" alt=""> *@
+
+                                    <FluentAutocomplete Id="my-customized"
+                                                        @ref="ContactList"
+                                                        TOption="Tag"
+                                                        Width="100%"
+                                                        Placeholder="search"
+                                                        OnOptionsSearch="@OnSearch"
+                                                        MaximumSelectedOptions="2"
+                                                        OptionText="@(item => item.Name)"
+                                                        Virtualize="true"
+                                                        OptionStyle="min-height: 40px;"
+                                                        @bind-SelectedOptions="@CaseModel.SelectedTagsObjects" />
+                                    <ValidationMessage For="() => CaseModel.SelectedTagsObjects" />
                                  
                                 </div>
+
+
+
                                 <div class="ask-4-file">
                                     <button class="btn btn-sm btn-orange btn-roboto" type="submit">Post</button>
                                 </div>
@@ -252,15 +268,23 @@
         }
     }
 
+    FluentAutocomplete<Tag> ContactList = default!;
+    IEnumerable<Tag> SelectedItems = Array.Empty<Tag>();
+
+    private void OnSearch(OptionsSearchEventArgs<Tag> e)
+    {
+        e.Items = AllTags.Where(i => i.Name.StartsWith(e.Text, StringComparison.OrdinalIgnoreCase)).OrderBy(i => i.Name);
+    }
+
     protected override async Task OnInitializedAsync()
     {
         this.AllSubCategoryList = await commonService.GetAllSubcategories();
         this.AllTags = await commonService.GetAllTags();
-
+        //  this.ContactList = await commonService.GetAllTags();
         SwitchCategory(MedicalCategory.MED);
     }
 
-   
+
     private async Task Cancel()
     {
         NavigationManager.NavigateTo("/");
@@ -273,6 +297,7 @@
             CaseModel.Type = CaseType.AskForHelp;
         else
             CaseModel.Type = CaseType.ClinicalKnowledge;
+        CaseModel.SelectedTags = CaseModel.SelectedTagsObjects.Select(x => x.ID).ToArray();
         var result = await hService.AddNewCase(CaseModel);
         if (result)
             NavigationManager.NavigateTo("/");

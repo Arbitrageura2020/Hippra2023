@@ -3,6 +3,7 @@ using Hippra.Models.SQL;
 using System.Collections.Generic;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Collections;
 
 namespace Hippra.Models.ViewModel
 {
@@ -47,7 +48,7 @@ namespace Hippra.Models.ViewModel
         public int MedicalSubCategoryId { get; set; } = 1;
         public MedicalSubCategory MedicalSubCategory { get; set; }
 
-        [MinLength(1, ErrorMessage = "Please select at least one tag")]
+        //[MinLength(1, ErrorMessage = "Please select at least one tag")]
         public int[]? SelectedTags { get; set; } 
 
         [Required]
@@ -61,6 +62,8 @@ namespace Hippra.Models.ViewModel
         public string CurrentTreatmentAdministered { get; set; }
         public string TreatmentOutcomes { get; set; }
         public string imgUrl { get; set; }
+
+        public IEnumerable<Tag> SelectedTagsObjects { get; set; } = new List<Tag>();
 
     }
 }
