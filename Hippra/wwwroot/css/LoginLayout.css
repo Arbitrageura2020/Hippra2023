@@ -11,17 +11,19 @@
     z-index: 999;
 }
 
+/* <-------------------------------------------------------------Edited - Start  */
 .rectangle-000 {
     box-sizing: border-box;
     background: #ffffff;
     width: 984px;
-    height: 594px;
+    min-height: 600px;
     border-radius: 40px;
     justify-content: center;
     align-items: center;
     text-align: center;
     position: relative;
 }
+/* <-------------------------------------------------------------Edited - End  */
 
 
 .input-field {
@@ -50,4 +52,52 @@ input::placeholder {
     bottom: 0;
     padding-left: 21px;
     padding-bottom: 10px;
+}
+
+/* Common -- End */
+
+
+.sub-txt {
+    /* display: none; */
+    color: #9da3aa;
+    font-size: 14px;
+    margin-top: 0;
+    height: 0;
+    text-align: left;
+}
+
+.validation-error {
+/*    display: none;*/
+    color: #e94238;
+    font-family: Open Sans;
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 0;
+    height: 0;
+    text-align: left;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+}
+
+
+.two-column-form {
+    display: flex;
+    width: 100%;
+}
+
+.column {
+    flex: 1;
+}
+
+.login-container {
+    display: block;
+    border: 0;
+    outline: none;
+    -webkit-transition: all 0.2s;
+    transition: all 0.2s;
 }

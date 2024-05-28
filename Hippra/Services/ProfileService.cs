@@ -24,6 +24,8 @@ using Hippra.Models.ViewModel;
 using SQLitePCL;
 using Hippra.Models.DTO;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Policy;
+using Microsoft.AspNetCore.Components;
 
 namespace Hippra.Services
 {
@@ -517,9 +519,59 @@ namespace Hippra.Services
 
                 return new(true, null);
             }
-            return new(false, result.Errors.Select(x=>x.Description).ToList());
-      
+            return new(false, result.Errors.Select(x => x.Description).ToList());
+
         }
 
+        public async Task<bool> SendPasswordReset(string email, string url)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                // Don't reveal that the user does not exist or is not confirmed
+                //  return RedirectToPage("./ForgotPasswordConfirmation");
+                return false;
+            }
+
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            //var callbackUrl = Url.Page(
+            //    "/Account/ResetPassword",
+            //    pageHandler: null,
+            //    values: new { area = "Identity", code },
+            //    protocol: Request.Scheme);
+            var callbackUrl = HtmlEncoder.Default.Encode(url + "resetpassword/?code=" + code);
+            await _emailSender.SendEmailAsync(
+                email,
+                "Reset Password",
+                $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+            return true;
+            // For more information on how to enable account confirmation and password reset please
+            // visit https://go.microsoft.com/fwlink/?LinkID=532713
+
+            //var callbackUrl = NavigationManager.GetUriWithQueryParameters(
+            //    NavigationManager.ToAbsoluteUri("/ResetPassword").AbsoluteUri,
+            //    new Dictionary<string, object?> { ["code"] = code });
+
+            //  await EmailSender.SendPasswordResetLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
+        }
+
+        public async Task<bool> PasswordReset(ResetPasswordViewModel Input)
+        {
+            var user = await _userManager.FindByEmailAsync(Input.Email);
+            if (user is null)
+            {
+                return false;
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);
+            if (result.Succeeded)
+            {
+                return true;
+            }
+            return false;
+
+        }
     }
 }

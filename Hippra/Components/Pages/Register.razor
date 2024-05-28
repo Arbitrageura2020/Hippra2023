@@ -32,71 +32,69 @@
     </div>
 
     <div class="select-account-type">Select Account Type</div>
-    <EditForm EditContext="step1Context">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        <div class="center-container">
-            <div class="dropdown-container">
-                <select class="dropdown" @bind="@Step1InputModel.AccountType" @bind:after="UserTypeSelected">
+    <div class="center-container">
+        <div class="form-wrapper-account-type">
+            <EditForm EditContext="step1Context">
+                <DataAnnotationsValidator />
+                @*       <ValidationSummary  /> *@
+                <input class="user-cred" type="text" placeholder="Email" @bind="@Step1InputModel.Email" />
+                <p class="validation-error"> <ValidationMessage For="() => Step1InputModel.Email" /></p>
+                @if (EmailExist)
+                {
+                    <p class="validation-error">Email is used in the system. </p>
+                }
+                <input class="user-cred" type="password" placeholder="Password" @bind="@Step1InputModel.Password" />
+                <p class="sub-txt">
+                    8+ characters, Uppercase, Lowercase, Number, Special characters.
+                </p>
+                <p class="validation-error"> <ValidationMessage For="() => Step1InputModel.Password" /></p>
+
+                <input class="user-cred"
+                       type="password"
+                       placeholder="Confirm Password" @bind="@Step1InputModel.ConfirmPassword" />
+                <p class="validation-error"> <ValidationMessage For="() => Step1InputModel.ConfirmPassword" /></p>
+                <select class="dropdown-account-type" @bind="@Step1InputModel.AccountType" @bind:after="UserTypeSelected">
                     <option value="0" disabled selected>I'm a ...</option>
                     @foreach (UserAccountType i in Enum.GetValues(typeof(UserAccountType)))
                     {
                         <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
                     }
                 </select>
-            </div>
+                <p class="validation-error"> <ValidationMessage For="() => Step1InputModel.AccountType" /></p>
+            </EditForm>
         </div>
-        <div class="center-container">
-            <div class="user-cred-container">
-                <input class="user-cred" type="text" placeholder="Email" @bind="@Step1InputModel.Email" />
-                <ValidationMessage For="() => Step1InputModel.Email" />
-                @if (EmailExist)
-                {
-                    <p>Email is used in the system. </p>
-                }
-                <input class="user-cred" type="text" placeholder="Password" @bind="@Step1InputModel.Password" />
-                <p class="sub-txt">
-                    8+ characters, Uppercase, Lowercase, Number, Special characters.
-                </p>
-                <ValidationMessage For="() => Step1InputModel.Password" />
-
-                <input class="user-cred"
-                       type="text"
-                       placeholder="Confirm Password" @bind="@Step1InputModel.ConfirmPassword" />
-                <ValidationMessage For="() => Step1InputModel.ConfirmPassword" />
-            </div>
-        </div>
-    </EditForm>
+        <!--------------------------------------------------------------- Edited - End  -->
+    </div>
 }
 @if (CurrentPage == 2)
 {
 
     <div class="profile">Profile</div>
-    <EditForm EditContext="step2Context">
-        <DataAnnotationsValidator />
-        <div class="form-container">
-            <form class="two-column-form">
+    <div class="form-container">
+
+        <EditForm EditContext="step2Context" class="two-column-form">
+            <DataAnnotationsValidator />
                 <div class="column column-1 login-container">
                     <div class="input-field">
                         <input type="FirstName" placeholder="First Name" @bind="@Step2InputModel.FirstName">
-                        <ValidationMessage For="() => Step2InputModel.FirstName" />
+                        <p class="validation-error">  <ValidationMessage For="() => Step2InputModel.FirstName" /></p>
                     </div>
                     <div class="input-field">
                         <input type="LastName" placeholder="Last Name" @bind="@Step2InputModel.LastName">
-                        <ValidationMessage For="() => Step2InputModel.LastName" />
+                        <p class="validation-error">   <ValidationMessage For="() => Step2InputModel.LastName" /></p>
                     </div>
                     @if (Step1InputModel.AccountType == UserAccountType.Nurse)
                     {
 
                         <div class="input-field">
                             <input type="ResHosp" placeholder="ID.Me" @bind="@Step2InputModel.IdMe">
-                            <ValidationMessage For="() => Step2InputModel.IdMe" />
+                            <p class="validation-error">  <ValidationMessage For="() => Step2InputModel.IdMe" /></p>
                         </div>
                     }
 
                     <div class="input-field">
                         <input type="ResHosp" placeholder="National Provider Identifier (NPI)" @bind="@Step2InputModel.IdNumber">
-                        <ValidationMessage For="() => Step2InputModel.IdNumber" />
+                        <p class="validation-error">  <ValidationMessage For="() => Step2InputModel.IdNumber" /></p>
                     </div>
 
                     <span class="subtext"><i>You can change this later</i></span>
@@ -109,7 +107,7 @@
                                 <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
                             }
                         </select>
-                        <ValidationMessage For="() => Step2InputModel.MedicalSpecialty" />
+                        <p class="validation-error">   <ValidationMessage For="() => Step2InputModel.MedicalSpecialty" /></p>
                     </div>
                     <span class="subtext"><i>You can change this later</i></span>
                 </div>
@@ -117,27 +115,26 @@
                 <div class="column column-2 login-container">
                     <div class="input-field">
                         <input type="ResHosp" placeholder="Residency Hospital" @bind="@Step2InputModel.ResidencyHospital">
-                        <ValidationMessage For="() => Step2InputModel.ResidencyHospital" />
+                        <p class="validation-error">  <ValidationMessage For="() => Step2InputModel.ResidencyHospital" /></p>
                     </div>
                     <div class="input-field">
                         <input type="MedSch" placeholder="Medical School Attended" @bind="@Step2InputModel.MedicalSchoolAttended">
-                        <ValidationMessage For="() => Step2InputModel.MedicalSchoolAttended" />
+                        <p class="validation-error">   <ValidationMessage For="() => Step2InputModel.MedicalSchoolAttended" /></p>
                     </div>
                     <div class="input-field">
                         <input type="Edu" placeholder="Education/Degree" @bind="@Step2InputModel.EducationDegree">
-                        <ValidationMessage For="() => Step2InputModel.EducationDegree" />
+                        <p class="validation-error">   <ValidationMessage For="() => Step2InputModel.EducationDegree" /></p>
                     </div>
                     <div class="check-box">
                         <input type="checkbox" id="remember" name="remember" @bind="@Step2InputModel.AmericanBoardCertified">
                         <label for="remember">American Board Certified</label>
-                        <ValidationMessage For="() => Step2InputModel.AmericanBoardCertified" />
+                        <p class="validation-error">   <ValidationMessage For="() => Step2InputModel.AmericanBoardCertified" /></p>
                     </div>
                 </div>
+        </EditForm>
 
-            </form>
-        </div>
-    </EditForm>
-
+        <!--------------------------------------------------------------- Edited - End  -->
+    </div>
 }
 
 @if (CurrentPage == 3)
@@ -152,57 +149,61 @@
     </svg>
 
     <div class="profile">Contact</div>
-    <EditForm EditContext="step3Context" OnValidSubmit="SubmitSignUp">
-        <DataAnnotationsValidator />
-        <div class="form-container">
+    <div class="form-container">
+
+        <EditForm EditContext="step3Context" OnValidSubmit="SubmitSignUp" class="two-column-form">
+            <DataAnnotationsValidator />
+
 
             <div class="column column-1 login-container">
                 <div class="input-field">
                     <input type="Address" placeholder="Address" @bind="@Step3InputModel.Address">
-                    <ValidationMessage For="() => Step3InputModel.Address" />
+                    <p class="validation-error">   <ValidationMessage For="() => Step3InputModel.Address" /></p>
                 </div>
                 <div class="input-field">
                     <input type="City" placeholder="City" @bind="@Step3InputModel.City">
-                    <ValidationMessage For="() => Step3InputModel.City" />
+                    <p class="validation-error">    <ValidationMessage For="() => Step3InputModel.City" /> </p>
                 </div>
 
                 <div class="input-field">
                     <input type="State" placeholder="State" @bind="@Step3InputModel.State">
-                    <ValidationMessage For="() => Step3InputModel.State" />
+                    <p class="validation-error">   <ValidationMessage For="() => Step3InputModel.State" /></p>
                 </div>
             </div>
 
             <div class="column column-2 login-container">
                 <div class="input-field">
                     <input type="Zipcode" placeholder="Zipcode" @bind="@Step3InputModel.Zipcode">
-                    <ValidationMessage For="() => Step3InputModel.Zipcode" />
+                    <p class="validation-error">   <ValidationMessage For="() => Step3InputModel.Zipcode" /></p>
                 </div>
                 <div class="input-field">
                     <input type="City" placeholder="Country" @bind="@Step3InputModel.Country">
-                    <ValidationMessage For="() => Step3InputModel.Country" />
+                    <p class="validation-error">  <ValidationMessage For="() => Step3InputModel.Country" /></p>
                 </div>
                 <div class="input-field">
                     <input type="Num" placeholder="Phone Number" @bind="@Step3InputModel.PhoneNumber">
-                    <ValidationMessage For="() => Step3InputModel.PhoneNumber" />
+                    <p class="validation-error">  <ValidationMessage For="() => Step3InputModel.PhoneNumber" /></p>
                 </div>
+            </div>
+
+            <div class="check-box-agreement">
+                <input type="checkbox" id="lolremember" name="lolremember" @bind="@Step3InputModel.AgreedTerm">
+                <label for="lolremember">
+                    I have read and agree to the terms presented in the
+                    <span class="t-and-c"><a href="">Terms and Conditions</a></span>
+                    agreement
+                </label>
+                <p class="validation-error">  <ValidationMessage For="() => Step3InputModel.AgreedTerm" /> </p>
             </div>
 
             <div class="sub-btn">
                 <button type="submit" class="submit-btn btn">Submit</button>
             </div>
+           
+        </EditForm>
 
-        </div>
-        <div class="check-box-agreement">
-            <input type="checkbox" id="lolremember" name="lolremember" @bind="@Step3InputModel.AgreedTerm">
-            <label for="lolremember">
-                I have read and agree to the terms presented in the
-                <span class="t-and-c"><a href="">Terms and Conditions</a></span>
-                agreement
-            </label>
-            <ValidationMessage For="() => Step3InputModel.AgreedTerm" />
-        </div>
-    </EditForm>
-
+        <!--------------------------------------------------------------- Edited - End  -->
+    </div>
     @if (hasError && ErrorMessages != null)
     {
         foreach (var error in ErrorMessages)
@@ -244,8 +245,9 @@
     </svg>
 </div>
 
-<div class="footer-profile-phy">
-
+<!--------------------------------------------------------------- Edited - Start  -->
+<div class="footer-acc-type">
+    @*     <div class="footer-btn"><span>Next &gt;</span></div> *@
     @if (showLoading)
     {
         <p>Validating </p>
@@ -254,16 +256,15 @@
     {
         @if (CurrentPage > 1 && CurrentPage < 4)
         {
-            <div class="back-profile-phy" @onclick="PreviousPage"><span>&lt; Back</span></div>
+            <div class="footer-btn" @onclick="PreviousPage"><span>&lt; Back</span></div>
         }
         @if (CurrentPage < 3)
         {
-            <div class="next-profile-phy" @onclick="NextPage"><span>Next &gt;</span></div>
+            <div class="footer-btn" @onclick="NextPage"><span>Next &gt;</span></div>
         }
     }
 </div>
-
-
+<!--------------------------------------------------------------- Edited - End  -->
 @code {
     private int CurrentPage { get; set; } = 1;
     private bool hasError { get; set; }
@@ -298,7 +299,9 @@
             {
                 EmailExist = await pService.IsEmailUsedInTheSystem(Step1InputModel.Email);
             }
-            isValid = !EmailExist && step1Context.Validate();
+
+            var isFormvalid = step1Context.Validate();
+            isValid = !EmailExist && isFormvalid;
         }
         if (CurrentPage == 2)
         {
