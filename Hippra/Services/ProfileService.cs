@@ -435,7 +435,6 @@ namespace Hippra.Services
                 user.NPIN = user.NPIN;
                 user.MedicalSpecialty = usr.MedicalSpecialty;
                 user.AmericanBoardCertified = usr.AmericanBoardCertified;
-
                 user.ResidencyHospital = usr.ResidencyHospital;
                 user.MedicalSchoolAttended = usr.MedicalSchoolAttended;
                 user.EducationDegree = usr.EducationDegree;
@@ -444,12 +443,24 @@ namespace Hippra.Services
                 user.State = usr.State;
                 user.City = usr.City;
                 user.PhoneNumber = usr.PhoneNumber; // check this
-
-                user.ProfileUrl = usr.ProfileUrl;
-                user.BackgroundUrl = usr.BackgroundUrl;
                 user.Bio = usr.Bio;
 
                 await _userManager.UpdateAsync(user);
+                await _signInManager.RefreshSignInAsync(user);
+            }
+
+        }
+
+        public async Task UpdateUserProfilePicture(string userId,string profilePicture)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user != null)
+            {
+                user.ProfileUrl = profilePicture;
+
+                await _userManager.UpdateAsync(user);
+                await _signInManager.RefreshSignInAsync(user);
             }
 
         }

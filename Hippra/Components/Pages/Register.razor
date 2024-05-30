@@ -153,48 +153,52 @@
 
         <EditForm EditContext="step3Context" OnValidSubmit="SubmitSignUp" class="two-column-form">
             <DataAnnotationsValidator />
+            <div class="form-material">
+                <!---------------------------------------------------------- Edited -Start -->
+                <div class="column column-1 login-container">
+                    <div class="input-field">
+                        <input type="Address" placeholder="Address" @bind="@Step3InputModel.Address">
+                        <p class="validation-error">   <ValidationMessage For="() => Step3InputModel.Address" /></p>
+                    </div>
+                    <div class="input-field">
+                        <input type="City" placeholder="City" @bind="@Step3InputModel.City">
+                        <p class="validation-error">    <ValidationMessage For="() => Step3InputModel.City" /> </p>
+                    </div>
 
-
-            <div class="column column-1 login-container">
-                <div class="input-field">
-                    <input type="Address" placeholder="Address" @bind="@Step3InputModel.Address">
-                    <p class="validation-error">   <ValidationMessage For="() => Step3InputModel.Address" /></p>
+                    <div class="input-field">
+                        <input type="State" placeholder="State" @bind="@Step3InputModel.State">
+                        <p class="validation-error">   <ValidationMessage For="() => Step3InputModel.State" /></p>
+                    </div>
                 </div>
-                <div class="input-field">
-                    <input type="City" placeholder="City" @bind="@Step3InputModel.City">
-                    <p class="validation-error">    <ValidationMessage For="() => Step3InputModel.City" /> </p>
+
+                <div class="column column-2 login-container">
+                    <div class="input-field">
+                        <input type="Zipcode" placeholder="Zipcode" @bind="@Step3InputModel.Zipcode">
+                        <p class="validation-error">   <ValidationMessage For="() => Step3InputModel.Zipcode" /></p>
+                    </div>
+                    <div class="input-field">
+                        <input type="City" placeholder="Country" @bind="@Step3InputModel.Country">
+                        <p class="validation-error">  <ValidationMessage For="() => Step3InputModel.Country" /></p>
+                    </div>
+                    <div class="input-field">
+                        <input type="Num" placeholder="Phone Number" @bind="@Step3InputModel.PhoneNumber">
+                        <p class="validation-error">  <ValidationMessage For="() => Step3InputModel.PhoneNumber" /></p>
+                    </div>
                 </div>
 
-                <div class="input-field">
-                    <input type="State" placeholder="State" @bind="@Step3InputModel.State">
-                    <p class="validation-error">   <ValidationMessage For="() => Step3InputModel.State" /></p>
+                <div class="check-box-agreement">
+                    <input type="checkbox" id="lolremember" name="lolremember" @bind="@Step3InputModel.AgreedTerm">
+                    <label for="lolremember">
+                        I have read and agree to the terms presented in the
+                        <span class="t-and-c"><a href="">Terms and Conditions</a></span>
+                        agreement
+                    </label>
+                    <p class="validation-error">  <ValidationMessage For="() => Step3InputModel.AgreedTerm" /> </p>
                 </div>
             </div>
 
-            <div class="column column-2 login-container">
-                <div class="input-field">
-                    <input type="Zipcode" placeholder="Zipcode" @bind="@Step3InputModel.Zipcode">
-                    <p class="validation-error">   <ValidationMessage For="() => Step3InputModel.Zipcode" /></p>
-                </div>
-                <div class="input-field">
-                    <input type="City" placeholder="Country" @bind="@Step3InputModel.Country">
-                    <p class="validation-error">  <ValidationMessage For="() => Step3InputModel.Country" /></p>
-                </div>
-                <div class="input-field">
-                    <input type="Num" placeholder="Phone Number" @bind="@Step3InputModel.PhoneNumber">
-                    <p class="validation-error">  <ValidationMessage For="() => Step3InputModel.PhoneNumber" /></p>
-                </div>
-            </div>
+  
 
-            <div class="check-box-agreement">
-                <input type="checkbox" id="lolremember" name="lolremember" @bind="@Step3InputModel.AgreedTerm">
-                <label for="lolremember">
-                    I have read and agree to the terms presented in the
-                    <span class="t-and-c"><a href="">Terms and Conditions</a></span>
-                    agreement
-                </label>
-                <p class="validation-error">  <ValidationMessage For="() => Step3InputModel.AgreedTerm" /> </p>
-            </div>
 
             <div class="sub-btn">
                 <button type="submit" class="submit-btn btn">Submit</button>

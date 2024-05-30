@@ -5,11 +5,12 @@ const uploadInput = document.querySelector("#uploadProfilePictureInput");
 const profilePicture = document.querySelector(".settings-profile-preview img");
 function HandleUploadButtonClick() {
 
-
+    var upldBtn = document.querySelector("#uploadProfilePictureBtn");
+    const uplInput = document.querySelector("#uploadProfilePictureInput");
     // Trigger Upload
-    if (uploadButton) {
+    if (upldBtn) {
 
-        uploadInput.click();
+        uplInput.click();
 
 
     }

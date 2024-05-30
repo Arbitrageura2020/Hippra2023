@@ -47,8 +47,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\FTDesign\Components2\" />
-    <Folder Include="Pages\FTDesign\Components\" />
     <Folder Include="wwwroot\css\images\" />
     <Folder Include="wwwroot\file\" />
     <Folder Include="MapConfigurations\" />

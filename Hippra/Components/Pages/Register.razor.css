@@ -27,6 +27,26 @@
     justify-content: center;
 }
 
+.input-field {
+    margin-top: 20px;
+}
+
+    .input-field input {
+        display: block;
+        width: 310px;
+        padding: 10px 1px;
+        border: 0;
+        border-bottom: 2px solid #093b58;
+        outline: none;
+        -webkit-transition: all 0.2s;
+        transition: all 0.2s;
+    }
+
+input::placeholder {
+    color: #093b58;
+    font: 300 20px/24px "OpenSans-Light", sans-serif;
+}
+
 /* <-------------------------------------------------------------Edited - Deleted {.select-account-type}  */
 
 

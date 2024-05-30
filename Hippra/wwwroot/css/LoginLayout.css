@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap");
+
 .dim-background {
     background: rgba(0, 0, 0, 0.5);
     top: 0;
@@ -26,25 +28,6 @@
 /* <-------------------------------------------------------------Edited - End  */
 
 
-.input-field {
-    margin-top: 20px;
-}
-
-    .input-field input {
-        display: block;
-        width: 310px;
-        padding: 10px 1px;
-        border: 0;
-        border-bottom: 2px solid #093b58;
-        outline: none;
-        -webkit-transition: all 0.2s;
-        transition: all 0.2s;
-    }
-
-input::placeholder {
-    color: #093b58;
-    font: 300 20px/24px "OpenSans-Light", sans-serif;
-}
 
 .h-logo {
     position: absolute;
@@ -84,11 +67,16 @@ input::placeholder {
     height: auto;
 }
 
+/*------------------------------------------------ Edit - Start */
+.form-material {
+    display: flex;
+}
 
 .two-column-form {
-    display: flex;
     width: 100%;
 }
+
+/*------------------------------------------------ Edit - End */
 
 .column {
     flex: 1;
@@ -100,4 +88,24 @@ input::placeholder {
     outline: none;
     -webkit-transition: all 0.2s;
     transition: all 0.2s;
+}
+
+
+.logininput {
+    display: block;
+    width: 432px;
+    padding: 10px 1px;
+    border: 0;
+    border-bottom: 2px solid #093b58;
+    outline: none;
+}
+
+.validation-message {
+    color: #e94238;
+    font-family: Open Sans;
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 0;
+    height: 0;
+    text-align: left;
 }
