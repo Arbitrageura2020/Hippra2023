@@ -916,11 +916,11 @@ namespace Hippra.Services
             var result = await _context.Cases.FirstOrDefaultAsync(c => c.ID == CaseId);
             return result;
         }
-        public async Task<Case> GetCaseNoTracking(int caseCaseId)
+        public async Task<Case> GetCaseNoTracking(int caseId)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var result = await _context.Cases.Include(x => x.MedicalSubCategory).Include(x => x.Tags).ThenInclude(x=>x.Tag).Include(x => x.Comments).AsNoTracking().FirstOrDefaultAsync(c => c.ID == caseCaseId);
+            var result = await _context.Cases.Where(x => x.ID == caseId).Include(c => c.MedicalSubCategory).Include(c => c.Tags).Include(x => x.User).FirstOrDefaultAsync();
             return result;
         }
 

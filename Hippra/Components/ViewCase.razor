@@ -31,147 +31,170 @@
 <div class="case-layout">
     <div class="case-top">
         <div class="case-top-action">
-          @*   <button>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12.136 16.364L5.77208 10L12.136 3.63604" stroke="#1DA39D" stroke-width="1.7" stroke-linecap="round"></path>
-                </svg>
-                <span>Back</span>
-            </button> *@
             <FTBackBtn BackTitle="Back" UseRedirect="false"></FTBackBtn>
         </div>
     </div>
-    <section class="case-content no-pad">
-        <div class="case-content-heading">
-            <h3>@pCase.Topic</h3>
-            <h4>A Case Report</h4>
-        </div>
-        <div class="case-content-meta">
-            <div class="case-profile">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt="">
-                <div class="case-profile-info">
-                    <h4>@pCase.PosterName</h4>
-                    <p>@pCase.PosterSpecialty</p>
-                </div>
-            </div>
-            <div class="case-content-date">
-                <p>Created: @pCase.DateCreated.ToShortDateString()</p>
-                <p>Last Updated: @pCase.DateLastUpdated.ToShortDateString()</p>
-            </div>
-            <div class="case-content-info">
-                <p>Case Status: @pCase.ParsedStatus</p>
-                <p>Priority: @pCase.Priority</p>
-            </div>
-            <div class="case-content-actions">
-                <button class="article-action-btn">
-                    <img src="./img/icons/share-green-lg.svg" alt="">
-                </button>
-                <button class="article-action-btn">
-                    <img src="./img/icons/bookmark-green.svg" alt="">
-                </button>
-                <button class="article-action-btn">
-                    <img src="./img/icons/message-green.svg" alt="">
-                </button>
-                <button class="article-action-btn">
-                    <img src="./img/icons/three-dots-green.svg" alt="">
-                </button>
-            </div>
-        </div>
-        <div class="case-main-content">
-            <div class="case-main-left">
-                <div class="case-patient">
-                    <div class="case-patient-info">
-                        <h4>Patient Information:</h4>
-                        <ul>
-                            <li>
-                                <span>Age:</span> @pCase.PatientAge
+    @if (dataReady)
+    {
+        <section class="case-content no-pad">
+            <div class="case-content-heading">
+                <h3>
+                    @pCase.Topic
+                </h3>
+
+                <div class="profile-tags">
+                    <ul>
+                        @if (pCase.Type == CaseType.ClinicalKnowledge)
+                        {
+                            <li class="knowledge-sharing-case">
+                                Clinical Knowledge Sharing Case
                             </li>
-                            <li>
-                                <span>Gender:</span> @pCase.ParsedGender
-                            </li>
-                            <li>
-                                <span>Race:</span> @pCase.ParsedRace
-                            </li>
-                            <li>
-                                <span>Ethnicity:</span> @pCase.ParsedEthnicity
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="case-patient-lab">
-                        <h6>Lab Values: </h6>
-                        <p>
-                            @pCase.LabValues
-                        </p>
-                    </div>
-                    <div class="case-patient-tags">
-                        <h6>Tags: </h6>
-                        <ul>
-                            @if (pCase.Tags != null)
+                        }
+                        @if (pCase.Type == CaseType.AskForHelp)
+                        {
+                            <li class="ask-for-help-case">Ask For Help Case</li>
+                        }
+                        @if (pCase.Tags != null)
+                        {
+                            @foreach (var tag in @pCase.Tags)
                             {
-                                @foreach (var tag in @pCase.Tags)
-                                {
-                                    <li><a @onclick="(e => { searchCasesContainTag(tag.Tag.Name); })">@tag.Tag.Name</a></li>
-                                }
+                                <li><a @onclick="(e => { searchCasesContainTag(tag.Tag.Name); })">@tag.Tag.Name</a></li>
                             }
-                            <li></li>
+                        }
+                        @*          <li>Diseases &amp; Disorders of the Blood</li>
+                    <li>Immunologic Disorders</li> *@
+                    </ul>
+                </div>
+            </div>
+            <div class="case-content-meta">
+                <div class="case-profile">
+                    <img src="@pCase.User.ProfileUrl" alt="">
+                    <div class="case-profile-info">
+                        <div>
+                            <h4><a href="/PersonalPage/@pCase.User.Id"></a>@pCase.PosterName</h4>
+                            <p class="color-green">Follow</p>
+                        </div>
 
-                        </ul>
+                        <div class="case-content-date">
+                            <p>@pCase.PosterSpecialty</p>
+                            <p>Last Updated: @pCase.DateLastUpdated.ToShortDateString()</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="case-main-right">
-                <div class="case-informations">
-                    <div class="case-info-title">
-                        <h4>Case Overview</h4>
-                        <hr>
-                    </div>
-                    <div class="case-info-desc">
-                        <p>
-                            @((MarkupString)@pCase.Description)
-                        </p>
-                    </div>
-                </div>
-                <div class="case-informations">
-                    <div class="case-info-title">
-                        <h4>Current Stage of Disease</h4>
-                        <hr>
-                    </div>
-                    <div class="case-info-desc">
-                        <p>
-                            @pCase.CurrentStageOfDisease
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Case Tabs Here -->
-    <section class="case-tabs">
-        <div class="case-tab-top">
-            <div class="case-tab-left">
-                <button class="case-tab-btn @(activeTab==1?"active":"")" data-target="tab-case-one" @onclick="()=>ToggleTab(1)">
-                    Current Treatment Administered
-                </button>
-            </div>
-            <div class="case-tab-right">
-                <button class="case-tab-btn @(activeTab==2?"active":"")" data-target="tab-case-two" @onclick="()=>ToggleTab(2)">
-                    Treatment Outcomes
-                </button>
-            </div>
-        </div>
-        <!-- Current Treatment Administered Content -->
-        <div class="case-tab-content tab-case-one@(activeTab==1?"active":"")">
-            <p>
-                @pCase.CurrentTreatmentAdministered
-            </p>
-        </div>
-        <!--  Treatment Outcomes Content -->
-        <div class="case-tab-content tab-case-two @(activeTab==2?"active":"")">
-            <p>
-                @pCase.TreatmentOutcomes
-            </p>
 
-        </div>
-    </section>
+                <!----------------------------------------------------------------------Edit - Start  -->
+
+                <div class="case-content-actions">
+                    @if (isOwner)
+                    {
+                        <button>
+                            <img src="/frontend/Dashboard/img/icons/new-edit.svg" alt="">
+                            <span>Edit</span>
+                        </button>
+                    }
+                    else
+                    {
+                        <button>
+                            <img src="/frontend//Dashboard/img/icons/thumbs-up-hollow.svg" alt="">
+                            <span>Like</span>
+                        </button>
+                        <button>
+                            <img src="/frontend/Dashboard/img/icons/comment.svg" alt="">
+                            <span>Respond</span>
+                        </button>
+                    }
+                </div>
+                <!----------------------------------------------------------------------Edit - End  -->
+            </div>
+            <div class="case-main-content">
+                <div class="case-main-left">
+                    <div class="case-patient">
+                        <div class="case-patient-info">
+                            <h4>Patient Information:</h4>
+                            <ul>
+                                <!----------------------------------------------------------------------Edit - Start  -->
+                                <li>
+                                    <span>Age:</span> <span class="light-text"> @pCase.PatientAge </span>
+                                </li>
+                                <li>
+                                    <span>Gender:</span>
+                                    <span class="light-text"> @pCase.Gender </span>
+                                </li>
+                                <li>
+                                    <span>Race:</span>
+                                    <span class="light-text"> @pCase.Race </span>
+                                </li>
+                                <li>
+                                    <span>Ethnicity:</span>
+                                    <span class="light-text">
+                                        @pCase.Ethnicity
+                                    </span>
+                                </li>
+                                <!----------------------------------------------------------------------Edit - End  -->
+                            </ul>
+                        </div>
+                        <div class="case-patient-lab">
+                            <h6>Lab Values:</h6>
+                            <p>
+                                @pCase.LabValues
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="case-main-right">
+                    <div class="case-informations">
+                        <div class="case-info-title">
+                            <h4>Case Overview</h4>
+                            <hr>
+                        </div>
+                        <div class="case-info-desc">
+                            <p>
+                                @((MarkupString)@pCase.Description)
+                            </p>
+                        </div>
+                    </div>
+                    <div class="case-informations">
+                        <div class="case-info-title">
+                            <h4>Current Stage of Disease</h4>
+                            <hr>
+                        </div>
+                        <div class="case-info-desc">
+                            <p>
+                                @pCase.CurrentStageOfDisease
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="case-tabs">
+            <div class="case-tab-top">
+                <div class="case-tab-left">
+                    <button class="case-tab-btn @(activeTab==1?"active":"")" @onclick="()=>ToggleTab(1)" data-target="tab-case-one">
+                        Current Treatment Administered
+                    </button>
+                </div>
+                <div class="case-tab-right">
+                    <button class="case-tab-btn @(activeTab==2?"active":"")" @onclick="()=>ToggleTab(2)" data-target="tab-case-two">
+                        Treatment Outcomes
+                    </button>
+                </div>
+            </div>
+            <!-- Current Treatment Administered Content -->
+            <div class="case-tab-content tab-case-one @(activeTab==1?"active":"")">
+                <p>
+                   @pCase.CurrentTreatmentAdministered
+                </p>
+            </div>
+            <!--  Treatment Outcomes Content -->
+            <div class="case-tab-content tab-case-two @(activeTab==1?"active":"")">
+                <p>
+                    @pCase.TreatmentOutcomes
+                </p>
+            </div>
+        </section>
+    }
+
     @if (dataReady)
     {
         <NewComments caseId="@pCase.ID" isOpened="true" />
@@ -192,50 +215,18 @@
 
     private bool isOwner { get; set; } = false;
     private string returnUrl { get; set; } = "/";
-    private Case InputModel { get; set; } = new Case();
-
-    private FilterModel filters { get; set; } = new FilterModel();
-    public class FilterModel
-    {
-        public bool showClosed { get; set; } = false;
-        public string SubCategory { get; set; } = "-1";
-    }
 
     private ParsedCase pCase { get; set; } = new ParsedCase();
 
-    private List<SelectListItem> specialtyList { get; set; }
-
-    //private List<SelectListItem> CategoryList { get; set; } = new List<SelectListItem>();
-    private List<SelectListItem> SubCategoryList { get; set; } = new List<SelectListItem>();
-    private List<SelectListItem> GenderList { get; set; } = new List<SelectListItem>();
-    private List<SelectListItem> RaceList { get; set; } = new List<SelectListItem>();
-    private List<SelectListItem> EthnicityList { get; set; } = new List<SelectListItem>();
-    private List<SelectListItem> SubCategoryFilterList { get; set; } = new List<SelectListItem>(){
-                new SelectListItem { Value = "-1", Text = "No Filters" }
-                };
-
-    private string bCategory { get; set; } = "0";
-    private string bSubCategory { get; set; } = "0";
-    private string bGender { get; set; } = "0";
-    private string bRace { get; set; } = "6";
-    private string bEthnicity { get; set; } = "3";
-
+    private int activeTab { get; set; } = 1;
     private string debug { get; set; } = "";
-
-    private PriorityModel priorityRadio = new PriorityModel();
-    public class PriorityModel
-    {
-        [Range(0, 2)]
-        public CaseResponseLevelType Priority { get; set; }
-    }
 
     private string[] imgUrls;
 
     private bool dataReady = false;
-    private int userId = -1;
+    private string userId { get; set; } = "";
 
 
-    private int activeTab = 1;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         //if (firstRender)
@@ -245,25 +236,16 @@
         //}
     }
 
-    private async Task ToggleTab(int tab)
-    {
-        this.activeTab = tab;
-        StateHasChanged();
-    }
-
     protected override async Task OnInitializedAsync()
     {
         authState = await authenticationStateTask;
-        user = authState.User;
+        var user = authState.User;
 
         if (user.Identity.IsAuthenticated)
         {
-            @*userInfo = await UserManager.GetUserAsync(user);*@
             try
             {
-
-                userId = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
-
+                userId = user.Claims.FirstOrDefault(s => s.Type == "UserId")?.Value;
             }
             catch (FormatException e)
             {
@@ -280,20 +262,28 @@
             }
             pCase = tCase.ToParsedCase();
             pCase.Comments = await hService.GetCommentsNoTracking(caseId);
-           // pCase.Tags = await hService.GetTagsNoTracking(pCase.ID);
+
             pCase.imgUrl = tCase.imgUrl;
             //deserialize
             if (!string.IsNullOrWhiteSpace(@pCase.imgUrl))
             {
                 imgUrls = @pCase.imgUrl.Split(' ');
             }
+
+
+            if (tCase.UserId == userId)
+            {
+                isOwner = true;
+            }
+
+            dataReady = true;
+            StateHasChanged();
         }
         else
         {
             // shouldn't get here
         }
-        dataReady = true;
-        StateHasChanged();
+
 
     }
 
@@ -302,17 +292,15 @@
         NavigationManager.NavigateTo("/PersonalPage/" + id);
     }
 
-    private async Task EditMode()
-    {
-        NavigationManager.NavigateTo("/editcase/" + caseId);
-    }
-
-
 
     private async Task searchCasesContainTag(string tag)
     {
         NavigationManager.NavigateTo("/tagsearch/" + caseId + "/" + tag);
     }
 
-
+    private async Task ToggleTab(int tab)
+    {
+        activeTab = tab;
+        StateHasChanged();
+    }
 }

@@ -1,4 +1,5 @@
 ﻿/* Case */
+
 .case-layout {
     position: relative;
 }
@@ -34,6 +35,10 @@
         stroke: var(--orange);
     }
 
+.profile-tags li {
+    margin-right: 10px;
+}
+
 .case-content {
     position: relative;
     padding: 0 55px;
@@ -45,7 +50,7 @@
 }
 
     .case-content-heading h3 {
-        color: var(--darkBlue);
+        color: #242424;
         font-size: 1.875rem;
         font-style: normal;
         font-weight: 700;
@@ -87,6 +92,15 @@
         margin-right: 20px;
     }
 
+    .case-profile .case-profile-info div {
+        display: flex;
+        gap: 10px;
+    }
+
+    .case-profile .case-profile-info .color-green {
+        color: var(--green);
+    }
+
     .case-profile .case-profile-info h4 {
         font-family: Roboto;
         color: #2b2c34;
@@ -99,10 +113,10 @@
 
     .case-profile .case-profile-info p {
         font-family: Roboto;
-        color: #0e0e0e;
+        color: #6b6b6b;
         font-size: 0.875rem;
         font-style: normal;
-        font-weight: 500;
+        font-weight: 400;
         line-height: normal;
         text-transform: capitalize;
     }
@@ -120,22 +134,30 @@
         color: #aaa;
         font-size: 1rem;
         font-style: normal;
-        font-weight: 500;
+        font-weight: 400;
         line-height: normal;
     }
 
 .case-content-actions {
-    position: relative;
     display: flex;
-    gap: 0 10px;
+    margin-top: 10px;
 }
 
     .case-content-actions button {
-        background-color: #ffffff;
-        outline: none;
         border: none;
+        display: inline-flex;
+        align-items: center;
+        background: transparent;
+        color: #6b6b6b;
+        padding: 10px;
         cursor: pointer;
     }
+
+        .case-content-actions button img {
+            margin-right: 8px;
+            height: 24px;
+            width: 24px;
+        }
 
 .case-main-content {
     position: relative;
@@ -158,7 +180,7 @@
 
 .case-patient {
     position: relative;
-    background: #f6fbfb;
+    background: #f1f8ff;
     border-radius: 10px;
     padding: 25px 30px;
 }
@@ -168,14 +190,16 @@
     margin-bottom: 16px;
 }
 
+    /* <-------------------------------------------------------------Edited - Start  */
     .case-patient-info h4 {
-        color: var(--green);
-        font-size: 1.125rem;
+        font-size: 18px;
         font-style: normal;
         font-weight: 600;
         line-height: normal;
         margin-bottom: 14px;
+        color: #0061c2;
     }
+    /* <-------------------------------------------------------------Edited - End  */
 
     .case-patient-info ul {
         list-style: none;
@@ -201,7 +225,6 @@
 }
 
     .case-patient-lab h6 {
-        color: var(--green);
         font-size: 0.875rem;
         font-style: normal;
         font-weight: 600;
@@ -209,59 +232,27 @@
         margin-bottom: 5px;
     }
 
+    /* <-------------------------------------------------------------Edited - Start  */
     .case-patient-lab p {
-        color: #aaaaaa;
         font-size: 0.875rem;
         font-style: normal;
         font-weight: 400;
         line-height: 22px;
     }
 
-/* Tags */
-
-.case-patient-tags {
-    position: relative;
-    margin-bottom: 30px;
-    font-family: Roboto;
+.patient-info-category h6,
+.patient-info-sub-category h6 {
+    font-size: 15px;
+    font-weight: 500;
 }
 
-    .case-patient-tags h6 {
-        color: var(--green);
-        font-size: 0.875rem;
-        font-style: normal;
-        font-weight: 600;
-        line-height: normal;
-        margin-bottom: 5px;
-    }
+.patient-info-category p,
+.patient-info-sub-category p {
+    font-size: 15px;
+    font-weight: 400;
+}
 
-    .case-patient-tags ul {
-        position: relative;
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-        .case-patient-tags ul li a {
-            font-family: Roboto;
-            display: flex;
-            padding: 4px 8px;
-            justify-content: center;
-            align-items: center;
-            border-radius: 10px;
-            background-color: #d9d9d9;
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: #000000;
-            margin-bottom: 8px;
-            text-decoration: none;
-        }
-
-            .case-patient-tags ul li a.active {
-                background-color: #88e7e2;
-            }
-
-        .case-patient-tags ul li:not(:last-child) {
-            margin-right: 5px;
-        }
+/* <-------------------------------------------------------------Edited - End  */
 
 /* Case Informations */
 
@@ -279,7 +270,7 @@
 }
 
     .case-info-title h4 {
-        color: var(--green);
+        color: #0061c2;
         font-size: 1.25rem;
         font-style: normal;
         font-weight: 600;
@@ -290,7 +281,7 @@
         margin-top: 8px;
         height: 3px;
         border: none;
-        background-color: var(--green);
+        background-color: #0061c2;
     }
 
 .case-info-desc {
@@ -299,7 +290,6 @@
 
     .case-info-desc p {
         font-family: Roboto;
-        color: #aaa;
         font-size: 0.875rem;
         font-style: normal;
         font-weight: 400;
@@ -339,7 +329,7 @@
     outline: none;
     border: none;
     border-radius: 8px 8px 0px 0px;
-    color: var(--green);
+    color: #0061c2;
     background-color: #ffffff;
     font-size: 1rem;
     font-style: normal;
@@ -349,7 +339,7 @@
 }
 
     .case-tab-btn.active {
-        background-color: var(--green);
+        background-color: #0061c2;
         color: #ffffff;
     }
 
@@ -358,7 +348,7 @@
     bottom: 0;
     content: "";
     display: block;
-    background-color: var(--green);
+    background-color: #0061c2;
     width: 100%;
     height: 2px;
 }
@@ -368,7 +358,7 @@
     bottom: 0;
     content: "";
     display: block;
-    background-color: var(--green);
+    background-color: #0061c2;
     width: 100%;
     height: 2px;
 }
@@ -379,7 +369,6 @@
 
     .case-tab-content p {
         font-family: Roboto;
-        color: #aaa;
         font-size: 0.875rem;
         font-style: normal;
         font-weight: 400;
@@ -402,7 +391,297 @@
     display: block;
 }
 
+/* Case Comment */
+.case-comment {
+    position: relative;
+    padding-right: 55px;
+    padding-left: 55px;
+    margin-bottom: 20px;
+}
 
+/* <-------------------------------------------------------------Edited - Start  */
+.case-comment-form {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.comment-form-box {
+    width: 100%;
+    padding: 15px;
+    align-items: center;
+    border-radius: 20px;
+    border: 1px solid #e0e4ec;
+    background: #f7f7f7;
+}
+
+.editing-comment {
+    border-radius: 20px;
+    border: 1px solid gray;
+}
+
+.comment-form-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+}
+
+    .comment-form-box input::placeholder {
+        font-family: Roboto;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+    }
+
+.case-comments {
+    position: relative;
+    align-items: center;
+}
+
+.upvote-btn {
+    display: flex;
+    gap: 5px;
+    height: 16px;
+    align-text: right;
+    font-size: 14px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #6b6b6b;
+    font-weight: 400;
+    margin-top: 20px;
+}
+
+.case-comment-item {
+    width: 100%;
+    padding: 15px;
+    align-items: center;
+    border-radius: 20px;
+    border: 1px solid #e0e4ec;
+    background: #f7f7f7;
+}
+
+.comment-edit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 25px;
+    right: 100px;
+    width: 175px;
+    height: 40px;
+    border: 1px solid #e0e4ec;
+    background: #ffffff;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+    .comment-edit img {
+        margin-right: 5px;
+    }
+
+.comment-user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.case-comment-item:not(:last-child) {
+    margin-bottom: 20px;
+}
+
+.comment-info {
+    align-items: center;
+    position: relative;
+    margin-left: 10px;
+}
+
+    .comment-info div {
+        display: flex;
+        gap: 10px;
+    }
+
+.light-text {
+    color: #6b6b6b;
+}
+
+.comment-info h6 {
+    font-family: "roboto";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-transform: capitalize;
+    margin-bottom: 5px;
+}
+
+.comment-author {
+    position: relative;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.comment-btns {
+    display: flex;
+    justify-content: space-between;
+}
+
+    .comment-btns button {
+        margin-top: 30px;
+        font-family: Roboto;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 500;
+        padding: 10px 30px 10px 30px;
+        line-height: normal;
+        align-items: center;
+        border: none;
+        border-radius: 20px;
+        background: #d9d9d9;
+        cursor: pointer;
+    }
+
+.clicked-btn {
+    color: var(--green);
+}
+
+.attach-btn {
+    display: flex;
+    gap: 10px;
+}
+
+.last-two-btns :last-child {
+    margin-left: 10px;
+    background: var(--green);
+    color: #ffffff;
+}
+
+.attached-files {
+    margin-top: 20px;
+}
+
+.files {
+    width: 500px;
+    height: 50px;
+    background: #ffffff;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+.files {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+    .files button {
+        border: none;
+        background: #f6fbfb;
+        height: 0;
+        cursor: pointer;
+    }
+
+.more-options {
+    margin-left: auto;
+}
+
+    .more-options button {
+        border: none;
+        background: #ffffff;
+        cursor: pointer;
+    }
+
+.more-options-expanded {
+    position: absolute;
+    right: 10px;
+    display: grid;
+    height: auto;
+    width: auto;
+    border: 1px solid #e0e4ec;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+    .more-options-expanded button {
+        display: flex;
+        gap: 10px;
+        padding: 10px 40px 10px 20px;
+        border: none;
+        background: #ffffff;
+        cursor: pointer;
+    }
+
+.dim-background {
+    background: rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pop-up-box {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 15px;
+    height: auto;
+    padding: 20px;
+}
+
+    .pop-up-box h4 {
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+.option-btns {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+    .option-btns button {
+        font-size: 16px;
+        font-weight: 700;
+        border: none;
+        background: #d9d9d9;
+        padding: 10px 30px 10px 30px;
+        border-radius: 50px;
+        cursor: pointer;
+    }
+
+    .option-btns :last-child {
+        color: #ffffff;
+        background: #e94238;
+    }
+
+.report-section {
+    position: absolute;
+    width: min-content;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+    .report-section h4 {
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .report-section textarea {
+        margin-top: 10px;
+        border: 1px solid #e0e4ec;
+        border-radius: 10px;
+    }
+
+        .report-section textarea::placeholder {
+            padding: 10px;
+        }
+
+/* <-------------------------------------------------------------Edited - End  */
 
 /********************* Orange Theme *********************/
 
@@ -443,7 +722,13 @@
         color: #ffffff;
     }
 
+.main-layout.orange .clicked-btn {
+    color: var(--orange);
+}
 
+.main-layout.orange .comment-form-box input:focus-visible {
+    border-color: var(--orange);
+}
 
 .main-layout.orange .case-tab-right::after {
     background-color: var(--orange);
@@ -451,6 +736,10 @@
 
 .main-layout.orange .case-tab-left::after {
     background-color: var(--orange);
+}
+
+.main-layout.orange .last-two-btns :last-child {
+    background: var(--orange);
 }
 
 /************** Responsive **************/

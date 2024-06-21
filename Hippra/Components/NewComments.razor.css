@@ -1,57 +1,30 @@
-﻿/* Case Comment */
-.case-comment {
-    position: relative;
-    padding-right: 55px;
-    padding-left: 55px;
-    margin-bottom: 20px;
-}
-
-.comment-form-box {
-    position: relative;
-}
-
+﻿/* <-------------------------------------------------------------Edited - Start  */
 .case-comment-form {
     position: relative;
-    overflow: hidden;
     margin-bottom: 30px;
 }
 
-.comment-form-box input {
+.comment-form-box {
     width: 100%;
-    overflow: hidden;
-}
-
-.comment-form-box button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 16px 25px;
-    border: none;
-    border-radius: 20px;
-    background-color: #39aea9;
-    color: #ffffff;
-    font-family: Roboto;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 2px solid transparent;
-}
-
-.comment-form-box input {
-    width: 100%;
-    border-radius: 20px;
-    background-color: #f1f2f6;
     padding: 15px;
-    border: 2px solid transparent;
+    align-items: center;
+    border-radius: 20px;
+    border: 1px solid #e0e4ec;
+    background: #f7f7f7;
+}
+
+.editing-comment {
+    border-radius: 20px;
+    border: 1px solid gray;
+}
+
+.comment-form-box input {
+    border: none;
+    background: transparent;
     outline: none;
-    transition-property: all;
-    transition-timing-function: ease-in-out;
-    transition-duration: 150ms;
 }
 
     .comment-form-box input::placeholder {
-        color: #636468;
         font-family: Roboto;
         font-size: 18px;
         font-style: normal;
@@ -59,78 +32,184 @@
         line-height: normal;
     }
 
-    .comment-form-box input:focus-visible {
-        border-color: #39aea9;
-    }
-
 .case-comments {
     position: relative;
+    align-items: center;
+}
+
+.upvote-btn {
+    display: flex;
+    gap: 5px;
+    height: 16px;
+    align-text: right;
+    font-size: 14px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #6b6b6b;
+    font-weight: 400;
+    margin-top: 20px;
 }
 
 .case-comment-item {
-    position: relative;
-    display: flex;
-    padding: 15px 20px 15px 20px;
+    width: 100%;
+    padding: 15px;
     align-items: center;
-    border-radius: 12px;
+    border-radius: 20px;
     border: 1px solid #e0e4ec;
-    background: #ffffff;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.15);
+    background: #f7f7f7;
 }
 
-    .case-comment-item:not(:last-child) {
-        margin-bottom: 20px;
+.comment-edit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 25px;
+    right: 100px;
+    width: 175px;
+    height: 40px;
+    border: 1px solid #e0e4ec;
+    background: #ffffff;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+    .comment-edit img {
+        margin-right: 5px;
     }
 
+.comment-user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.case-comment-item:not(:last-child) {
+    margin-bottom: 20px;
+}
+
 .comment-info {
+    align-items: center;
     position: relative;
-    flex: 1;
     margin-left: 10px;
 }
 
-    .comment-info h6 {
-        color: #939393;
-        font-family: "roboto";
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-        text-transform: capitalize;
-        margin-bottom: 5px;
+    .comment-info div {
+        display: flex;
+        gap: 10px;
     }
 
-    .comment-info p {
-        color: #949494;
-        font-family: "roboto";
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-        text-transform: capitalize;
-    }
+.light-text {
+    color: #6b6b6b;
+}
+
+.comment-info h6 {
+    font-family: "roboto";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-transform: capitalize;
+    margin-bottom: 5px;
+}
 
 .comment-author {
     position: relative;
     width: 45px;
+    height: 45px;
     border-radius: 50%;
     overflow: hidden;
 }
 
-/************** Responsive **************/
+.comment-btns {
+    display: flex;
+    justify-content: space-between;
+}
 
-@media only screen and (max-width: 1280px) {
-    .case-comment {
-        padding-left: 25px;
-        padding-right: 25px;
+    .comment-btns button {
+        margin-top: 30px;
+        font-family: Roboto;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 500;
+        padding: 10px 30px 10px 30px;
+        line-height: normal;
+        align-items: center;
+        border: none;
+        border-radius: 20px;
+        background: #d9d9d9;
+        cursor: pointer;
     }
+
+.clicked-btn {
+    color: var(--green);
 }
 
-
-.main-layout.orange .comment-form-box button {
-    background-color: var(--orange);
+.attach-btn {
+    display: flex;
+    gap: 10px;
 }
 
-.main-layout.orange .comment-form-box input:focus-visible {
-    border-color: var(--orange);
+.last-two-btns :last-child {
+    margin-left: 10px;
+    background: var(--green);
+    color: #ffffff;
 }
+
+.attached-files {
+    margin-top: 20px;
 }
+
+.files {
+    width: 500px;
+    height: 50px;
+    background: #ffffff;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+.files {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+    .files button {
+        border: none;
+        background: #f6fbfb;
+        height: 0;
+        cursor: pointer;
+    }
+
+.more-options {
+    margin-left: auto;
+}
+
+    .more-options button {
+        border: none;
+        background: #ffffff;
+        cursor: pointer;
+    }
+
+.more-options-expanded {
+    position: absolute;
+    right: 10px;
+    display: grid;
+    height: auto;
+    width: auto;
+    border: 1px solid #e0e4ec;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+    .more-options-expanded button {
+        display: flex;
+        gap: 10px;
+        padding: 10px 40px 10px 20px;
+        border: none;
+        background: #ffffff;
+        cursor: pointer;
+    }

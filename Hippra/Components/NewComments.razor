@@ -20,13 +20,23 @@
 @inject CommonService commonService;
 @inject INotificationsService notificationsService;
 <section class="case-comment">
-    <div class="case-comment-form">
+    <div class="case-comment-form editing-comment">
         <EditForm Model="@newComment" OnValidSubmit="@AddComment" FormName="AddCommentForm">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="comment-form-box">
                 <input type="text" placeholder="Write a Comment" @bind="@newComment.Comment" required></input>
-                <button type="submit" disabled="@(!isSubmitted)"> @(isSubmitted ? "Comment" : "Sending ...") </button>
+                <div class="comment-btns">
+                    <button class="attach-btn">
+                        <img src="/frontend/Dashboard/img/icons/attachment.svg" alt="">
+                        Attach files
+                    </button>
+                    <div class="last-two-btns">
+                        <button type="submit" disabled="@(!isSubmitted)"> @(isSubmitted ? "Comment" : "Sending ...") </button>
+                        <button>Post</button>
+                    </div>
+                </div>
+
             </div>
             <div class="border">
                 <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
@@ -40,6 +50,75 @@
             {
                 if (c.ID != EditThis)
                 {
+                    <div class="case-comment-item">
+                        <div class="comment-user-info">
+                            <div class="comment-author">
+                                @if (c.User != null)
+                                {
+                                    <img src="@c.User.ProfileUrl" alt="@c.User.FirstName">
+                                }
+                                else
+                                {
+                                    <img src="/img/hippra/blank-profile.png" />
+                                }
+                            </div>
+                            <div class="comment-info">
+                                <div>
+
+                                    @if (c.User != null)
+                                    {
+                                        <h6>
+                                            <span>@c.User.FullName</span>
+                                        </h6>
+                                        <h6 class="light-text">@c.User.MedicalSpecialty</h6>
+                                    }
+                                    else
+                                    {
+                                        <h6>
+                                            <span>Anonymus</span>
+                                        </h6>
+                                    }
+
+
+                                </div>
+                                <h6 class="light-text">2 Weeks Ago</h6>
+                            </div>
+                        </div>
+                        @if (c.UserId == userId)
+                        {
+                            <button class="comment-edit" @onclick="(e => { EditComment(c.ID); })">
+                                <img src="/frontend/Dashboard/img/icons/edit-icon.svg" alt="">
+                                Edit
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="comment-edit">
+                                <img src="/frontend/Dashboard/img/icons/report-icon.svg" alt="">
+                                Report
+                            </button>
+                        }
+                        <p>
+                            @c.Comment
+                        </p>
+                        <div class="attached-files">
+                            <div class="files">
+                                <p>Lab Reports.pdf</p>
+                            </div>
+                            <div class="files">
+                                <p>Lab Reports.pdf</p>
+                            </div>
+                            <div class="files">
+                                <p>Lab Reports.pdf</p>
+                            </div>
+                        </div>
+                        <button class="upvote-btn" @onclick="(e => { AddVote(c); })">
+                            <img src="/frontend/Dashboard/img/icons/upward-arrow-hollow.svg" alt="">
+                            Upvote
+                        </button>
+                    </div>
+
+
                     <div class="case-comment-item">
                         <div class="col vote-bar">
                             <div class="row-md-1 wrap-button-up">
@@ -112,7 +191,7 @@
                                     @* <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload> *@
 
                                 }
-                   
+
                             </div>
                         </EditForm>
                     </div>

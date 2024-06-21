@@ -40,6 +40,10 @@ namespace Hippra.Extensions
             {
                 pCase.Comments = tCase.Comments;
             }
+            if (tCase.User != null)
+            {
+                pCase.User = tCase.User;
+            }
             pCase.imgUrl = tCase.imgUrl;
             pCase.PatientAge = tCase.PatientAge;
             pCase.CurrentStageOfDisease = tCase.CurrentStageOfDisease;
