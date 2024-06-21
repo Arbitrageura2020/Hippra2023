@@ -354,3 +354,9 @@ healthchecksdb
 #Migrations/
 .vscode/tasks.json
 .vscode/launch.json
+
+# Visual Studio Code
+.vscode/
+*.zip
+*.zip
+*.zip
