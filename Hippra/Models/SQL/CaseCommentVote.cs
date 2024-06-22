@@ -1,11 +1,10 @@
 ﻿using System;
 namespace Hippra.Models.SQL
 {
-    public class Vote
+    public class CaseCommentVote
     {
         public int ID { get; set; }
-        public int CID { get; set; }
-        public int VoteType { get; set; }
+        public long CommentId { get; set; }
         public int PosterID { get; set; }
 		public string UserId { get; set; }
 		public int VoterID { get; set; }

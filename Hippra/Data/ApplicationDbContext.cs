@@ -24,11 +24,11 @@ namespace Hippra.Data
 
         public DbSet<PostHistory> PostHistories { get; set; }
 
-        public DbSet<Vote> Votes { get; set; }
+        public DbSet<CaseCommentVote> CaseCommentVotes { get; set; }
 
         public DbSet<Connection> Connections { get; set; }
 
- 
+
         public DbSet<Notification> Notifications { get; set; }
 
         public DbSet<Follow> Follows { get; set; }
@@ -36,5 +36,6 @@ namespace Hippra.Data
         public DbSet<Tag> Tags { get; set; }
 
         public DbSet<MedicalSubCategory> MedicalSubCategories { get; set; }
-	}
+        public DbSet<CaseCommentFile> CaseCommentFiles { get; set; }
+    }
 }

@@ -7,7 +7,7 @@ namespace Hippra.Models.SQL
 {
 	public class CaseComment
 	{
-		public int ID { get; set; }
+		public long ID { get; set; }
 
 		public int PosterId { get; set; }
 		public string PosterName { get; set; }
@@ -23,5 +23,6 @@ namespace Hippra.Models.SQL
 		public Case Case { get; set; }
 		public string UserId { get; set; }
 		public AppUser User { get; set; }
+		public IList<CaseCommentFile> Files { get; set; }
 	}
 }

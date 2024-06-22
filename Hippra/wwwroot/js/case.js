@@ -25,13 +25,19 @@ caseTabButtons.forEach((item) => {
     });
 });
 
-// Handle Case Page Back
 
-const caseBackButton = document.querySelector(".case-top-action");
+// Handle Comments File Upload
+//const uploadButton = document.querySelector("#uploadFileButton");
+//const uploadInput = document.querySelector("#uploadProfilePictureInput");
+function HandleCommentUploadButtonClick() {
 
-if (caseBackButton) {
-    caseBackButton.addEventListener("click", (e) => {
-        e.preventDefault();
-        window.history.back();
-    });
+    var upldBtn = document.querySelector("#uploadFileButton");
+    const uplInput = document.querySelector("#uploadFileInput");
+    // Trigger Upload
+    if (upldBtn) {
+
+        uplInput.click();
+
+
+    }
 }

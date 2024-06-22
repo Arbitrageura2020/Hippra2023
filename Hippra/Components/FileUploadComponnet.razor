@@ -1,0 +1,165 @@
+﻿@using Hippra.Services
+
+@inject HippraService hService
+@*<InputFile OnChange="HandleFileSelected" />*@
+<InputFile OnChange="@HandleFileSelected" />
+
+@if (!string.IsNullOrWhiteSpace(displayImgUrl))
+{
+    if (!isSubmitted)
+    {
+        <p><img src="@displayImgUrl" width="50%" height="auto" /></p>
+        <div class="btn btn-outline-danger" @onclick="DeleteFile">
+            delete
+        </div>
+    }
+}
+else
+{
+    if (isDeleted)
+    {
+        <p>File Deleted</p>
+    }
+}
+
+
+@code {
+    [Parameter]
+    public string fileName { get; set; } = "";
+    [Parameter]
+    public string imgUrl { get; set; } = "";
+    [Parameter]
+    public bool isSubmitted { get; set; }
+
+    private string savedImgUrl = "";
+    private string displayImgUrl = "";
+    private string fileName2 = "";
+    private string guid = "";
+
+
+    [Parameter]
+    public EventCallback<string> fileNameChanged { get; set; }
+    [Parameter]
+    public EventCallback<string> imgUrlChanged { get; set; }
+    [Parameter]
+    public EventCallback<bool> isSubmittedChanged { get; set; }
+
+    @*IFileListEntry file;*@
+
+
+    private bool isDeleted { get; set; } = false;
+    private int counter { get; set; } = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        displayImgUrl = imgUrl;
+        savedImgUrl = hService.GetImgStorageUrl() + "img";
+    }
+
+
+
+    //public async Task HandleFileSelected(IFileListEntry[] files)
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        isSubmitted = false;
+        isSubmittedChanged.InvokeAsync(isSubmitted);
+        imgUrl = "";
+
+        var maxAllowedFiles = 1;
+        var format = "image/png";
+
+        foreach (var imageFile in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            if (imageFile == null || imageFile.Size < 100)
+            {
+                StateHasChanged();
+                return;
+            }
+
+            if (imageFile.Name.Contains("png") ||
+                imageFile.Name.Contains("jpg") ||
+                imageFile.Name.Contains("jpeg") ||
+                imageFile.Name.Contains("gif"))
+            {
+
+                var buffer = new byte[imageFile.Size];
+
+
+                string extension = imageFile.Name.Remove(0, 6);
+                guid = Guid.NewGuid().ToString();
+
+                fileName = fileName + guid + "." + extension;
+                fileName2 = fileName;
+                @*await hService.UploadImgToAzureAsync(file.Data, fileName2);*@
+                await hService.UploadImgToAzureAsync(imageFile.OpenReadStream(), fileName2);
+
+
+                imgUrl = savedImgUrl + fileName2;
+                displayImgUrl = imgUrl + "?" + counter++;
+                isDeleted = false;
+                imgUrlChanged.InvokeAsync(imgUrl);
+
+                if (isSubmitted)
+                {
+                    isSubmitted = false;
+                    displayImgUrl = "";
+                    imgUrlChanged.InvokeAsync(imgUrl);
+                }
+
+                savedImgUrl = hService.GetImgStorageUrl() + "img";
+
+                StateHasChanged();
+                return;
+
+            }
+            else
+            {
+                StateHasChanged();
+                return;
+            }
+
+
+        }
+
+
+    }
+
+
+
+    public async Task DeleteFile()
+    {
+        var response = await hService.DeleteImage(fileName2);
+        if (response)
+        {
+            isDeleted = true;
+
+            imgUrl = "";
+            displayImgUrl = "";
+
+            imgUrlChanged.InvokeAsync(imgUrl);
+        }
+
+        StateHasChanged();
+    }
+
+    private Task OnfileNameChanged(ChangeEventArgs e)
+    {
+        fileName = e.Value.ToString();
+
+        return fileNameChanged.InvokeAsync(fileName);
+    }
+
+    private Task OnimgUrlChanged(ChangeEventArgs e)
+    {
+        imgUrl = e.Value.ToString();
+
+        return imgUrlChanged.InvokeAsync(imgUrl);
+    }
+
+    private Task OnisSubmittedChanged(ChangeEventArgs e)
+    {
+        isSubmitted = (bool)e.Value;
+        return isSubmittedChanged.InvokeAsync(isSubmitted);
+    }
+}

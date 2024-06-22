@@ -1249,7 +1249,7 @@ namespace Hippra.Services
         }
 
         [Authorize]
-        public async Task<bool> AddComment(int caseId, string comment, string userId, string? img)
+        public async Task<Result> AddComment(int caseId, string comment, string userId)
         {
             using var _context = DbFactory.CreateDbContext();
             var userInfo = await _userManager.GetUserAsync(WebContext.User);
@@ -1262,7 +1262,6 @@ namespace Hippra.Services
             addComment.CaseID = caseId;
             addComment.Comment = comment;
             addComment.UserId = userInfo.Id;
-            addComment.imgUrl = img;
             if (userInfo.ProfileUrl != null)
             {
                 addComment.ProfileUrl = userInfo.ProfileUrl;
@@ -1275,11 +1274,13 @@ namespace Hippra.Services
             await _context.SaveChangesAsync();
 
 
-            return true;
+            return Result.Success(addComment.ID);
         }
 
+
+
         [Authorize]
-        public async Task<bool> UpdateComment(int commentId, string comment, string? img)
+        public async Task<bool> UpdateComment(long commentId, string comment, string? img)
         {
             using var _context = DbFactory.CreateDbContext();
             var caseComment = await _context.CaseComments.FirstOrDefaultAsync(m => m.ID == commentId);
@@ -1343,14 +1344,14 @@ namespace Hippra.Services
 
             return true;
         }
-        private bool CaseCommentExists(int id)
+        private bool CaseCommentExists(long id)
         {
             using var _context = DbFactory.CreateDbContext();
 
             return _context.CaseComments.AsNoTracking().Any(e => e.ID == id);
         }
 
-        public async Task<bool> DeleteComment(int caseCommentId)
+        public async Task<bool> DeleteComment(long caseCommentId)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -1405,19 +1406,19 @@ namespace Hippra.Services
             return h;
         }
         //Vote
-        public async Task<bool> AddVote(Vote newVote)
+        public async Task<bool> AddVote(CaseCommentVote newVote)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            _context.Votes.Add(newVote);
+            _context.CaseCommentVotes.Add(newVote);
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> CheckVoter(int postId, int voterId, int cID)
+        public async Task<bool> CheckVoter(int postId, string voterId, long cID)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var vote = await _context.Votes.FirstOrDefaultAsync(v => v.PosterID == postId && v.VoterID == voterId && v.CID == cID);
+            var vote = await _context.CaseCommentVotes.FirstOrDefaultAsync(v => v.PosterID == postId && v.UserId == voterId && v.CommentId == cID);
             if (vote != null)
             {
                 return true;
@@ -1430,8 +1431,8 @@ namespace Hippra.Services
             using var _context = DbFactory.CreateDbContext();
 
             Stats stats = new Stats();
-            stats.UpVote = await _context.Votes.AsNoTracking().CountAsync(v => v.PosterID == postId);
-            stats.Votes = await _context.Votes.AsNoTracking().CountAsync(v => v.VoterID == postId);
+            stats.UpVote = await _context.CaseCommentVotes.AsNoTracking().CountAsync(v => v.PosterID == postId);
+            stats.Votes = await _context.CaseCommentVotes.AsNoTracking().CountAsync(v => v.VoterID == postId);
             stats.Answers = await _context.CaseComments.AsNoTracking().CountAsync(c => c.PosterId == postId && c.PosterId != c.Case.PosterID);
             return stats;
         }
@@ -1550,5 +1551,7 @@ namespace Hippra.Services
             string filename = await ImageHelper.UploadImageToStorage(file, name).ConfigureAwait(true);
             return true;
         }
+
+
     }
 }

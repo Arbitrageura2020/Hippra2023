@@ -19,6 +19,7 @@
 @inject IAuthorizationService AuthorizationService
 @inject CommonService commonService;
 @inject INotificationsService notificationsService;
+@inject ICaseService caseService;
 <section class="case-comment">
     <div class="case-comment-form editing-comment">
         <EditForm Model="@newComment" OnValidSubmit="@AddComment" FormName="AddCommentForm">
@@ -26,21 +27,33 @@
             <ValidationSummary />
             <div class="comment-form-box">
                 <input type="text" placeholder="Write a Comment" @bind="@newComment.Comment" required></input>
+                <div class="attached-files">
+                    @if (AssociatedFiles != null)
+                    {
+                        @foreach (var document in AssociatedFiles)
+                        {
+                            <div class="files">
+                                <p>@document.Name</p>
+                            </div>
+                        }
+                    }
+                </div>
                 <div class="comment-btns">
-                    <button class="attach-btn">
+                    <button class="attach-btn" id="uploadFileButton" type="button" @onclick="OpenFilePicker">
                         <img src="/frontend/Dashboard/img/icons/attachment.svg" alt="">
                         Attach files
                     </button>
+                    <InputFile id="uploadFileInput" hidden="" type="file" OnChange="@HandleUploadProf" @ref="_filePicker" multiple />
                     <div class="last-two-btns">
-                        <button type="submit" disabled="@(!isSubmitted)"> @(isSubmitted ? "Comment" : "Sending ...") </button>
-                        <button>Post</button>
+                        <button>Cancel</button>
+                        <button type="submit" disabled="@(!isSubmitted)"> @(isSubmitted ? "Post" : "Sending ...") </button>
                     </div>
                 </div>
 
             </div>
-            <div class="border">
-                <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
-            </div>
+            @*        <div class="border">
+            <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
+            </div> *@
         </EditForm>
     </div>
     <div class="case-comments">
@@ -102,20 +115,21 @@
                             @c.Comment
                         </p>
                         <div class="attached-files">
-                            <div class="files">
-                                <p>Lab Reports.pdf</p>
-                            </div>
-                            <div class="files">
-                                <p>Lab Reports.pdf</p>
-                            </div>
-                            <div class="files">
-                                <p>Lab Reports.pdf</p>
-                            </div>
+                            @*    @foreach (var document in AssociatedFiles)
+                {
+                <div class="files">
+                <p>@document.Name</p>
+                </div>
+                } *@
                         </div>
-                        <button class="upvote-btn" @onclick="(e => { AddVote(c); })">
-                            <img src="/frontend/Dashboard/img/icons/upward-arrow-hollow.svg" alt="">
-                            Upvote
-                        </button>
+                        @c.VoteUp
+                        @if (c.UserId != userId)
+                        {
+                            <button class="upvote-btn" @onclick="(e => { AddVote(c); })">
+                                <img src="/frontend/Dashboard/img/icons/upward-arrow-hollow.svg" alt="">
+                                Upvote
+                            </button>
+                        }
                     </div>
 
 
@@ -187,8 +201,7 @@
                                 }
                                 else
                                 {
-                                    <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="editComment.imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
-                                    @* <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload> *@
+                                   
 
                                 }
 
@@ -215,16 +228,14 @@
     public bool isOpened { get; set; }
     private CaseComment newComment = new CaseComment();
     private CaseComment editComment = new CaseComment();
-    private int EditThis = -1;
-    private string fileName;
-    private string imgUrl;
+    private long EditThis = -1;
+
     private bool isSubmitted = true;
-    private string[] imgUrls;
+
     private Case caseInfo = new Case();
-    private int lastHistoryID = -1;
     private bool dataReady = false;
     private string userId { get; set; }
-
+    public IReadOnlyList<IBrowserFile> AssociatedFiles { get; set; } = default;
     protected override async Task OnInitializedAsync()
     {
 
@@ -253,7 +264,7 @@
         // OpenComment();
     }
 
-    public async Task EditComment(int ID)
+    public async Task EditComment(long ID)
     {
         EditThis = ID;
         editComment = CommentList.Where(x => x.ID == ID).FirstOrDefault();
@@ -263,10 +274,7 @@
     private async Task UpdateComment()
     {
         isSubmitted = false;
-        if (!string.IsNullOrWhiteSpace(imgUrl))
-        {
-            editComment.imgUrl = imgUrl;
-        }
+
 
         await hService.UpdateComment(EditThis, editComment.Comment, editComment.imgUrl);
 
@@ -276,7 +284,7 @@
         EditThis = -1;
         newComment.Comment = "";
 
-        imgUrl = "";
+
         newComment.imgUrl = "";
         newComment.ProfileUrl = "";
         isOpened = true;
@@ -310,14 +318,26 @@
         isSubmitted = false;
         CaseComment addComment = new CaseComment();
 
-        await hService.AddComment(caseId, newComment.Comment, userId, imgUrl);
+        var saveResult=await hService.AddComment(caseId, newComment.Comment, userId);
+
+        if(saveResult.IsSuccess)
+        {
+            if (AssociatedFiles != null)
+            {
+                foreach(var file in AssociatedFiles)
+                {
+                   await caseService.SaveCaseCommentFile(file.OpenReadStream(), saveResult.EntityId, file.Name, file.ContentType, userId);
+                }
+                
+            }
+        }
+
 
 
 
         newComment.Comment = "";
         CommentList = await hService.GetCommentsNoTracking(caseId);
 
-        imgUrl = "";
         isOpened = true;
         await commonService.addToHistoryComment("added a comment on", caseInfo);
 
@@ -336,32 +356,96 @@
         this.StateHasChanged();
     }
 
-    private async Task AddVote(CaseComment c)
+    private InputFile _filePicker;
+    private async Task OpenFilePicker()
+        => await JSRuntime.InvokeVoidAsync("HTMLElement.prototype.click.call",
+            _filePicker.Element);
+
+    private async Task OpenFileClick()
     {
-        // bool isVoted = await hService.CheckVoter(c.PosterId, userId, c.ID);
-        // if (!isVoted)
-        // {
-        //     if (updateType == -3)
+        await JSRuntime.InvokeVoidAsync("HandleCommentUploadButtonClick");
+    }
+
+    public async Task HandleUploadProf(InputFileChangeEventArgs e)
+    {
+        //     if (UserProfile.ProfileUrl != null)
         //     {
-        //         addComment.VoteUp = c.VoteUp + 1;
-        //         await addToHistory("added an up vote on", c);
-        //         //   await addNotification();
+        //         var deleteFile = UserProfile.ProfileUrl.Substring(57, UserProfile.ProfileUrl.Length - 57);
+        //         var response = await hService.DeleteImage(deleteFile);
+        //     }
+        //     UserProfile.ProfileUrl = await HandleFileSelected(e);
+        //     DisplayProfileUrl = UserProfile.ProfileUrl;
+        //     try
+        //     {
+        //         await profileService.UpdateUserProfilePicture(userId, DisplayProfileUrl);
+        //     }
+        //     catch (Exception exc)
+        //     {
+
+        //         this.StateHasChanged();
+        //         // return;
+        //     }
+        //     ;
+
+        var selectedFiles = e.GetMultipleFiles();
+        AssociatedFiles = selectedFiles;
+        StateHasChanged();
+    }
+
+    public async Task<string> HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var maxAllowedFiles = 1;
+        var format = "image/png";
+
+        // foreach (var imageFile in e.GetMultipleFiles(maxAllowedFiles))
+        // {
+        //     if (imageFile == null || imageFile.Size < 100)
+        //     {
+        //         StateHasChanged();
+        //         return "";
+        //     }
+
+        //     if (imageFile.Name.Contains("png") ||
+        //         imageFile.Name.Contains("jpg") ||
+        //         imageFile.Name.Contains("jpeg") ||
+        //         imageFile.Name.Contains("gif"))
+        //     {
+        //         //                string extension = imageFile.Name.Remove(0, 6);
+        //         guid = Guid.NewGuid().ToString();
+        //         //fileName = fileName + guid + "." + extension;
+        //         fileName = fileName + guid + imageFile.Name;
+        //         await hService.UploadImgToAzureAsync(imageFile.OpenReadStream(), fileName);
+
+        //         return savedImgUrl + fileName;
         //     }
         //     else
         //     {
-        //         addComment.VoteDown = c.VoteDown + 1;
-        //         await addToHistory("added a down vote on", c);
-        //         //  await addNotification();
+
+        //         return "";
         //     }
-        //     Vote newVote = new Vote();
-        //     newVote.ID = 0;
-        //     newVote.CID = c.ID;
-        //     newVote.VoteType = updateType;
-        //     newVote.PosterID = c.PosterId;
-        //     newVote.VoterID = userId;
-        //     newVote.VoteDate = DateTime.Now;
-        //     await hService.AddVote(newVote);
-        //     await hService.EditComment(addComment, updateType);
+
         // }
+        return "";
     }
+
+    private async Task AddVote(CaseComment c)
+    {
+        bool isVoted = await hService.CheckVoter(c.PosterId, userId, c.ID);
+        if (!isVoted)
+        {
+            // addComment.VoteUp = c.VoteUp + 1;
+            // await addToHistory("added an up vote on", c);
+            // //   await addNotification();
+
+            CaseCommentVote newVote = new CaseCommentVote();
+            newVote.ID = 0;
+            newVote.CommentId = c.ID;
+            newVote.PosterID = c.PosterId;
+            newVote.UserId = userId;
+            newVote.VoteDate = DateTime.Now;
+            await hService.AddVote(newVote);
+        }
+    }
+
+
 }
