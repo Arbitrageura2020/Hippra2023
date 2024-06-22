@@ -1232,7 +1232,7 @@ namespace Hippra.Services
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var result = await _context.CaseComments.Where(c => c.CaseID == caseId).Include(x => x.User).AsNoTracking().ToListAsync();
+            var result = await _context.CaseComments.Where(c => c.CaseID == caseId).Include(x => x.User).Include(x=>x.Files).AsNoTracking().ToListAsync();
             return result;
         }
         public async Task<CaseComment> GetComment(int caseCommentId)

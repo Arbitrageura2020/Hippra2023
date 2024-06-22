@@ -37,11 +37,13 @@ namespace Hippra.Services
     {
         private IDbContextFactory<ApplicationDbContext> DbFactory;
         private AzureStorage _azureStorage;
+        private AppSettings AppSettings { get; set; }
         public CaseService(
-            IDbContextFactory<ApplicationDbContext> dbFactory, AzureStorage azureStorage)
+            IDbContextFactory<ApplicationDbContext> dbFactory, AzureStorage azureStorage, IOptions<AppSettings> settings)
         {
             DbFactory = dbFactory;
             _azureStorage = azureStorage;
+            AppSettings = settings?.Value;
         }
 
         public async Task<Result> SaveCaseCommentFile(Stream fileStream, long caseCommentId, string fileName, string fileType, string userId)
@@ -49,14 +51,17 @@ namespace Hippra.Services
             try
             {
                 using var _context = DbFactory.CreateDbContext();
-                var uniquefileName = fileName + Guid.NewGuid().ToString();
+                var extension = Path.GetExtension(fileName);
+                var plainFileName=Path.GetFileNameWithoutExtension(fileName);
+                var uniquefileName = plainFileName + Guid.NewGuid().ToString() + extension;
                 await _azureStorage.SetBlobFile(uniquefileName, fileStream).ConfigureAwait(true);
 
+                var fileLink = GetImgStorageUrl() + uniquefileName;
                 var newCaseCommentFile = new CaseCommentFile();
                 newCaseCommentFile.CaseCommentId = caseCommentId;
                 newCaseCommentFile.FileName = fileName;
                 newCaseCommentFile.FileType = fileType;
-                newCaseCommentFile.FileLink = uniquefileName;
+                newCaseCommentFile.FileLink = fileLink;
                 newCaseCommentFile.UploadDate = DateTime.Now;
                 newCaseCommentFile.UploadedByUserId = userId;
                 _context.CaseCommentFiles.Add(newCaseCommentFile);
@@ -68,6 +73,11 @@ namespace Hippra.Services
                 var t = e;
                 return Result.Failure(new List<string>() { "Error saving case comment file" });
             }
+        }
+
+        public string GetImgStorageUrl()
+        {
+            return AppSettings.StorageUrl;
         }
 
     }

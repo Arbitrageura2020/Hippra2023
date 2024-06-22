@@ -115,12 +115,12 @@
                             @c.Comment
                         </p>
                         <div class="attached-files">
-                            @*    @foreach (var document in AssociatedFiles)
+                               @foreach (var document in c.Files)
                 {
                 <div class="files">
-                <p>@document.Name</p>
+                <p><a href="@document.FileLink">@document.FileName</a></p>
                 </div>
-                } *@
+                }
                         </div>
                         @c.VoteUp
                         @if (c.UserId != userId)
@@ -141,13 +141,6 @@
                             </div>
                             <div class="row-md-1" style="color:red">
                                 @c.VoteUp
-                            </div>
-                            <div class="row-md-1" style="color:black">
-                                @c.VoteDown
-                            </div>
-                            <div class="row-md-1 wrap-button-down">
-                                <button class="btn vote-button-down bg-light" @onclick="(e => { AddVote(c); })"><span class="fa fa-caret-square-o-down"></span></button>
-                                <div class="down-content">This answer is not useful.</div>
                             </div>
                         </div>
                         <div class="comment-author">
@@ -201,7 +194,7 @@
                                 }
                                 else
                                 {
-                                   
+
 
                                 }
 
@@ -235,7 +228,9 @@
     private Case caseInfo = new Case();
     private bool dataReady = false;
     private string userId { get; set; }
-    public IReadOnlyList<IBrowserFile> AssociatedFiles { get; set; } = default;
+    private List<IBrowserFile> AssociatedFiles = new();
+    private long maxFileSize = 1024 * 1024 * 100;
+    private int maxAllowedFiles = 3;
     protected override async Task OnInitializedAsync()
     {
 
@@ -318,17 +313,18 @@
         isSubmitted = false;
         CaseComment addComment = new CaseComment();
 
-        var saveResult=await hService.AddComment(caseId, newComment.Comment, userId);
+        var saveResult = await hService.AddComment(caseId, newComment.Comment, userId);
 
-        if(saveResult.IsSuccess)
+        if (saveResult.IsSuccess)
         {
             if (AssociatedFiles != null)
             {
-                foreach(var file in AssociatedFiles)
+                foreach (var file in AssociatedFiles)
                 {
-                   await caseService.SaveCaseCommentFile(file.OpenReadStream(), saveResult.EntityId, file.Name, file.ContentType, userId);
+                    var c = file.OpenReadStream(maxFileSize);
+                    await caseService.SaveCaseCommentFile(c, saveResult.EntityId, file.Name, file.ContentType, userId);
                 }
-                
+
             }
         }
 
@@ -351,6 +347,7 @@
             };
 
         await notificationsService.AddNotification(request);
+        AssociatedFiles.Clear();
         isSubmitted = true;
 
         this.StateHasChanged();
@@ -387,8 +384,20 @@
         //     }
         //     ;
 
-        var selectedFiles = e.GetMultipleFiles();
-        AssociatedFiles = selectedFiles;
+        AssociatedFiles.Clear();
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            try
+            {
+                AssociatedFiles.Add(file);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
         StateHasChanged();
     }
 
