@@ -1280,14 +1280,14 @@ namespace Hippra.Services
 
 
         [Authorize]
-        public async Task<bool> UpdateComment(long commentId, string comment, string? img)
+        public async Task<Result> UpdateComment(long commentId, string comment, string? img)
         {
             using var _context = DbFactory.CreateDbContext();
             var caseComment = await _context.CaseComments.FirstOrDefaultAsync(m => m.ID == commentId);
 
             if (caseComment == null)
             {
-                return false;
+                return Result.Failure(new List<string>() { "The comment is not found." });
             }
 
             caseComment.LastUpdatedDate = DateTime.Now;
@@ -1297,7 +1297,7 @@ namespace Hippra.Services
             await _context.SaveChangesAsync();
 
 
-            return true;
+            return Result.Success(caseComment.ID);
         }
 
         public async Task<bool> EditComment(CaseComment EditedCaseComment, int type)

@@ -59,16 +59,16 @@
     <div class="case-comments">
         @if (dataReady && CommentList != null)
         {
-            @foreach (var c in CommentList)
+            @foreach (var comment in CommentList)
             {
-                if (c.ID != EditThis)
+                if (comment.ID != EditCommentId)
                 {
                     <div class="case-comment-item">
                         <div class="comment-user-info">
                             <div class="comment-author">
-                                @if (c.User != null)
+                                @if (comment.User != null)
                                 {
-                                    <img src="@c.User.ProfileUrl" alt="@c.User.FirstName">
+                                    <img src="@comment.User.ProfileUrl" alt="@comment.User.FirstName">
                                 }
                                 else
                                 {
@@ -78,12 +78,12 @@
                             <div class="comment-info">
                                 <div>
 
-                                    @if (c.User != null)
+                                    @if (comment.User != null)
                                     {
                                         <h6>
-                                            <span>@c.User.FullName</span>
+                                            <span>@comment.User.FullName</span>
                                         </h6>
-                                        <h6 class="light-text">@c.User.MedicalSpecialty</h6>
+                                        <h6 class="light-text">@comment.User.MedicalSpecialty</h6>
                                     }
                                     else
                                     {
@@ -97,78 +97,39 @@
                                 <h6 class="light-text">2 Weeks Ago</h6>
                             </div>
                         </div>
-                        @if (c.UserId == userId)
+                        @if (comment.UserId == userId)
                         {
-                            <button class="comment-edit" @onclick="(e => { EditComment(c.ID); })">
+                            <button class="comment-edit" @onclick="(e => { EditComment(comment.ID); })">
                                 <img src="/frontend/Dashboard/img/icons/edit-icon.svg" alt="">
-                                Edit
+                                Edit @comment.ID
                             </button>
                         }
                         else
                         {
-                            <button class="comment-edit">
+                            <button class="comment-edit" @onclick="(e => { ReportComment(comment.ID); })">
                                 <img src="/frontend/Dashboard/img/icons/report-icon.svg" alt="">
                                 Report
                             </button>
                         }
                         <p>
-                            @c.Comment
+                            @comment.Comment
                         </p>
                         <div class="attached-files">
-                               @foreach (var document in c.Files)
-                {
-                <div class="files">
-                <p><a href="@document.FileLink">@document.FileName</a></p>
-                </div>
-                }
+                            @foreach (var document in comment.Files)
+                            {
+                                <div class="files">
+                                    <p><a href="@document.FileLink">@document.FileName</a></p>
+                                </div>
+                            }
                         </div>
-                        @c.VoteUp
-                        @if (c.UserId != userId)
+                        @comment.VoteUp
+                        @if (comment.UserId != userId)
                         {
-                            <button class="upvote-btn" @onclick="(e => { AddVote(c); })">
+                            <button class="upvote-btn" @onclick="(e => { AddVote(comment); })">
                                 <img src="/frontend/Dashboard/img/icons/upward-arrow-hollow.svg" alt="">
                                 Upvote
                             </button>
                         }
-                    </div>
-
-
-                    <div class="case-comment-item">
-                        <div class="col vote-bar">
-                            <div class="row-md-1 wrap-button-up">
-                                <button class="btn vote-button-up bg-light" @onclick="(e => { AddVote(c); })"><span class="fa fa-caret-square-o-up"></span></button>
-                                <div class="up-content"><p>This answer is useful.</p></div>
-                            </div>
-                            <div class="row-md-1" style="color:red">
-                                @c.VoteUp
-                            </div>
-                        </div>
-                        <div class="comment-author">
-                            @if (c.User != null)
-                            {
-                                <img src="@c.User.ProfileUrl" alt="@c.User.FirstName">
-                            }
-                            else
-                            {
-                                <img src="/img/hippra/blank-profile.png" />
-                            }
-                        </div>
-                        <div class="comment-info">
-                            <h6>@c.LastUpdatedDate</h6>
-                            <p> @c.Comment</p>
-                            @if (!string.IsNullOrWhiteSpace(c.imgUrl))
-                            {
-                                <label class="label-img">
-                                    <input type="checkbox">
-                                    <img id="caseImg" src="@c.imgUrl" width="20%" height="20%" />
-                                </label>
-                            }
-                            @if (dataReady && c.UserId == userId)
-                            {
-                                <button class="comment-button" @onclick="(e => { EditComment(c.ID); })">Edit</button>
-                                <button class="comment-button" @onclick="(e => { DeleteComment(c); })">Delete</button>
-                            }
-                        </div>
                     </div>
                 }
                 else
@@ -178,27 +139,42 @@
                             <DataAnnotationsValidator />
                             <ValidationSummary />
                             <div class="comment-form-box">
-                                <input type="text" placeholder="Write a Comment" @bind="@c.Comment" required></input>
-                                <button type="submit">Update Comment</button>
-                            </div>
-                            <div class="border">
-                                @if (!string.IsNullOrWhiteSpace(c.imgUrl))
-                                {
-                                    <label class="label-img">
-                                        <input type="checkbox">
-                                        <img id="caseImg" src="@c.imgUrl" width="20%" height="20%" />
-                                    </label>
-                                    <div class="btn btn-outline-danger" @onclick="(e => { DeleteFile(c); })">
-                                        delete
+                                <input type="text" placeholder="Write a Comment" @bind="@comment.Comment" required></input>
+                                <div class="attached-files">
+                                    @if (comment.Files != null)
+                                    {
+                                        @foreach (var document in comment.Files)
+                                        {
+                                            <div class="files">
+                                                <p>@document.FileName <button @onclick="(e => { DeleteFile(document.ID); })"> delete file</button>
+
+                                            </p>
+                                            </div>
+                                        }
+                                    }
+                                    @if (AssociatedFiles != null)
+                                    {
+                                        @foreach (var document in AssociatedFiles)
+                                        {
+                                            <div class="files">
+                                                <p>@document.Name</p>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                                <div class="comment-btns">
+                                    <button class="attach-btn" id="uploadFileButton" type="button" @onclick="OpenFilePicker">
+                                        <img src="/frontend/Dashboard/img/icons/attachment.svg" alt="">
+                                        Attach files
+                                    </button>
+                                    <InputFile id="uploadFileInput" hidden="" type="file" OnChange="@HandleUploadProf" @ref="_filePicker" multiple />
+                                    <div class="last-two-btns">
+                                        <button @onclick="(e => { EditCommentId=-1; })">Cancel @comment.ID</button>
+                                        <button type="submit"> Update Comment </button>
                                     </div>
-                                }
-                                else
-                                {
-
-
-                                }
-
+                                </div>
                             </div>
+                        
                         </EditForm>
                     </div>
                 }
@@ -221,7 +197,7 @@
     public bool isOpened { get; set; }
     private CaseComment newComment = new CaseComment();
     private CaseComment editComment = new CaseComment();
-    private long EditThis = -1;
+    private long EditCommentId = -1;
 
     private bool isSubmitted = true;
 
@@ -261,9 +237,17 @@
 
     public async Task EditComment(long ID)
     {
-        EditThis = ID;
+        EditCommentId = ID;
         editComment = CommentList.Where(x => x.ID == ID).FirstOrDefault();
+        AssociatedFiles.Clear();
         this.StateHasChanged();
+    }
+
+    public async Task ReportComment(long ID)
+    {
+        // EditThis = ID;
+        // editComment = CommentList.Where(x => x.ID == ID).FirstOrDefault();
+        // this.StateHasChanged();
     }
 
     private async Task UpdateComment()
@@ -271,14 +255,27 @@
         isSubmitted = false;
 
 
-        await hService.UpdateComment(EditThis, editComment.Comment, editComment.imgUrl);
+       var saveResult= await hService.UpdateComment(EditCommentId, editComment.Comment, editComment.imgUrl);
+
+        if (saveResult.IsSuccess)
+        {
+            if (AssociatedFiles != null)
+            {
+                foreach (var file in AssociatedFiles)
+                {
+                    var c = file.OpenReadStream(maxFileSize);
+                    await caseService.SaveCaseCommentFile(c, saveResult.EntityId, file.Name, file.ContentType, userId);
+                }
+
+            }
+        }
 
         isSubmitted = true;
 
 
-        EditThis = -1;
+        EditCommentId = -1;
         newComment.Comment = "";
-
+        AssociatedFiles.Clear();
 
         newComment.imgUrl = "";
         newComment.ProfileUrl = "";
@@ -303,9 +300,10 @@
 
         this.StateHasChanged();
     }
-    public async Task DeleteFile(CaseComment c)
+
+    public async Task DeleteFile(long commentFileId)
     {
-        c.imgUrl = "";
+       // c.imgUrl = "";
     }
 
     private async Task AddComment()
