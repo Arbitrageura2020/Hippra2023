@@ -28,9 +28,9 @@
             <div class="comment-form-box">
                 <input type="text" placeholder="Write a Comment" @bind="@newComment.Comment" required></input>
                 <div class="attached-files">
-                    @if (AssociatedFiles != null)
+                    @if (NewCaseUploadedFiles != null)
                     {
-                        @foreach (var document in AssociatedFiles)
+                        @foreach (var document in NewCaseUploadedFiles)
                         {
                             <div class="files">
                                 <p>@document.Name</p>
@@ -152,9 +152,9 @@
                                             </div>
                                         }
                                     }
-                                    @if (AssociatedFiles != null)
+                                    @if (NewCaseUploadedFiles != null)
                                     {
-                                        @foreach (var document in AssociatedFiles)
+                                        @foreach (var document in NewCaseUploadedFiles)
                                         {
                                             <div class="files">
                                                 <p>@document.Name</p>
@@ -204,7 +204,8 @@
     private Case caseInfo = new Case();
     private bool dataReady = false;
     private string userId { get; set; }
-    private List<IBrowserFile> AssociatedFiles = new();
+    private List<IBrowserFile> NewCaseUploadedFiles = new();
+    private List<IBrowserFile> EditCaseUploadedFiles = new();
     private long maxFileSize = 1024 * 1024 * 100;
     private int maxAllowedFiles = 3;
     protected override async Task OnInitializedAsync()
@@ -239,7 +240,7 @@
     {
         EditCommentId = ID;
         editComment = CommentList.Where(x => x.ID == ID).FirstOrDefault();
-        AssociatedFiles.Clear();
+        EditCaseUploadedFiles.Clear();
         this.StateHasChanged();
     }
 
@@ -259,9 +260,9 @@
 
         if (saveResult.IsSuccess)
         {
-            if (AssociatedFiles != null)
+            if (EditCaseUploadedFiles != null)
             {
-                foreach (var file in AssociatedFiles)
+                foreach (var file in EditCaseUploadedFiles)
                 {
                     var c = file.OpenReadStream(maxFileSize);
                     await caseService.SaveCaseCommentFile(c, saveResult.EntityId, file.Name, file.ContentType, userId);
@@ -275,7 +276,7 @@
 
         EditCommentId = -1;
         newComment.Comment = "";
-        AssociatedFiles.Clear();
+        EditCaseUploadedFiles.Clear();
 
         newComment.imgUrl = "";
         newComment.ProfileUrl = "";
@@ -315,9 +316,9 @@
 
         if (saveResult.IsSuccess)
         {
-            if (AssociatedFiles != null)
+            if (NewCaseUploadedFiles != null)
             {
-                foreach (var file in AssociatedFiles)
+                foreach (var file in NewCaseUploadedFiles)
                 {
                     var c = file.OpenReadStream(maxFileSize);
                     await caseService.SaveCaseCommentFile(c, saveResult.EntityId, file.Name, file.ContentType, userId);
@@ -345,7 +346,7 @@
             };
 
         await notificationsService.AddNotification(request);
-        AssociatedFiles.Clear();
+        NewCaseUploadedFiles.Clear();
         isSubmitted = true;
 
         this.StateHasChanged();
@@ -363,32 +364,13 @@
 
     public async Task HandleUploadProf(InputFileChangeEventArgs e)
     {
-        //     if (UserProfile.ProfileUrl != null)
-        //     {
-        //         var deleteFile = UserProfile.ProfileUrl.Substring(57, UserProfile.ProfileUrl.Length - 57);
-        //         var response = await hService.DeleteImage(deleteFile);
-        //     }
-        //     UserProfile.ProfileUrl = await HandleFileSelected(e);
-        //     DisplayProfileUrl = UserProfile.ProfileUrl;
-        //     try
-        //     {
-        //         await profileService.UpdateUserProfilePicture(userId, DisplayProfileUrl);
-        //     }
-        //     catch (Exception exc)
-        //     {
-
-        //         this.StateHasChanged();
-        //         // return;
-        //     }
-        //     ;
-
-        AssociatedFiles.Clear();
+        NewCaseUploadedFiles.Clear();
 
         foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
         {
             try
             {
-                AssociatedFiles.Add(file);
+                NewCaseUploadedFiles.Add(file);
             }
             catch (Exception ex)
             {

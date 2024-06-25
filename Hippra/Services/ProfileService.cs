@@ -63,14 +63,14 @@ namespace Hippra.Services
         }
 
 
-        public async Task<Profile> GetProfile(int id)
+        public async Task<ProfileViewModel> GetProfile(int id)
         {
-            Profile rProfile;
+            ProfileViewModel rProfile;
 
             var user = await UserManagerExtensions.FindByPublicIDNoTrackAsync(_userManager, id);
             if (user != null)
             {
-                rProfile = new Profile
+                rProfile = new ProfileViewModel
                 {
                     Userid = user.Id,
                     FirstName = user.FirstName,
@@ -99,25 +99,25 @@ namespace Hippra.Services
             }
             else
             {
-                rProfile = new Profile();
+                rProfile = new ProfileViewModel();
             }
 
             return rProfile;
         }
 
-        public async Task<Profile> GetProfileById(string userId)
+        public async Task<ProfileViewModel> GetProfileById(string userId)
         {
-            Profile rProfile;
+            ProfileViewModel rProfile;
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
-                rProfile = Profile.FromEntity(user);
+                rProfile = ProfileViewModel.FromEntity(user);
 
             }
             else
             {
-                rProfile = new Profile();
+                rProfile = new ProfileViewModel();
             }
 
             return rProfile;
@@ -424,7 +424,7 @@ namespace Hippra.Services
             return await _context.Users.AnyAsync(x => x.Email == email.ToLower());
         }
 
-        public async Task UpdateUserProfile(Profile usr)
+        public async Task UpdateUserProfile(ProfileViewModel usr)
         {
             var user = await _userManager.FindByIdAsync(usr.Userid);
 

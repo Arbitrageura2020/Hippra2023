@@ -85,7 +85,7 @@
             };
 
 
-    private List<ParsedCase> SearchResults { get; set; } = new List<ParsedCase>();
+    private List<CaseViewModel> SearchResults { get; set; } = new List<CaseViewModel>();
     private List<Case> cases { get; set; } = new List<Case>();
 
     private int actionOptions { get; set; } = 0; // 0 = all, 1 = my posts
@@ -93,7 +93,7 @@
     private bool mIsCreate = true;
     private bool viewMode = true;
 
-    private ParsedCase pCase { get; set; } = new ParsedCase();
+    private CaseViewModel pCase { get; set; } = new CaseViewModel();
 
     private string cssAllActive { get; set; } = "active";
     private string cssMyActive { get; set; } = "";
@@ -191,7 +191,7 @@
 
     private async Task GetSearchResults(int targetPage)
     {
-        SearchResults = new List<ParsedCase>();
+        SearchResults = new List<CaseViewModel>();
         cases = new List<Case>();
 
         int tSubCategory = -1;
@@ -243,14 +243,14 @@
         //	});
         //}
 
-        SearchResults = cases.Select(i => new ParsedCase()
+        SearchResults = cases.Select(i => new CaseViewModel()
             {
                 ID = i.ID,
                 Topic = i.Topic,
                 Description = i.Description,
                 DateCreated = i.DateCreated,
                 Priority = EnumsHelper.GetDisplayName(i.ResponseNeeded),
-             //   ParsedCategory = Enums.GetDisplayName(i.MedicalCategory),
+                //   ParsedCategory = Enums.GetDisplayName(i.MedicalCategory),
                 ParsedSubCategory = i.MedicalSubCategory!.Name
             }).ToList();
 
@@ -446,13 +446,13 @@
 
     private async Task PopulateModel(Case tCase)
     {
-        pCase = tCase.ToParsedCase();
+        pCase = CaseViewModel.FromEntity(tCase);
 
         priorityRadio = new PriorityModel();
         priorityRadio.Priority = tCase.ResponseNeeded;
-      //  bCategory = ParseCategoryValueFromSub(tCase.MedicalCategory);
-      //  bSubCategory = tCase.MedicalCategory.ToString();
-      //  await SwitchSubCategory(bCategory);
+        //  bCategory = ParseCategoryValueFromSub(tCase.MedicalCategory);
+        //  bSubCategory = tCase.MedicalCategory.ToString();
+        //  await SwitchSubCategory(bCategory);
         bGender = tCase.Gender.ToString();
         bEthnicity = tCase.Ethnicity.ToString();
         bRace = tCase.Race.ToString();
@@ -462,5 +462,5 @@
 
     #endregion
 
-   
+
 }

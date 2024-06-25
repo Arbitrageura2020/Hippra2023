@@ -71,7 +71,7 @@
                     <img src="@pCase.User.ProfileUrl" alt="">
                     <div class="case-profile-info">
                         <div>
-                            <h4><a href="/PersonalPage/@pCase.User.Id"></a>@pCase.PosterName</h4>
+                            <h4><a href="/PersonalPage/@pCase.User.Id">@pCase.User.FullName</a></h4>
                             <p class="color-green">Follow</p>
                         </div>
 
@@ -216,7 +216,7 @@
     private bool isOwner { get; set; } = false;
     private string returnUrl { get; set; } = "/";
 
-    private ParsedCase pCase { get; set; } = new ParsedCase();
+    private CaseViewModel pCase { get; set; } = new CaseViewModel();
 
     private int activeTab { get; set; } = 1;
     private string debug { get; set; } = "";
@@ -260,7 +260,7 @@
                 // didn't find it, should flag for error
                 return;
             }
-            pCase = tCase.ToParsedCase();
+            pCase = CaseViewModel.FromEntity(tCase);
             pCase.Comments = await hService.GetCommentsNoTracking(caseId);
 
             pCase.imgUrl = tCase.imgUrl;

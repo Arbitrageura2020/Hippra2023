@@ -1,6 +1,15 @@
-﻿.profile-frame {
+﻿.comment-author {
     position: relative;
-    background: rgba(9, 59, 88, 0.05);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-frame {
+    position: relative;
+    background: #f6fbfb;
+    border-radius: 10px;
     padding: 40px 30px 20px 15px;
 }
 
@@ -74,7 +83,9 @@
 
 .profile-frame-logo {
     position: relative;
+    opacity: 0.4;
 }
+
 /* Profile Content */
 
 .profile-content {
@@ -114,7 +125,7 @@
 }
 
     .profile-about p {
-        color: #4c535f;
+        color: #6b6b6b;
         font-size: 14px;
         font-style: normal;
         font-weight: 500;
@@ -127,7 +138,6 @@
 
 .profile-tags {
     position: relative;
-    margin-bottom: 25px;
 }
 
     .profile-tags ul {
@@ -136,31 +146,56 @@
         flex-wrap: wrap;
     }
 
-        .profile-tags ul li {
-            display: flex;
-            padding: 4px 8px;
-            justify-content: center;
-            align-items: center;
-            border-radius: 10px;
-            background-color: #d9d9d9;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #000000;
-            margin-bottom: 16px;
-            text-decoration: none;
-            transition-property: all;
-            transition-timing-function: ease-in-out;
-            transition-duration: 150ms;
+    .profile-tags li {
+        display: flex;
+        padding: 4px 8px;
+        border-radius: 10px;
+        background: #f7f7f7;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #000000;
+        text-decoration: none;
+    }
+
+    .profile-tags:not(:last-child) li {
+        margin-right: 10px;
+    }
+
+    .profile-tags .knowledge-sharing-case {
+        color: #0061c2;
+        background: #f1f8ff;
+    }
+
+    .profile-tags .ask-for-help-case {
+        color: #da5810;
+        background: #fff3ed;
+    }
+
+.tags-and-btns {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+    .tags-and-btns button {
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        background: transparent;
+        color: #6b6b6b;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+        .tags-and-btns button img {
+            margin-right: 8px;
+            height: 24px;
+            width: 24px;
         }
 
-            .profile-tags ul li:hover {
-                background-color: var(--lightGreen);
-                color: #ffffff;
-            }
-
-            .profile-tags ul li:not(:last-child) {
-                margin-right: 20px;
-            }
+        .tags-and-btns button span {
+            display: inline-block;
+        }
 
 .profile-contact {
     position: relative;
@@ -168,6 +203,7 @@
 
 .profile-contact-info {
     position: relative;
+    color: #6b6b6b;
 }
 
 .profile-contact-item {
@@ -202,16 +238,31 @@
     position: relative;
 }
 
-
 .activities-list-item {
     position: relative;
     border-radius: 12px 12px 12px 12px;
     box-shadow: rgb(0 0 0 / 0%) 1px -2px 4px 0px, rgba(0, 0, 0, 0.25) 0px 2px 4px 0px;
 }
 
-    .activities-list-item:not(:last-child) {
-        margin-bottom: 30px;
+.profile-activities-item {
+    margin-left: auto;
+    width: 100%;
+    position: relative;
+    padding: 15px 20px 15px 20px;
+    align-items: center;
+    border-radius: 12px;
+    border: 1px solid #e0e4ec;
+    background: #ffffff;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.15);
+}
+
+    .profile-activities-item:not(:last-child) {
+        margin-bottom: 20px;
     }
+
+.activities-list-item:not(:last-child) {
+    margin-bottom: 30px;
+}
 
 .activities-list-item {
     position: relative;
@@ -306,49 +357,3 @@
         padding: 10px 25px;
     }
 }
-
-
-/*from old styling*/
-.circle-pic, .square-pic {
-    height: 120px;
-    width: 120px;
-    border: 1px solid #c3c3c3;
-    border-radius: 50%;
-    background: none;
-/*    position: absolute;
-    bottom: 35%;*/
-    left: 7%;
-    background: lightgrey;
-}
-
-    .circle-pic:hover .upload-bg {
-        display: block;
-    }
-.upload-bg {
-    display: none;
-    z-index: 2;
-    font-size: 16px;
-    float: right;
-    margin: 10px;
-    height: 30px;
-    width: 30px;
-    border-radius: 50%;
-}
-.upload-bg:focus {
-    outline: 0;
-}
-
-.circle-pic:focus {
-    outline: 0;
-}
-
-.image-upload > input {
-    display: none;
-}
-
-.image-upload span {
-    cursor: pointer;
-}
-
-
-

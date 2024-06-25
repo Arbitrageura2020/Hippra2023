@@ -114,7 +114,7 @@
             };
 
 
-    private List<ParsedCase> SearchResults { get; set; } = new List<ParsedCase>();
+    private List<CaseViewModel> SearchResults { get; set; } = new List<CaseViewModel>();
     private List<Case> cases { get; set; } = new List<Case>();
 
 
@@ -124,7 +124,7 @@
     private bool mIsCreate = true;
     private bool viewMode = true;
 
-    private ParsedCase pCase { get; set; } = new ParsedCase();
+    private CaseViewModel pCase { get; set; } = new CaseViewModel();
 
     private string cssAllActive { get; set; } = "active";
     private string cssMyActive { get; set; } = "";
@@ -200,7 +200,7 @@
 
     private async Task GetSearchResults(int targetPage)
     {
-        SearchResults = new List<ParsedCase>();
+        SearchResults = new List<CaseViewModel>();
         cases = new List<Case>();
 
         int tSubCategory = -1;
@@ -237,7 +237,7 @@
             //Count = await hService.GetMyCaseCount(usr.PublicId);
         }
 
-        SearchResults = cases.Select(i => new ParsedCase()
+        SearchResults = cases.Select(i => new CaseViewModel()
             {
                 ID = i.ID,
                 Topic = i.Topic,

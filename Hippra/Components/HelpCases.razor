@@ -62,7 +62,7 @@
 @code {
     private bool IsLoading = false;
     private string searchString { get; set; } = "";
-    private List<ParsedCase> SearchResults { get; set; } = new List<ParsedCase>();
+    private List<CaseViewModel> SearchResults { get; set; } = new List<CaseViewModel>();
     private List<Case> cases { get; set; } = new List<Case>();
 
     public int CurrentPage { get; set; } = 1;
@@ -91,13 +91,13 @@
 
     private async Task GetSearchResults()
     {
-        SearchResults = new List<ParsedCase>();
+        SearchResults = new List<CaseViewModel>();
 
         var searchResults = await hService.GetAllCases(CaseType.AskForHelp);
 
         Count = searchResults.TotalCount;
 
-        SearchResults = searchResults.Cases.Select(i => new ParsedCase()
+        SearchResults = searchResults.Cases.Select(i => new CaseViewModel()
             {
                 ID = i.ID,
                 Topic = i.Topic,

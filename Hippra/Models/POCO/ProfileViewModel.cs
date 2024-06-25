@@ -11,7 +11,7 @@ using System.Globalization;
 
 namespace Hippra.Models.POCO
 {
-    public class Profile
+    public class ProfileViewModel
     {
         // + personal info 
         public string Userid { get; set; }
@@ -53,8 +53,8 @@ namespace Hippra.Models.POCO
         [Display(Name = "City")]
         public string City { get; set; }
 
-       [Display(Name = "Contact Number")]
-       [Phone]
+        [Display(Name = "Contact Number")]
+        [Phone]
         public string PhoneNumber { get; set; }
 
 
@@ -66,10 +66,15 @@ namespace Hippra.Models.POCO
         public string BackgroundUrl { get; set; }
         public string Bio { get; set; }
 
-        public static Profile FromEntity(AppUser user)
+        public string FullName { get { return this.FirstName + " " + this.LastName; } }
+
+        private int NrOfFollowers { get; set; }
+        private int NrOfFollowing { get; set; }
+        private int NrOfPosts { get; set; }
+        public static ProfileViewModel FromEntity(AppUser user)
         {
 
-            Profile result = new Profile
+            ProfileViewModel result = new ProfileViewModel
             {
                 Userid = user.Id,
                 FirstName = user.FirstName,
@@ -97,7 +102,7 @@ namespace Hippra.Models.POCO
             return result;
         }
 
-        public static IList<Profile> FromEntityList(ICollection<AppUser> items)
+        public static IList<ProfileViewModel> FromEntityList(ICollection<AppUser> items)
         {
             return items.Select(x => FromEntity(x)).ToList();
         }

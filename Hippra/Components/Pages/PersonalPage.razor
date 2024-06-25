@@ -32,42 +32,40 @@
             <!-- PRofile Informations -->
             <div class="profile-frame-user">
                 <div class="profile-frame-img">
-                    <div class="image-upload circle-pic" style="background-image: url('@DisplayProfileUrl');background-size: 100%;">
-                    </div>
+                    <img src="@DisplayProfileUrl" alt="">
                 </div>
                 <div class="profile-frame-info">
-                    <h4>@profile.FirstName</h4>
-                    <h5>
-                        @EnumsHelper.GetDisplayName(profile.MedicalSpecialty) at @profile.ResidencyHospital
-                        @if (@profile.ResidencyHospital != null)
+                    <h4>@profile.FullName</h4>
+                    <h5>@EnumsHelper.GetDisplayName(profile.MedicalSpecialty)</h5>
+                    <p>@profile.ResidencyHospital . @profile.City</p>
+                    <div class="profile-frame-social">
+                        <div class="profile-social-item">
+                            <strong>@NrOfPosts</strong> Posts
+                        </div>
+                        <div class="profile-social-item">
+                            <strong>@NrOfFollowers</strong> Followers
+                        </div>
+                        <div class="profile-social-item">
+                            <strong>@NrOfFollowing</strong> Following
+                        </div>
+                    </div>
+                    @if (!IsMyOwnProfile)
+                    {
+                        @if (isFollowed)
                         {
-                            <span>@EnumsHelper.GetDisplayName(profile.MedicalSpecialty) at @profile.ResidencyHospital</span>
+                            <button class="prof-f-btn" @onclick="@RemoveFromFollowerList">Followed</button>
                         }
                         else
                         {
-                            <span class="usr-loc">@EnumsHelper.GetDisplayName(profile.MedicalSpecialty)</span>
+                            <button class="prof-f-btn" @onclick="@AddToFollowerList">Follow+</button>
                         }
-                    </h5>
-                    <p>@profile.State</p>
-                    <div class="profile-frame-social">
-                        <div class="profile-social-item">
-                            <a href=""><strong>@NrOfFollowers</strong> Followers</a>
-                        </div>
-                        <div class="profile-social-item">
-                            <a href=""><strong>@NrOfFollowing</strong> Following</a>
-                        </div>
-                        @if(!IsMyOwnProfile)
-                        {
-                            @if (isFollowed)
-                            {
-                                <button class="prof-f-btn" @onclick="@RemoveFromFollowerList">Followed</button>
-                            }
-                            else
-                            {
-                                <button class="prof-f-btn" @onclick="@AddToFollowerList">Follow+</button>
-                            }
-                        }
-                    </div>
+                    }
+                    else
+                    {
+                        <button type="" class="btn btn-sm btn-green">
+                            Edit Profile
+                        </button>
+                    }
                 </div>
             </div>
             <div class="profile-frame-logo">
@@ -126,38 +124,59 @@
                     <h4>Past Activities</h4>
                 </div>
                 <div class="profile-activities-list">
-                    @foreach (var c in ListOfCases)
+                    @foreach (var caseItem in ListOfCases)
                     {
-                        <div class="activities-list-item @c.CaseCssClass">
-                            <div class="activity-top">
-                                <div class="activity-date">
-                                    <p>@c.DateLastUpdated.ToShortDateString()</p>
+                        <div class="profile-activities-item">
+                            <div class="comment-user-info">
+                                <div class="comment-author">
+                                    @if (caseItem.User != null)
+                                    {
+                                        <img src="@caseItem.User.ProfileUrl" alt="@caseItem.User.FirstName">
+                                    }
+                                    else
+                                    {
+                                        <img src="/img/hippra/blank-profile.png" />
+                                    }
+                                   
                                 </div>
-                                <div class="activity-caption">
-                                    <a href=@($"/viewcase/{c.ID}")>@c.Topic</a>
+                                <div class="comment-info">
+                                    <h6> @caseItem.User.FullName </h6>
+                                    <h6 class="light-text"> Disease Specialist </h6>
+                                    <h6 class="light-text">2 Weeks Ago @caseItem.DateLastUpdated.ToShortDateString()</h6>
                                 </div>
-                                <div class="activity-content">
-                                    <p>
-                                        @c.Description.Left(200) ...
-                                    </p>
-                                </div>
-
+                                <div class="more-options"> <button> <img src="/frontend/Dashboard/img/icons/three-dots-green.svg" alt=""> </button> </div>
                             </div>
-                            <div class="activity-bot">
-                                <div class="activity-bot-actions">
-                                    <button class="activity-action-btn">
-                                        <img src="./img/icons/message-green.svg" alt="">
-                                    </button>
-                                    <button class="activity-action-btn">
-                                        <img src="./img/icons/bookmark-green.svg" alt="">
-                                    </button>
-                                    <button class="activity-action-btn">
-                                        <img src="./img/icons/three-dots-green.svg" alt="">
-                                    </button>
+                            <div>
+                                <h3>   <a href=@($"/viewcase/{caseItem.ID}")>@caseItem.Topic</a></h3>
+                                <p>     @caseItem.Description.Left(200) ...</p>
+                            </div>
+                            <div class="tags-and-btns">
+                                <div class="profile-tags">
+                                    <ul>
+                                        @if (caseItem.Type == CaseType.ClinicalKnowledge)
+                                        {
+                                            <li class="knowledge-sharing-case">Clinical Knowledge Sharing Case</li>
+                                        }
+                                        else
+                                        {
+                                            <li class="ask-for-help-case">Ask For Help Case</li>
+                                        }
+                                        @if (caseItem.Tags != null)
+                                        {
+                                            @foreach (var tag in @caseItem.Tags)
+                                            {
+                                                <li>@tag.Tag.Name</li>
+                                            }
+                                        }
+                                    </ul>
                                 </div>
-                                <a href=@($"/viewcase/{c.ID}")><img src="./img/icons/arrow-right-green.svg" alt=""></a>
+                                <div>
+                                    <button><img src="/frontend//Dashboard/img/icons/thumbs-up-hollow.svg" alt=""><span>Like</span></button>
+                                    <button><img src="/frontend/Dashboard/img/icons/comment.svg" alt=""><span>Comment</span></button>
+                                </div>
                             </div>
                         </div>
+                      
                     }
 
                 </div>
@@ -172,14 +191,15 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private AuthenticationState authState { get; set; }
-    private List<ParsedCase> ListOfCases { get; set; } = new List<ParsedCase>();
-    private Profile profile { get; set; } = new Profile();
+    private List<CaseViewModel> ListOfCases { get; set; } = new List<CaseViewModel>();
+    private ProfileViewModel profile { get; set; } = new ProfileViewModel();
     private string DisplayProfileUrl = "";
     private bool IsLoading = true;
     private string currentUserId { get; set; }
     private bool isFollowed = false;
     private int NrOfFollowers { get; set; }
     private int NrOfFollowing { get; set; }
+    public int NrOfPosts { get; set; }
     private bool IsMyOwnProfile { get; set; } = false;
     protected override async Task OnInitializedAsync()
     {
@@ -204,7 +224,7 @@
         }
 
         //profile
-        profile = new Profile();
+        profile = new ProfileViewModel();
         profile = await pService.GetProfileById(userId);
         if (profile.ProfileUrl != null)
         {
@@ -227,12 +247,12 @@
 
     private async Task GetCases()
     {
-        ListOfCases = new List<ParsedCase>();
+        ListOfCases = new List<CaseViewModel>();
 
         var searchResults = await hService.GetMyCases(userId);
 
-        ListOfCases = ParsedCase.FromEntityList(searchResults.Cases).ToList();
-
+        ListOfCases = CaseViewModel.FromEntityList(searchResults.Cases).ToList();
+        NrOfPosts = ListOfCases.Count;
         IsLoading = false;
     }
 
