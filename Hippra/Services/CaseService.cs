@@ -30,6 +30,7 @@ using Hippra.Models.ViewModel;
 using Hippra.Components;
 using Hippra.Models.DTO;
 using Microsoft.Identity.Client.Extensions.Msal;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace Hippra.Services
 {
@@ -56,7 +57,7 @@ namespace Hippra.Services
 
 
         //comments
-        public async Task<List<CaseCommentViewModel>> GetCommentsNoTracking(int caseId)
+        public async Task<List<CaseCommentViewModel>> GetCommentsNoTracking(int caseId, string currentUserId)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -71,7 +72,9 @@ namespace Hippra.Services
                   PosterName = x.User.FullName,
                   PosterId = x.User.Id,
                   PosterSpeciality = @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty),
-                  PosterImage = x.User.ProfileUrl
+                  PosterImage = x.User.ProfileUrl,
+                  IsAnonymos = x.IsAnonymus,
+                  IsMyOwnComment = x.UserId == currentUserId
               }).ToListAsync();
 
 
@@ -79,22 +82,34 @@ namespace Hippra.Services
             return result;
         }
 
-        public async Task<bool> CheckVote(string voterId, long commentId)
-        {
-            using var _context = DbFactory.CreateDbContext();
 
-            var vote = await _context.CaseCommentVotes.FirstOrDefaultAsync(v => v.UserId == voterId && v.CommentId == commentId);
-            if (vote != null)
-            {
-                return true;
-            }
-            return false;
-        }
 
         public async Task<int> GetCommentAddedCount(string posterId)
         {
             using var _context = DbFactory.CreateDbContext();
+
             return await _context.CaseComments.AsNoTracking().CountAsync(c => c.UserId == posterId);
+        }
+
+        public async Task<CaseCommentViewModel> GetComment(long commentId, string currentUserId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+            var result = await _context.CaseComments.Where(x => x.ID == commentId).Select(x =>
+             new CaseCommentViewModel()
+             {
+                 CaseID = x.CaseID,
+                 Comment = x.Comment,
+                 ID = x.ID,
+                 PostedDate = x.PostedDate,
+                 Files = x.Files,
+                 PosterName = x.User.FullName,
+                 PosterId = x.User.Id,
+                 PosterSpeciality = @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty),
+                 PosterImage = x.User.ProfileUrl,
+                 IsAnonymos = x.IsAnonymus,
+                 IsMyOwnComment = x.UserId == currentUserId
+             }).FirstOrDefaultAsync();
+            return result;
         }
 
         [Authorize]
@@ -163,10 +178,66 @@ namespace Hippra.Services
             }
         }
 
+        public async Task<Result> DeleteCommentFile(long commentFileId, string userId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var caseCommentFile = await _context.CaseCommentFiles.FindAsync(commentFileId);
+
+            if (caseCommentFile != null && caseCommentFile.UploadedByUserId == userId)
+            {
+                _context.CaseCommentFiles.Remove(caseCommentFile);
+                await _context.SaveChangesAsync();
+                return Result.Success(caseCommentFile.ID);
+            }
+            return Result.Failure(new List<string>() { "Error deleting case comment file" }); ;
+        }
+
+
+        public async Task<bool> DeleteComment(long commentId, string userId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var caseComment = await _context.CaseComments.FindAsync(commentId);
+
+            if (caseComment != null && caseComment.UserId == userId)
+            {
+                _context.CaseComments.Remove(caseComment);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
         public string GetImgStorageUrl()
         {
             return AppSettings.StorageUrl;
         }
 
+        public async Task<bool> CheckVote(string voterId, long commentId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var vote = await _context.CaseCommentVotes.FirstOrDefaultAsync(v => v.UserId == voterId && v.CommentId == commentId);
+            if (vote != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> AddVote(string voterId, long commentId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            _context.CaseCommentVotes.Add(new CaseCommentVote()
+            {
+                CommentId = commentId,
+                UserId=voterId,
+                VoteDate = DateTime.UtcNow
+            });
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

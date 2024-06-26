@@ -12,7 +12,6 @@
 @*@inject SignInManager<AppUser> SignInManager
 	@inject UserManager<AppUser> UserManager*@
 @inject IOptions<AppSettings> settings
-@inject HippraService hService
 @inject IJSRuntime JSRuntime
 @inject ProfileService pService
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
@@ -44,10 +43,10 @@
                         <img src="/frontend/Dashboard/img/icons/attachment.svg" alt="">
                         Attach files
                     </button>
-                    <InputFile id="uploadFileInput" hidden="" type="file" OnChange="@HandleUploadProf" @ref="_filePicker" multiple />
+                    <InputFile id="uploadFileInput" hidden="" type="file" OnChange="@HandleUploadFileNew" @ref="_filePicker" multiple />
                     <div class="last-two-btns">
                         <button>Cancel</button>
-                        <button type="submit" disabled="@(!isSubmitted)"> @(isSubmitted ? "Post" : "Sending ...") </button>
+                        <button type="submit" disabled="@(!isSubmitted)"> @(isSubmitted ? "Post" : "Saving ...") </button>
                     </div>
                 </div>
 
@@ -67,35 +66,20 @@
                     <div class="case-comment-item">
                         <div class="comment-user-info">
                             <div class="comment-author">
-                                @if (comment.User != null)
-                                {
-                                    <img src="@comment.User.ProfileUrl" alt="@comment.User.FirstName">
-                                }
-                                else
-                                {
-                                    <img src="/img/hippra/blank-profile.png" />
-                                }
+
+                                <img src="@comment.PosterImage" alt="@comment.PosterName">
+
                             </div>
                             <div class="comment-info">
                                 <div>
 
-                                    @if (comment.User != null)
-                                    {
-                                        <h6>
-                                            <span>@comment.PosterName</span>
-                                        </h6>
-                                        <h6 class="light-text">@comment.PosterSpeciality</h6>
-                                    }
-                                    else
-                                    {
-                                        <h6>
-                                            <span>Anonymus</span>
-                                        </h6>
-                                    }
-
+                                    <h6>
+                                        <span>@comment.PosterName</span>
+                                    </h6>
+                                    <h6 class="light-text">@comment.PosterSpeciality</h6>
 
                                 </div>
-                                <h6 class="light-text">2 Weeks Ago</h6>
+                                <h6 class="light-text">@comment.TimeDifferenceText</h6>
                             </div>
                         </div>
                         @if (comment.PosterId == userId)
@@ -147,9 +131,10 @@
                                         @foreach (var document in comment.Files)
                                         {
                                             <div class="files">
-                                                <p>@document.FileName <button @onclick="(e => { DeleteFile(document.ID); })"> delete file</button>
+                                                <p>
+                                                    @document.FileName <button @onclick="(e => { DeleteSavedFile(comment, document); })"> delete file</button>
 
-                                            </p>
+                                                </p>
                                             </div>
                                         }
                                     }
@@ -164,18 +149,18 @@
                                     }
                                 </div>
                                 <div class="comment-btns">
-                                    <button class="attach-btn" id="uploadFileButton" type="button" @onclick="OpenFilePicker">
+                                    <button class="attach-btn" id="uploadFileButton" type="button" @onclick="OpenFilePickerEdit">
                                         <img src="/frontend/Dashboard/img/icons/attachment.svg" alt="">
                                         Attach files
                                     </button>
-                                    <InputFile id="uploadFileInput" hidden="" type="file" OnChange="@HandleUploadProf" @ref="_filePicker" multiple />
+                                    <InputFile id="uploadFileInputEdit" hidden="" type="file" OnChange="@HandleUploadFileEdit" @ref="_filePickerEdit" multiple />
                                     <div class="last-two-btns">
                                         <button @onclick="(e => { EditCommentId=-1; })">Cancel @comment.ID</button>
                                         <button type="submit"> Update Comment </button>
                                     </div>
                                 </div>
                             </div>
-                        
+
                         </EditForm>
                     </div>
                 }
@@ -230,7 +215,7 @@
         }
 
         //  caseInfo = await hService.GetCase(caseId);
-        CommentList = await caseService.GetCommentsNoTracking(caseId);
+        CommentList = await caseService.GetCommentsNoTracking(caseId, userId);
 
         this.StateHasChanged();
         dataReady = true;
@@ -240,7 +225,7 @@
     public async Task EditComment(long ID)
     {
         EditCommentId = ID;
-      //  editComment = CommentList.Where(x => x.ID == ID).FirstOrDefault();
+        //  editComment = CommentList.Where(x => x.ID == ID).FirstOrDefault();
         EditCaseUploadedFiles.Clear();
         this.StateHasChanged();
     }
@@ -257,7 +242,7 @@
         isSubmitted = false;
 
 
-        var saveResult= await caseService.UpdateComment(EditCommentId, editComment.Comment);
+        var saveResult = await caseService.UpdateComment(EditCommentId, editComment.Comment);
 
         if (saveResult.IsSuccess)
         {
@@ -274,35 +259,46 @@
 
         isSubmitted = true;
 
-
         EditCommentId = -1;
         newComment.Comment = "";
         EditCaseUploadedFiles.Clear();
-        isOpened = true;
+
         this.StateHasChanged();
     }
 
-    public async Task DeleteComment(CaseComment c)
+    public async Task DeleteComment(CaseCommentViewModel commentObject)
     {
-
         isSubmitted = false;
 
-
-
-        await hService.DeleteComment(c.ID);
+        var result = await caseService.DeleteComment(commentObject.ID, userId);
 
         isSubmitted = true;
 
-       // CommentList = await hService.GetCommentsNoTracking(caseId);
+        if (result)
+        {
+            CommentList.Remove(commentObject);
+            // CommentList = await hService.GetCommentsNoTracking(caseId);
+        }
 
         await commonService.addToHistoryComment("deleted a comment on", caseInfo);
 
         this.StateHasChanged();
     }
 
-    public async Task DeleteFile(long commentFileId)
+    public async Task DeleteSavedFile(CaseCommentViewModel commentObject, CaseCommentFile file)
     {
-        // c.imgUrl = "";
+
+        var result = await caseService.DeleteCommentFile(file.ID, userId);
+
+
+
+        if (result.IsSuccess)
+        {
+            commentObject.Files.Remove(file);
+            // CommentList = await hService.GetCommentsNoTracking(caseId);
+        }
+
+        this.StateHasChanged();
     }
 
     private async Task AddComment()
@@ -323,31 +319,33 @@
                 }
 
             }
-        }
 
-
-
-
-        newComment.Comment = "";
-      //  CommentList = await hService.GetCommentsNoTracking(caseId);
-
-        isOpened = true;
-        await commonService.addToHistoryComment("added a comment on", caseInfo);
-
-
-        //add notification
-        AddNotificationDto request = new AddNotificationDto()
+            var newCaseItem = await caseService.GetComment(saveResult.EntityId, userId);
+            if (newCaseItem != null)
             {
-                SenderUserID = userId,
-                Type = NotificationType.AddedComment,
-                PostID = caseId
-            };
+                CommentList.Add(newCaseItem);
+            }
+            newComment.Comment = "";
+            NewCaseUploadedFiles.Clear();
+            //  CommentList = await hService.GetCommentsNoTracking(caseId);
 
-        await notificationsService.AddNotification(request);
-        NewCaseUploadedFiles.Clear();
-        isSubmitted = true;
+            await commonService.addToHistoryComment("added a comment on", caseInfo);
 
-        this.StateHasChanged();
+
+            //add notification
+            AddNotificationDto request = new AddNotificationDto()
+                {
+                    SenderUserID = userId,
+                    Type = NotificationType.AddedComment,
+                    PostID = caseId
+                };
+
+            await notificationsService.AddNotification(request);
+          
+            isSubmitted = true;
+
+            this.StateHasChanged();
+        }
     }
 
     private InputFile _filePicker;
@@ -355,12 +353,17 @@
         => await JSRuntime.InvokeVoidAsync("HTMLElement.prototype.click.call",
             _filePicker.Element);
 
+    private InputFile _filePickerEdit;
+    private async Task OpenFilePickerEdit()
+        => await JSRuntime.InvokeVoidAsync("HTMLElement.prototype.click.call",
+            _filePickerEdit.Element);
+
     private async Task OpenFileClick()
     {
         await JSRuntime.InvokeVoidAsync("HandleCommentUploadButtonClick");
     }
 
-    public async Task HandleUploadProf(InputFileChangeEventArgs e)
+    public async Task HandleUploadFileNew(InputFileChangeEventArgs e)
     {
         NewCaseUploadedFiles.Clear();
 
@@ -379,57 +382,67 @@
         StateHasChanged();
     }
 
-    public async Task<string> HandleFileSelected(InputFileChangeEventArgs e)
+    public async Task HandleUploadFileEdit(InputFileChangeEventArgs e)
     {
-        var maxAllowedFiles = 1;
-        var format = "image/png";
+        EditCaseUploadedFiles.Clear();
 
-        // foreach (var imageFile in e.GetMultipleFiles(maxAllowedFiles))
-        // {
-        //     if (imageFile == null || imageFile.Size < 100)
-        //     {
-        //         StateHasChanged();
-        //         return "";
-        //     }
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            try
+            {
+                EditCaseUploadedFiles.Add(file);
+            }
+            catch (Exception ex)
+            {
 
-        //     if (imageFile.Name.Contains("png") ||
-        //         imageFile.Name.Contains("jpg") ||
-        //         imageFile.Name.Contains("jpeg") ||
-        //         imageFile.Name.Contains("gif"))
-        //     {
-        //         //                string extension = imageFile.Name.Remove(0, 6);
-        //         guid = Guid.NewGuid().ToString();
-        //         //fileName = fileName + guid + "." + extension;
-        //         fileName = fileName + guid + imageFile.Name;
-        //         await hService.UploadImgToAzureAsync(imageFile.OpenReadStream(), fileName);
+            }
+        }
 
-        //         return savedImgUrl + fileName;
-        //     }
-        //     else
-        //     {
-
-        //         return "";
-        //     }
-
-        // }
-        return "";
+        StateHasChanged();
     }
+
+    // public async Task<string> HandleFileSelected(InputFileChangeEventArgs e)
+    // {
+    //     var maxAllowedFiles = 1;
+    //     var format = "image/png";
+
+    //     // foreach (var imageFile in e.GetMultipleFiles(maxAllowedFiles))
+    //     // {
+    //     //     if (imageFile == null || imageFile.Size < 100)
+    //     //     {
+    //     //         StateHasChanged();
+    //     //         return "";
+    //     //     }
+
+    //     //     if (imageFile.Name.Contains("png") ||
+    //     //         imageFile.Name.Contains("jpg") ||
+    //     //         imageFile.Name.Contains("jpeg") ||
+    //     //         imageFile.Name.Contains("gif"))
+    //     //     {
+    //     //         //                string extension = imageFile.Name.Remove(0, 6);
+    //     //         guid = Guid.NewGuid().ToString();
+    //     //         //fileName = fileName + guid + "." + extension;
+    //     //         fileName = fileName + guid + imageFile.Name;
+    //     //         await hService.UploadImgToAzureAsync(imageFile.OpenReadStream(), fileName);
+
+    //     //         return savedImgUrl + fileName;
+    //     //     }
+    //     //     else
+    //     //     {
+
+    //     //         return "";
+    //     //     }
+
+    //     // }
+    //     return "";
+    // }
 
     private async Task AddVote(long commentId)
     {
         bool isVoted = await caseService.CheckVote(userId, commentId);
         if (!isVoted)
         {
-            // addComment.VoteUp = c.VoteUp + 1;
-            // await addToHistory("added an up vote on", c);
-            // //   await addNotification();
-
-            CaseCommentVote newVote = new CaseCommentVote();
-            newVote.ID = 0;
-            newVote.CommentId = commentId;
-            newVote.UserId = userId;
-            newVote.VoteDate = DateTime.Now;
-            await hService.AddVote(newVote);
+            await caseService.AddVote(userId, commentId);
         }
     }
 

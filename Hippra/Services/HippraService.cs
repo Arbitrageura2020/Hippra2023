@@ -1220,57 +1220,7 @@ namespace Hippra.Services
 
             return result;
         }
-
-        // comments
-        public async Task<List<CaseComment>> GetComments(int caseId)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            return await _context.CaseComments.Where(c => c.CaseID == caseId).ToListAsync();
-        }
-        public async Task<List<CaseComment>> GetCommentsNoTracking(int caseId)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            var result = await _context.CaseComments.Where(c => c.CaseID == caseId).Include(x => x.User).Include(x=>x.Files).AsNoTracking().ToListAsync();
-            return result;
-        }
-        public async Task<CaseComment> GetComment(int caseCommentId)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            return await _context.CaseComments.FirstOrDefaultAsync(c => c.ID == caseCommentId);
-        }
-        public async Task<CaseComment> GetCommentNoTracking(int caseCommentId)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            return await _context.CaseComments.AsNoTracking().FirstOrDefaultAsync(c => c.ID == caseCommentId);
-        }
-
-
-
-        private bool CaseCommentExists(long id)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            return _context.CaseComments.AsNoTracking().Any(e => e.ID == id);
-        }
-
-        public async Task<bool> DeleteComment(long caseCommentId)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            var CaseComment = await _context.CaseComments.FindAsync(caseCommentId);
-
-            if (CaseComment != null)
-            {
-                _context.CaseComments.Remove(CaseComment);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            return false;
-        }
+      
         // history type
         public async Task<int> AddHistory(PostHistory newHistory)
         {
@@ -1311,26 +1261,8 @@ namespace Hippra.Services
             PostHistory h = await _context.PostHistories.FirstOrDefaultAsync(h => h.ID == id);
             return h;
         }
-        //Vote
-        public async Task<bool> AddVote(CaseCommentVote newVote)
-        {
-            using var _context = DbFactory.CreateDbContext();
+     
 
-            _context.CaseCommentVotes.Add(newVote);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        public async Task<bool> CheckVoter(int postId, string voterId, long cID)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            var vote = await _context.CaseCommentVotes.FirstOrDefaultAsync(v => v.PosterID == postId && v.UserId == voterId && v.CommentId == cID);
-            if (vote != null)
-            {
-                return true;
-            }
-            return false;
-        }
         //Stats
         //public async Task<Stats> GetStats(int postId)
         //{
