@@ -1248,102 +1248,8 @@ namespace Hippra.Services
             return await _context.CaseComments.AsNoTracking().FirstOrDefaultAsync(c => c.ID == caseCommentId);
         }
 
-        [Authorize]
-        public async Task<Result> AddComment(int caseId, string comment, string userId)
-        {
-            using var _context = DbFactory.CreateDbContext();
-            var userInfo = await _userManager.GetUserAsync(WebContext.User);
-            var addComment = new CaseComment();
-            addComment.PosterId = userInfo.PublicId;
-            addComment.PosterName = userInfo.FullName;
-            addComment.PostedDate = DateTime.Now;
-            addComment.LastUpdatedDate = DateTime.Now;
-            addComment.posterSpeciality = EnumsHelper.GetDisplayName(userInfo.MedicalSpecialty);
-            addComment.CaseID = caseId;
-            addComment.Comment = comment;
-            addComment.UserId = userInfo.Id;
-            if (userInfo.ProfileUrl != null)
-            {
-                addComment.ProfileUrl = userInfo.ProfileUrl;
-            }
-            else
-            {
-                addComment.ProfileUrl = "/img/hippra/blank-profile.png";
-            }
-            _context.CaseComments.Add(addComment);
-            await _context.SaveChangesAsync();
 
 
-            return Result.Success(addComment.ID);
-        }
-
-
-
-        [Authorize]
-        public async Task<Result> UpdateComment(long commentId, string comment, string? img)
-        {
-            using var _context = DbFactory.CreateDbContext();
-            var caseComment = await _context.CaseComments.FirstOrDefaultAsync(m => m.ID == commentId);
-
-            if (caseComment == null)
-            {
-                return Result.Failure(new List<string>() { "The comment is not found." });
-            }
-
-            caseComment.LastUpdatedDate = DateTime.Now;
-            caseComment.Comment = comment;
-            caseComment.imgUrl = img;
-            _context.CaseComments.Update(caseComment);
-            await _context.SaveChangesAsync();
-
-
-            return Result.Success(caseComment.ID);
-        }
-
-        public async Task<bool> EditComment(CaseComment EditedCaseComment, int type)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            var CaseComment = await _context.CaseComments.FirstOrDefaultAsync(m => m.ID == EditedCaseComment.ID);
-
-            if (CaseComment == null)
-            {
-                return false;
-            }
-            CaseComment.Comment = EditedCaseComment.Comment;
-            CaseComment.imgUrl = EditedCaseComment.imgUrl;
-            CaseComment.ProfileUrl = EditedCaseComment.ProfileUrl;
-            if (type == -2)
-            {
-                CaseComment.LastUpdatedDate = DateTime.Now;
-            }
-            else if (type == -3)
-            {
-                CaseComment.VoteUp = EditedCaseComment.VoteUp;
-            }
-            else
-            {
-                CaseComment.VoteDown = EditedCaseComment.VoteDown;
-            }
-            try
-            {
-                _context.Update(CaseComment);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CaseCommentExists(EditedCaseComment.ID))
-                {
-                    return false;
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return true;
-        }
         private bool CaseCommentExists(long id)
         {
             using var _context = DbFactory.CreateDbContext();
@@ -1426,21 +1332,17 @@ namespace Hippra.Services
             return false;
         }
         //Stats
-        public async Task<Stats> GetStats(int postId)
-        {
-            using var _context = DbFactory.CreateDbContext();
+        //public async Task<Stats> GetStats(int postId)
+        //{
+        //    using var _context = DbFactory.CreateDbContext();
 
-            Stats stats = new Stats();
-            stats.UpVote = await _context.CaseCommentVotes.AsNoTracking().CountAsync(v => v.PosterID == postId);
-            stats.Votes = await _context.CaseCommentVotes.AsNoTracking().CountAsync(v => v.VoterID == postId);
-            stats.Answers = await _context.CaseComments.AsNoTracking().CountAsync(c => c.PosterId == postId && c.PosterId != c.Case.PosterID);
-            return stats;
-        }
-        public async Task<int> GetCommentCount(int posterId)
-        {
-            using var _context = DbFactory.CreateDbContext();
-            return await _context.CaseComments.AsNoTracking().CountAsync(c => c.PosterId == posterId);
-        }
+        //    Stats stats = new Stats();
+        //    stats.UpVote = await _context.CaseCommentVotes.AsNoTracking().CountAsync(v => v.PosterID == postId);
+        //    stats.Votes = await _context.CaseCommentVotes.AsNoTracking().CountAsync(v => v.VoterID == postId);
+        //    stats.Answers = await _context.CaseComments.AsNoTracking().CountAsync(c => c.PosterId == postId && c.PosterId != c.Case.PosterID);
+        //    return stats;
+        //}
+      
         //Connections
         public async Task<bool> AddConnection(Connection conn)
         {

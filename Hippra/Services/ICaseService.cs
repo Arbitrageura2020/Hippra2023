@@ -33,6 +33,14 @@ namespace Hippra.Services
 {
     public interface ICaseService
     {
-       Task<Result> SaveCaseCommentFile(Stream fileStream, long caseCommentId, string fileName, string fileType, string userId);
+        Task<Case> GetCaseNoTracking(int caseId);
+
+        //comments
+        Task<List<CaseCommentViewModel>> GetCommentsNoTracking(int caseId);
+        Task<int> GetCommentAddedCount(string posterId);
+        Task<Result> AddComment(int caseId, string comment, string userId);
+        Task<Result> UpdateComment(long commentId, string comment);
+        Task<bool> CheckVote(string voterId, long commentId);
+        Task<Result> SaveCaseCommentFile(Stream fileStream, long caseCommentId, string fileName, string fileType, string userId);
     }
 }

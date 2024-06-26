@@ -46,13 +46,101 @@ namespace Hippra.Services
             AppSettings = settings?.Value;
         }
 
+        public async Task<Case> GetCaseNoTracking(int caseId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var result = await _context.Cases.Where(x => x.ID == caseId).Include(c => c.MedicalSubCategory).Include(c => c.Tags).Include(x => x.User).FirstOrDefaultAsync();
+            return result;
+        }
+
+
+        //comments
+        public async Task<List<CaseCommentViewModel>> GetCommentsNoTracking(int caseId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var result = await _context.CaseComments.Where(c => c.CaseID == caseId).Select(x =>
+              new CaseCommentViewModel()
+              {
+                  CaseID = x.CaseID,
+                  Comment = x.Comment,
+                  ID = x.ID,
+                  PostedDate = x.PostedDate,
+                  Files = x.Files,
+                  PosterName = x.User.FullName,
+                  PosterId = x.User.Id,
+                  PosterSpeciality = @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty),
+                  PosterImage = x.User.ProfileUrl
+              }).ToListAsync();
+
+
+            //.Include(x => x.User).Include(x => x.Files).AsNoTracking().ToListAsync();
+            return result;
+        }
+
+        public async Task<bool> CheckVote(string voterId, long commentId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var vote = await _context.CaseCommentVotes.FirstOrDefaultAsync(v => v.UserId == voterId && v.CommentId == commentId);
+            if (vote != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<int> GetCommentAddedCount(string posterId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+            return await _context.CaseComments.AsNoTracking().CountAsync(c => c.UserId == posterId);
+        }
+
+        [Authorize]
+        public async Task<Result> AddComment(int caseId, string comment, string userId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+            var addComment = new CaseComment();
+            addComment.PostedDate = DateTime.Now;
+            addComment.LastUpdatedDate = DateTime.Now;
+            addComment.CaseID = caseId;
+            addComment.Comment = comment;
+            addComment.UserId = userId;
+            _context.CaseComments.Add(addComment);
+            await _context.SaveChangesAsync();
+
+
+            return Result.Success(addComment.ID);
+        }
+
+        [Authorize]
+        public async Task<Result> UpdateComment(long commentId, string comment)
+        {
+            using var _context = DbFactory.CreateDbContext();
+            var caseComment = await _context.CaseComments.FirstOrDefaultAsync(m => m.ID == commentId);
+
+            if (caseComment == null)
+            {
+                return Result.Failure(new List<string>() { "The comment is not found." });
+            }
+
+            caseComment.LastUpdatedDate = DateTime.Now;
+            caseComment.Comment = comment;
+            _context.CaseComments.Update(caseComment);
+            await _context.SaveChangesAsync();
+
+
+            return Result.Success(caseComment.ID);
+        }
+
         public async Task<Result> SaveCaseCommentFile(Stream fileStream, long caseCommentId, string fileName, string fileType, string userId)
         {
             try
             {
                 using var _context = DbFactory.CreateDbContext();
                 var extension = Path.GetExtension(fileName);
-                var plainFileName=Path.GetFileNameWithoutExtension(fileName);
+                var plainFileName = Path.GetFileNameWithoutExtension(fileName);
                 var uniquefileName = plainFileName + Guid.NewGuid().ToString() + extension;
                 await _azureStorage.SetBlobFile(uniquefileName, fileStream).ConfigureAwait(true);
 

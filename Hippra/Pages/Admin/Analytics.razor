@@ -110,7 +110,7 @@
                 foreach(var userReport in UserReports)
                 {
                     userReport.NumCase = await hService.GetMyCaseCount(userReport.PublicId);
-                    userReport.NumComments = await hService.GetCommentCount(userReport.PublicId);
+                    // userReport.NumComments = await hService.GetCommentCount(userReport.PublicId);
                 }
             }
  @*           var usr = await UserManager.GetUserAsync(user);

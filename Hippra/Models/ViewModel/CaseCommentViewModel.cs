@@ -13,7 +13,7 @@ namespace Hippra.Models.ViewModel
 		public string PosterId { get; set; }
 		public string PosterName { get; set; }
 		public string PosterSpeciality { get; set; }
-        public string PosterImage = "";
+        public string PosterImage { get; set; } = "/img/hippra/blank-profile.png";
         public string Comment { get; set; }
 		public DateTime PostedDate { get; set; }
 		public int CaseID { get; set; }

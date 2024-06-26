@@ -1,6 +1,7 @@
 ﻿@using Hippra.Models.DTO
 @using Hippra.Models.SQL
 @using Hippra.Models.POCO
+@using Hippra.Models.ViewModel
 @using Hippra.Pages.Common
 @using Hippra.Services
 @using Hippra.Pages.FTDesign.Features
@@ -81,9 +82,9 @@
                                     @if (comment.User != null)
                                     {
                                         <h6>
-                                            <span>@comment.User.FullName</span>
+                                            <span>@comment.PosterName</span>
                                         </h6>
-                                        <h6 class="light-text">@comment.User.MedicalSpecialty</h6>
+                                        <h6 class="light-text">@comment.PosterSpeciality</h6>
                                     }
                                     else
                                     {
@@ -97,7 +98,7 @@
                                 <h6 class="light-text">2 Weeks Ago</h6>
                             </div>
                         </div>
-                        @if (comment.UserId == userId)
+                        @if (comment.PosterId == userId)
                         {
                             <button class="comment-edit" @onclick="(e => { EditComment(comment.ID); })">
                                 <img src="/frontend/Dashboard/img/icons/edit-icon.svg" alt="">
@@ -122,10 +123,10 @@
                                 </div>
                             }
                         </div>
-                        @comment.VoteUp
-                        @if (comment.UserId != userId)
+                        @comment.Votes
+                        @if (comment.PosterId != userId)
                         {
-                            <button class="upvote-btn" @onclick="(e => { AddVote(comment); })">
+                            <button class="upvote-btn" @onclick="(e => { AddVote(comment.ID); })">
                                 <img src="/frontend/Dashboard/img/icons/upward-arrow-hollow.svg" alt="">
                                 Upvote
                             </button>
@@ -192,7 +193,7 @@
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private AuthenticationState authState { get; set; }
 
-    public List<CaseComment> CommentList { get; set; }
+    public List<CaseCommentViewModel> CommentList { get; set; }
     [Parameter]
     public bool isOpened { get; set; }
     private CaseComment newComment = new CaseComment();
@@ -228,8 +229,8 @@
             }
         }
 
-        caseInfo = await hService.GetCase(caseId);
-        CommentList = await hService.GetCommentsNoTracking(caseId);
+        //  caseInfo = await hService.GetCase(caseId);
+        CommentList = await caseService.GetCommentsNoTracking(caseId);
 
         this.StateHasChanged();
         dataReady = true;
@@ -239,7 +240,7 @@
     public async Task EditComment(long ID)
     {
         EditCommentId = ID;
-        editComment = CommentList.Where(x => x.ID == ID).FirstOrDefault();
+      //  editComment = CommentList.Where(x => x.ID == ID).FirstOrDefault();
         EditCaseUploadedFiles.Clear();
         this.StateHasChanged();
     }
@@ -256,7 +257,7 @@
         isSubmitted = false;
 
 
-       var saveResult= await hService.UpdateComment(EditCommentId, editComment.Comment, editComment.imgUrl);
+        var saveResult= await caseService.UpdateComment(EditCommentId, editComment.Comment);
 
         if (saveResult.IsSuccess)
         {
@@ -277,9 +278,6 @@
         EditCommentId = -1;
         newComment.Comment = "";
         EditCaseUploadedFiles.Clear();
-
-        newComment.imgUrl = "";
-        newComment.ProfileUrl = "";
         isOpened = true;
         this.StateHasChanged();
     }
@@ -295,7 +293,7 @@
 
         isSubmitted = true;
 
-        CommentList = await hService.GetCommentsNoTracking(caseId);
+       // CommentList = await hService.GetCommentsNoTracking(caseId);
 
         await commonService.addToHistoryComment("deleted a comment on", caseInfo);
 
@@ -304,7 +302,7 @@
 
     public async Task DeleteFile(long commentFileId)
     {
-       // c.imgUrl = "";
+        // c.imgUrl = "";
     }
 
     private async Task AddComment()
@@ -312,7 +310,7 @@
         isSubmitted = false;
         CaseComment addComment = new CaseComment();
 
-        var saveResult = await hService.AddComment(caseId, newComment.Comment, userId);
+        var saveResult = await caseService.AddComment(caseId, newComment.Comment, userId);
 
         if (saveResult.IsSuccess)
         {
@@ -331,7 +329,7 @@
 
 
         newComment.Comment = "";
-        CommentList = await hService.GetCommentsNoTracking(caseId);
+      //  CommentList = await hService.GetCommentsNoTracking(caseId);
 
         isOpened = true;
         await commonService.addToHistoryComment("added a comment on", caseInfo);
@@ -417,9 +415,9 @@
         return "";
     }
 
-    private async Task AddVote(CaseComment c)
+    private async Task AddVote(long commentId)
     {
-        bool isVoted = await hService.CheckVoter(c.PosterId, userId, c.ID);
+        bool isVoted = await caseService.CheckVote(userId, commentId);
         if (!isVoted)
         {
             // addComment.VoteUp = c.VoteUp + 1;
@@ -428,8 +426,7 @@
 
             CaseCommentVote newVote = new CaseCommentVote();
             newVote.ID = 0;
-            newVote.CommentId = c.ID;
-            newVote.PosterID = c.PosterId;
+            newVote.CommentId = commentId;
             newVote.UserId = userId;
             newVote.VoteDate = DateTime.Now;
             await hService.AddVote(newVote);

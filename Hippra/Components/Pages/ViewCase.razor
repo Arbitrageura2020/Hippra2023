@@ -26,9 +26,8 @@
 @inject IJSRuntime JSRuntime
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @inject ProfileService pService
-@inject HippraService hService
 @inject IAuthorizationService AuthorizationService
-
+@inject ICaseService caseService
 <div class="case-layout">
     <div class="case-top">
         <div class="case-top-action">
@@ -40,24 +39,24 @@
         <section class="case-content no-pad">
             <div class="case-content-heading">
                 <h3>
-                    @pCase.Topic
+                    @CaseItem.Topic
                 </h3>
 
                 <div class="profile-tags">
                     <ul>
-                        @if (pCase.Type == CaseType.ClinicalKnowledge)
+                        @if (CaseItem.Type == CaseType.ClinicalKnowledge)
                         {
                             <li class="knowledge-sharing-case">
                                 Clinical Knowledge Sharing Case
                             </li>
                         }
-                        @if (pCase.Type == CaseType.AskForHelp)
+                        @if (CaseItem.Type == CaseType.AskForHelp)
                         {
                             <li class="ask-for-help-case">Ask For Help Case</li>
                         }
-                        @if (pCase.Tags != null)
+                        @if (CaseItem.Tags != null)
                         {
-                            @foreach (var tag in @pCase.Tags)
+                            @foreach (var tag in CaseItem.Tags)
                             {
                                 <li><a @onclick="(e => { searchCasesContainTag(tag.Name); })">@tag.Name</a></li>
                             }
@@ -69,16 +68,16 @@
             </div>
             <div class="case-content-meta">
                 <div class="case-profile">
-                    <img src="@pCase.User.ProfileUrl" alt="">
+                    <img src="@CaseItem.User.ProfileUrl" alt="">
                     <div class="case-profile-info">
                         <div>
-                            <h4><a href="/PersonalPage/@pCase.User.Id">@pCase.User.FullName</a></h4>
+                            <h4><a href="/PersonalPage/@CaseItem.User.Id">@CaseItem.User.FullName</a></h4>
                             <p class="color-green">Follow</p>
                         </div>
 
                         <div class="case-content-date">
-                            <p>@pCase.PosterSpecialty</p>
-                            <p>Last Updated: @pCase.DateLastUpdated.ToShortDateString()</p>
+                            <p>@CaseItem.PosterSpecialty</p>
+                            <p>Last Updated: @CaseItem.DateLastUpdated.ToShortDateString()</p>
                         </div>
                     </div>
                 </div>
@@ -115,20 +114,20 @@
                             <ul>
                                 <!----------------------------------------------------------------------Edit - Start  -->
                                 <li>
-                                    <span>Age:</span> <span class="light-text"> @pCase.PatientAge </span>
+                                    <span>Age:</span> <span class="light-text"> @CaseItem.PatientAge </span>
                                 </li>
                                 <li>
                                     <span>Gender:</span>
-                                    <span class="light-text"> @pCase.Gender </span>
+                                    <span class="light-text"> @CaseItem.Gender </span>
                                 </li>
                                 <li>
                                     <span>Race:</span>
-                                    <span class="light-text"> @pCase.Race </span>
+                                    <span class="light-text"> @CaseItem.Race </span>
                                 </li>
                                 <li>
                                     <span>Ethnicity:</span>
                                     <span class="light-text">
-                                        @pCase.Ethnicity
+                                        @CaseItem.Ethnicity
                                     </span>
                                 </li>
                                 <!----------------------------------------------------------------------Edit - End  -->
@@ -137,7 +136,7 @@
                         <div class="case-patient-lab">
                             <h6>Lab Values:</h6>
                             <p>
-                                @pCase.LabValues
+                                @CaseItem.LabValues
                             </p>
                         </div>
                     </div>
@@ -150,7 +149,7 @@
                         </div>
                         <div class="case-info-desc">
                             <p>
-                                @((MarkupString)@pCase.Description)
+                                @((MarkupString)CaseItem.Description)
                             </p>
                         </div>
                     </div>
@@ -161,7 +160,7 @@
                         </div>
                         <div class="case-info-desc">
                             <p>
-                                @pCase.CurrentStageOfDisease
+                                @CaseItem.CurrentStageOfDisease
                             </p>
                         </div>
                     </div>
@@ -184,13 +183,13 @@
             <!-- Current Treatment Administered Content -->
             <div class="case-tab-content tab-case-one @(activeTab==1?"active":"")">
                 <p>
-                   @pCase.CurrentTreatmentAdministered
+                   @CaseItem.CurrentTreatmentAdministered
                 </p>
             </div>
             <!--  Treatment Outcomes Content -->
             <div class="case-tab-content tab-case-two @(activeTab==1?"active":"")">
                 <p>
-                    @pCase.TreatmentOutcomes
+                    @CaseItem.TreatmentOutcomes
                 </p>
             </div>
         </section>
@@ -198,7 +197,7 @@
 
     @if (dataReady)
     {
-        <NewComments caseId="@pCase.ID" isOpened="true" />
+        <NewComments caseId="@CaseItem.ID" isOpened="true" />
     }
 </div>
 
@@ -209,7 +208,6 @@
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private AuthenticationState authState { get; set; }
     private ClaimsPrincipal user { get; set; }
-    @*private AppUser userInfo { get; set; } = new AppUser();*@
 
     private bool hasError { get; set; } = false;
     private int status { get; set; } = 0;
@@ -217,13 +215,9 @@
     private bool isOwner { get; set; } = false;
     private string returnUrl { get; set; } = "/";
 
-    private CaseViewModel pCase { get; set; } = new CaseViewModel();
+    private CaseViewModel CaseItem { get; set; } = new CaseViewModel();
 
     private int activeTab { get; set; } = 1;
-    private string debug { get; set; } = "";
-
-    private string[] imgUrls;
-
     private bool dataReady = false;
     private string userId { get; set; } = "";
 
@@ -255,17 +249,18 @@
 
             returnUrl = returnUrl;
 
-            var tCase = await hService.GetCaseNoTracking(caseId);
-            if (tCase == null)
+            var caseObject = await caseService.GetCaseNoTracking(caseId);
+            if (caseObject == null)
             {
                 // didn't find it, should flag for error
+                hasError = true;
                 return;
             }
-            pCase = CaseViewModel.FromEntity(tCase);
-            pCase.Comments = await hService.GetCommentsNoTracking(caseId);
+            CaseItem = CaseViewModel.FromEntity(caseObject);
+            // pCase.Comments = await caseService.GetCommentsNoTracking(caseId);
 
     
-            if (tCase.UserId == userId)
+            if (caseObject.UserId == userId)
             {
                 isOwner = true;
             }

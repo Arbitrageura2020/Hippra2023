@@ -14,6 +14,7 @@ namespace Hippra.Models.ViewModel
         public CaseViewModel()
         {
             Tags = new List<CaseTagViewModel>();
+            Comments = new List<CaseCommentViewModel>();
         }
         public string Priority { get; set; } = "";
         public string ParsedCategory { get; set; } = "";
@@ -70,7 +71,7 @@ namespace Hippra.Models.ViewModel
         public string TreatmentOutcomes { get; set; }
 
         public List<CaseTagViewModel> Tags { get; set; }
-        public List<CaseComment> Comments { get; set; }
+        public List<CaseCommentViewModel> Comments { get; set; }
         public static CaseViewModel FromEntity(Case tCase)
         {
 
