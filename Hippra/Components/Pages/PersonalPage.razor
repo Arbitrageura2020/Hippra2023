@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @using System.ComponentModel.DataAnnotations
 @using Hippra.Models.DTO
+@using Hippra.Models.ViewModel
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -161,13 +162,13 @@
                                         {
                                             <li class="ask-for-help-case">Ask For Help Case</li>
                                         }
-                                        @if (caseItem.Tags != null)
+                                    @*     @if (caseItem.Tags != null)
                                         {
                                             @foreach (var tag in @caseItem.Tags)
                                             {
                                                 <li>@tag.Tag.Name</li>
                                             }
-                                        }
+                                        } *@
                                     </ul>
                                 </div>
                                 <div>

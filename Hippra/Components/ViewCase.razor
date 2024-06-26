@@ -1,4 +1,7 @@
 ﻿@page "/viewcase/{caseId:int}"
+@using Hippra.Models.Enums
+@using Hippra.Models.ViewModel
+@using System.Security.Claims
 @using System.ComponentModel.DataAnnotations
 @using Hippra.Models.DTO
 @using Microsoft.AspNetCore.Authentication
@@ -10,14 +13,12 @@
 @using Hippra.Models.FTDesign
 @using Hippra.Services
 @using Hippra.Models.SQL
-@using Hippra.Models.Enums
 @using Hippra.Extensions
 @using Hippra.Pages.Common
 @using Hippra.Pages.FTDesign.Features
 @using Hippra.Pages.FTDesign
 @using Hippra.Pages.Home
 @using Hippra.Pages.MCase
-@using System.Security.Claims
 @using Microsoft.AspNetCore.Http
 @using static Hippra.Components.Cases
 @using static Hippra.Components.NewComments
@@ -58,7 +59,7 @@
                         {
                             @foreach (var tag in @pCase.Tags)
                             {
-                                <li><a @onclick="(e => { searchCasesContainTag(tag.Tag.Name); })">@tag.Tag.Name</a></li>
+                                <li><a @onclick="(e => { searchCasesContainTag(tag.Name); })">@tag.Name</a></li>
                             }
                         }
                         @*          <li>Diseases &amp; Disorders of the Blood</li>
@@ -263,14 +264,7 @@
             pCase = CaseViewModel.FromEntity(tCase);
             pCase.Comments = await hService.GetCommentsNoTracking(caseId);
 
-            pCase.imgUrl = tCase.imgUrl;
-            //deserialize
-            if (!string.IsNullOrWhiteSpace(@pCase.imgUrl))
-            {
-                imgUrls = @pCase.imgUrl.Split(' ');
-            }
-
-
+    
             if (tCase.UserId == userId)
             {
                 isOwner = true;
