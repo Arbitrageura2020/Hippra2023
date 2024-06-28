@@ -1220,7 +1220,7 @@
 	{
 		await notificationService.NotificationRead(p.NotificationID);
 		p.IsRead = "";
-		NavigationManager.NavigateTo("/PersonalPage/" + p.PosterID);
+		NavigationManager.NavigateTo("/profile/" + p.PosterID);
 	}
 	private async Task ClearNotification(PostHistory h)
 	{

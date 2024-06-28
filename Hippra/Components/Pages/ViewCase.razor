@@ -20,7 +20,7 @@
 @using Hippra.Pages.Home
 @using Microsoft.AspNetCore.Http
 @using static Hippra.Components.Cases
-@using static Hippra.Components.NewComments
+@using static Hippra.Components.CaseComments
 @inject IHttpContextAccessor httpContextAccessor
 @inject IJSRuntime JSRuntime
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
@@ -70,7 +70,7 @@
                     <img src="@CaseItem.User.ProfileUrl" alt="">
                     <div class="case-profile-info">
                         <div>
-                            <h4><a href="/PersonalPage/@CaseItem.User.Id">@CaseItem.User.FullName</a></h4>
+                            <h4><a href="/profile/@CaseItem.User.Id">@CaseItem.User.FullName</a></h4>
                             <p class="color-green">Follow</p>
                         </div>
 
@@ -196,7 +196,7 @@
 
     @if (dataReady)
     {
-        <NewComments caseId="@CaseItem.ID" isOpened="true" />
+        <CaseComments caseId="@CaseItem.ID" isOpened="true" />
     }
 </div>
 
@@ -277,7 +277,7 @@
 
     private async Task viewPage(int id)
     {
-        NavigationManager.NavigateTo("/PersonalPage/" + id);
+        NavigationManager.NavigateTo("/profile/" + id);
     }
 
 

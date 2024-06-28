@@ -33,7 +33,7 @@ namespace Hippra.Models.ViewModel
                 }
                 if (Type == NotificationType.Followed)
                 {
-                    link = "/PersonalPage/" + this.SenderUserID;
+                    link = "/profile/" + this.SenderUserID;
                 }
                 return link;
             }
