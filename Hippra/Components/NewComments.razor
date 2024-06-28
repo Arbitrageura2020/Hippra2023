@@ -107,7 +107,7 @@
                                 </div>
                             }
                         </div>
-                        @comment.Votes
+                        @comment.Votes Upvotes
                         @if (comment.PosterId != userId)
                         {
                             <button class="upvote-btn" @onclick="(e => { AddVote(comment.ID); })">
@@ -138,9 +138,9 @@
                                             </div>
                                         }
                                     }
-                                    @if (NewCaseUploadedFiles != null)
+                                    @if (EditCaseUploadedFiles != null)
                                     {
-                                        @foreach (var document in NewCaseUploadedFiles)
+                                        @foreach (var document in EditCaseUploadedFiles)
                                         {
                                             <div class="files">
                                                 <p>@document.Name</p>
@@ -156,7 +156,7 @@
                                     <InputFile id="uploadFileInputEdit" hidden="" type="file" OnChange="@HandleUploadFileEdit" @ref="_filePickerEdit" multiple />
                                     <div class="last-two-btns">
                                         <button @onclick="(e => { EditCommentId=-1; })">Cancel @comment.ID</button>
-                                        <button type="submit"> Update Comment </button>
+                                        <button type="submit" disabled="@(!isSubmitted)"> @(isUpdated ? "Update Comment" : "Saving ...")  </button>
                                     </div>
                                 </div>
                             </div>
@@ -181,12 +181,12 @@
     public List<CaseCommentViewModel> CommentList { get; set; }
     [Parameter]
     public bool isOpened { get; set; }
-    private CaseComment newComment = new CaseComment();
-    private CaseComment editComment = new CaseComment();
+    private CaseCommentViewModel newComment = new CaseCommentViewModel();
+    private CaseCommentViewModel editComment = new CaseCommentViewModel();
     private long EditCommentId = -1;
 
     private bool isSubmitted = true;
-
+    private bool isUpdated = true;
     private Case caseInfo = new Case();
     private bool dataReady = false;
     private string userId { get; set; }
@@ -224,8 +224,9 @@
 
     public async Task EditComment(long ID)
     {
+        isUpdated = true;
         EditCommentId = ID;
-        //  editComment = CommentList.Where(x => x.ID == ID).FirstOrDefault();
+        editComment = CommentList.Where(x => x.ID == ID).FirstOrDefault();
         EditCaseUploadedFiles.Clear();
         this.StateHasChanged();
     }
@@ -239,7 +240,7 @@
 
     private async Task UpdateComment()
     {
-        isSubmitted = false;
+        isUpdated = false;
 
 
         var saveResult = await caseService.UpdateComment(EditCommentId, editComment.Comment);
@@ -255,14 +256,25 @@
                 }
 
             }
+
+            var editedCaseItem = await caseService.GetComment(saveResult.EntityId, userId);
+            if (editedCaseItem != null)
+            {
+                var oldItem = CommentList.Where(x => x.ID == EditCommentId).FirstOrDefault();
+                if (oldItem != null)
+                {
+                    CommentList.Remove(oldItem);
+                    CommentList.Add(editedCaseItem);
+                }
+            }
+
+            EditCommentId = -1;
+            editComment.Comment = "";
+            EditCaseUploadedFiles.Clear();
+
         }
 
         isSubmitted = true;
-
-        EditCommentId = -1;
-        newComment.Comment = "";
-        EditCaseUploadedFiles.Clear();
-
         this.StateHasChanged();
     }
 
@@ -341,7 +353,7 @@
                 };
 
             await notificationsService.AddNotification(request);
-          
+
             isSubmitted = true;
 
             this.StateHasChanged();
@@ -401,41 +413,6 @@
         StateHasChanged();
     }
 
-    // public async Task<string> HandleFileSelected(InputFileChangeEventArgs e)
-    // {
-    //     var maxAllowedFiles = 1;
-    //     var format = "image/png";
-
-    //     // foreach (var imageFile in e.GetMultipleFiles(maxAllowedFiles))
-    //     // {
-    //     //     if (imageFile == null || imageFile.Size < 100)
-    //     //     {
-    //     //         StateHasChanged();
-    //     //         return "";
-    //     //     }
-
-    //     //     if (imageFile.Name.Contains("png") ||
-    //     //         imageFile.Name.Contains("jpg") ||
-    //     //         imageFile.Name.Contains("jpeg") ||
-    //     //         imageFile.Name.Contains("gif"))
-    //     //     {
-    //     //         //                string extension = imageFile.Name.Remove(0, 6);
-    //     //         guid = Guid.NewGuid().ToString();
-    //     //         //fileName = fileName + guid + "." + extension;
-    //     //         fileName = fileName + guid + imageFile.Name;
-    //     //         await hService.UploadImgToAzureAsync(imageFile.OpenReadStream(), fileName);
-
-    //     //         return savedImgUrl + fileName;
-    //     //     }
-    //     //     else
-    //     //     {
-
-    //     //         return "";
-    //     //     }
-
-    //     // }
-    //     return "";
-    // }
 
     private async Task AddVote(long commentId)
     {
@@ -446,5 +423,12 @@
         }
     }
 
-
+    private async Task RemoveVote(long commentId)
+    {
+        bool isVoted = await caseService.CheckVote(userId, commentId);
+        if (isVoted)
+        {
+            await caseService.AddVote(userId, commentId);
+        }
+    }
 }

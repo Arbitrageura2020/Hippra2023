@@ -24,7 +24,7 @@ namespace Hippra.Models.ViewModel
         {
             get
             {
-                var daysDifference = (DateTime.UtcNow - this.PostedDate).TotalDays;
+                var daysDifference = (DateTime.UtcNow - this.PostedDate).Days;
                 if (daysDifference < 7)
                     return daysDifference + " Days Ago";
                 else

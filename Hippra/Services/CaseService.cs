@@ -233,11 +233,27 @@ namespace Hippra.Services
             _context.CaseCommentVotes.Add(new CaseCommentVote()
             {
                 CommentId = commentId,
-                UserId=voterId,
+                UserId = voterId,
                 VoteDate = DateTime.UtcNow
             });
             await _context.SaveChangesAsync();
             return true;
+        }
+
+
+        public async Task<bool> RemoveVote(string voterId, long commentId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var vote = await _context.CaseCommentVotes.FirstOrDefaultAsync(v => v.UserId == voterId && v.CommentId == commentId);
+            if (vote != null)
+            {
+                _context.CaseCommentVotes.Remove(vote);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
         }
     }
 }
