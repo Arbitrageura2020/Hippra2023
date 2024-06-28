@@ -959,72 +959,7 @@ namespace Hippra.Services
 
         }
 
-        [Authorize]
-        public async Task<bool> AddNewCase(AddEditCaseViewModel inputCase)
-        {
-            var userInfo = await _userManager.GetUserAsync(WebContext.User);
-
-            using var _context = DbFactory.CreateDbContext();
-
-            var newCase = new Case();
-
-            newCase.UserId = userInfo!.Id;
-            newCase.PosterName = userInfo.FirstName;
-            newCase.PosterSpecialty = EnumsHelper.GetDisplayName(userInfo.MedicalSpecialty);
-            newCase.Status = true;
-            newCase.DateLastUpdated = DateTime.Now;
-            newCase.DateCreated = DateTime.Now;
-            newCase.PosterName = inputCase.PosterName;
-            newCase.PosterSpecialty = inputCase.PosterSpecialty;
-            newCase.Type = inputCase.Type;
-            newCase.Topic = inputCase.Topic;
-            newCase.Description = inputCase.Description;
-            newCase.ResponseNeeded = inputCase.ResponseNeeded;
-            newCase.MedicalCategory = inputCase.MedicalCategory;
-            newCase.MedicalSubCategoryId = inputCase.MedicalSubCategoryId;
-            newCase.PatientAge = inputCase.PatientAge;
-
-            newCase.Gender = inputCase.Gender;
-            newCase.Race = inputCase.Race;
-            newCase.Ethnicity = inputCase.Ethnicity;
-            newCase.LabValues = inputCase.LabValues;
-            newCase.CurrentStageOfDisease = inputCase.CurrentStageOfDisease;
-            newCase.imgUrl = inputCase.imgUrl;
-
-            newCase.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
-            newCase.TreatmentOutcomes = inputCase.TreatmentOutcomes;
-            if (inputCase.SelectedTags != null)
-            {
-                newCase.Tags = new List<PostTags>();
-                foreach (var tagId in inputCase.SelectedTags)
-                {
-                    newCase.Tags.Add(new PostTags()
-                    {
-                        TagId = tagId,
-                        CaseID = newCase.ID,
-                    });
-                }
-            }
-
-            try
-            {
-                await _context.AddAsync(newCase);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CaseExists(inputCase.ID))
-                {
-                    return false;
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return true;
-        }
+    
 
 
 

@@ -173,8 +173,8 @@ namespace Hippra.Services
             newHistory.UserID = userInfo.PublicId;
             newHistory.CreationDate = DateTime.Now;
             newHistory.PosterID = userInfo.PublicId;
-            newHistory.UserDisplayName = userInfo.FullName;
-            newHistory.UserDisplayName2 = c.PosterName;
+            //newHistory.UserDisplayName = userInfo.FullName;
+            //newHistory.UserDisplayName2 = c.PosterName;
             newHistory.Title = c.Topic;
             newHistory.Detail = c.Description;
             newHistory.HistoryTypes = historyType;

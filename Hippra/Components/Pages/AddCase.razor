@@ -25,7 +25,8 @@
 @inject IJSRuntime JSRuntime
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @inject ProfileService pService
-@inject HippraService hService
+@* @inject HippraService hService *@
+@inject ICaseService caseService
 @inject CommonService commonService
 @inject IJSRuntime JSRuntime
 @inject IAuthorizationService AuthorizationService
@@ -297,7 +298,7 @@
         else
             CaseModel.Type = CaseType.ClinicalKnowledge;
         CaseModel.SelectedTags = CaseModel.SelectedTagsObjects.Select(x => x.ID).ToArray();
-        var result = await hService.AddNewCase(CaseModel);
+        var result = await caseService.AddNewCase(CaseModel);
         if (result)
             NavigationManager.NavigateTo("/");
         else

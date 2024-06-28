@@ -47,12 +47,133 @@ namespace Hippra.Services
             AppSettings = settings?.Value;
         }
 
-        public async Task<Case> GetCaseNoTracking(int caseId)
+        public async Task<IList<CaseViewModel>> GetMyCases(string userId)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var result = await _context.Cases.Where(x => x.ID == caseId).Include(c => c.MedicalSubCategory).Include(c => c.Tags).Include(x => x.User).FirstOrDefaultAsync();
+            var result = await _context.Cases.Where(x => x.UserId == userId).Select(x => new CaseViewModel()
+            {
+                ID = x.ID,
+                Description = x.Description,
+                Topic = x.Topic,
+                DateLastUpdated = x.DateLastUpdated,
+                PosterName = x.User.FullName,
+                PosterId = x.User.Id,
+                PosterSpeciality = @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty),
+                PosterImg = x.User.ProfileUrl
+             /*   IsAnonymos = x.IsAnonymus*/,
+                //ImOwner = x.UserId == currentUserId
+                Tags = x.Tags.Select(t => new CaseTagViewModel()
+                {
+                    Name = t.Tag.Name,
+                    TagId = t.TagId,
+                }).ToList()
+            }).AsNoTracking().ToListAsync();
             return result;
+        }
+
+        public async Task<CaseViewModel> GetCaseNoTracking(int caseId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var result = await _context.Cases.Where(x => x.ID == caseId).Select(x => new CaseViewModel()
+            {
+                ID = x.ID,
+                Description = x.Description,
+                Topic = x.Topic,
+                DateLastUpdated = x.DateLastUpdated,
+                PosterName = x.User.FullName,
+                PosterId = x.User.Id,
+                PosterSpeciality = @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty),
+                PosterImg = x.User.ProfileUrl,
+                CurrentStageOfDisease = x.CurrentStageOfDisease,
+                CurrentTreatmentAdministered = x.CurrentTreatmentAdministered,
+                DateCreated = x.DateCreated,
+                LabValues = x.LabValues,
+                Ethnicity = x.Ethnicity,
+                Gender = x.Gender,
+                Type = x.Type,
+                MedicalCategory = x.MedicalCategory,
+                MedicalSubCategory = x.MedicalSubCategory,
+                Race = x.Race,
+                PatientAge = x.PatientAge,
+                TreatmentOutcomes = x.TreatmentOutcomes,
+                Status = x.Status,
+                Tags = x.Tags.Select(t => new CaseTagViewModel()
+                {
+                    Name = t.Tag.Name,
+                    TagId = t.TagId,
+                }).ToList()
+            }).FirstOrDefaultAsync();
+            return result;
+        }
+
+        [Authorize]
+        public async Task<bool> AddNewCase(AddEditCaseViewModel inputCase)
+        {
+
+            using var _context = DbFactory.CreateDbContext();
+
+            var newCase = new Case();
+
+            newCase.UserId = inputCase.UserId;
+            newCase.Status = true;
+            newCase.DateLastUpdated = DateTime.Now;
+            newCase.DateCreated = DateTime.Now;
+            newCase.Type = inputCase.Type;
+            newCase.Topic = inputCase.Topic;
+            newCase.Description = inputCase.Description;
+            newCase.ResponseNeeded = inputCase.ResponseNeeded;
+            newCase.MedicalCategory = inputCase.MedicalCategory;
+            newCase.MedicalSubCategoryId = inputCase.MedicalSubCategoryId;
+            newCase.PatientAge = inputCase.PatientAge;
+            newCase.Gender = inputCase.Gender;
+            newCase.Race = inputCase.Race;
+            newCase.Ethnicity = inputCase.Ethnicity;
+            newCase.LabValues = inputCase.LabValues;
+            newCase.CurrentStageOfDisease = inputCase.CurrentStageOfDisease;
+            newCase.imgUrl = inputCase.imgUrl;
+
+            newCase.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
+            newCase.TreatmentOutcomes = inputCase.TreatmentOutcomes;
+            if (inputCase.SelectedTags != null)
+            {
+                newCase.Tags = new List<PostTags>();
+                foreach (var tagId in inputCase.SelectedTags)
+                {
+                    newCase.Tags.Add(new PostTags()
+                    {
+                        TagId = tagId,
+                        CaseID = newCase.ID,
+                    });
+                }
+            }
+
+            try
+            {
+                await _context.AddAsync(newCase);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CaseExists(inputCase.ID))
+                {
+                    return false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return true;
+        }
+
+        private bool CaseExists(int id)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            return _context.Cases.Include(x => x.MedicalSubCategory).AsNoTracking().Any(e => e.ID == id);
         }
 
 
@@ -75,7 +196,7 @@ namespace Hippra.Services
                   PosterImage = x.User.ProfileUrl,
                   IsAnonymos = x.IsAnonymus,
                   IsMyOwnComment = x.UserId == currentUserId
-              }).ToListAsync();
+              }).AsNoTracking().ToListAsync();
 
 
             //.Include(x => x.User).Include(x => x.Files).AsNoTracking().ToListAsync();

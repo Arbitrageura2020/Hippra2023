@@ -13,9 +13,6 @@ namespace Hippra.Models.SQL
 		public int PosterID { get; set; }
 		public string UserId { get; set; }
 		public AppUser User { get; set; }
-		public string PosterName { get; set; }
-		public string PosterSpecialty { get; set; }
-
 
 		// case 
 		public bool Status { get; set; } // true: open, false: closed   => should create enum for this

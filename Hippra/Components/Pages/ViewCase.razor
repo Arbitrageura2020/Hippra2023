@@ -67,15 +67,15 @@
             </div>
             <div class="case-content-meta">
                 <div class="case-profile">
-                    <img src="@CaseItem.User.ProfileUrl" alt="">
+                    <img src="@CaseItem.PosterImg" alt="">
                     <div class="case-profile-info">
                         <div>
-                            <h4><a href="/profile/@CaseItem.User.Id">@CaseItem.User.FullName</a></h4>
+                            <h4><a href="/profile/@CaseItem.PosterId">@CaseItem.PosterName</a></h4>
                             <p class="color-green">Follow</p>
                         </div>
 
                         <div class="case-content-date">
-                            <p>@CaseItem.PosterSpecialty</p>
+                            <p>@CaseItem.PosterSpeciality</p>
                             <p>Last Updated: @CaseItem.DateLastUpdated.ToShortDateString()</p>
                         </div>
                     </div>
@@ -86,10 +86,10 @@
                 <div class="case-content-actions">
                     @if (isOwner)
                     {
-                        <button>
+                        <a href="/editcase/@caseId">
                             <img src="/frontend/Dashboard/img/icons/new-edit.svg" alt="">
                             <span>Edit</span>
-                        </button>
+                        </a>
                     }
                     else
                     {
@@ -248,18 +248,9 @@
 
             returnUrl = returnUrl;
 
-            var caseObject = await caseService.GetCaseNoTracking(caseId);
-            if (caseObject == null)
-            {
-                // didn't find it, should flag for error
-                hasError = true;
-                return;
-            }
-            CaseItem = CaseViewModel.FromEntity(caseObject);
-            // pCase.Comments = await caseService.GetCommentsNoTracking(caseId);
-
-    
-            if (caseObject.UserId == userId)
+            CaseItem = await caseService.GetCaseNoTracking(caseId);
+            
+            if (CaseItem.PosterId == userId)
             {
                 isOwner = true;
             }

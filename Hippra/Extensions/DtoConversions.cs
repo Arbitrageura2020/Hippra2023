@@ -74,13 +74,12 @@ namespace Hippra.Extensions
             viewModel.Description = @case.Description;
             viewModel.Topic = @case.Topic;
             viewModel.PosterID = @case.PosterID;
-            viewModel.PosterName = @case.PosterName;
             viewModel.Race = @case.Race;
             viewModel.Gender = @case.Gender;
             viewModel.Ethnicity = @case.Ethnicity;
             viewModel.ResponseNeeded = @case.ResponseNeeded;
             viewModel.MedicalCategory = @case.MedicalCategory;
-            viewModel.PosterSpecialty = @case.PosterSpecialty;
+            //viewModel.PosterSpecialty = @case.PosterSpecialty;
             viewModel.MedicalSubCategory = @case.MedicalSubCategory;
             viewModel.MedicalSubCategoryId = @case.MedicalSubCategoryId;
             if (@case.Tags != null)

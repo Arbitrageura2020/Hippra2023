@@ -34,12 +34,13 @@ namespace Hippra.Models.ViewModel
 
         public int ID { get; set; }
         // poster 
-        public int PosterID { get; set; }
-        public string UserId { get; set; }
+        public string PosterId { get; set; }
         public AppUser User { get; set; }
         public string PosterName { get; set; }
-        public string PosterSpecialty { get; set; }
-        public string PosterImg { get; set; }
+        public string PosterSpeciality { get; set; }
+        public string PosterImg { get; set; } = "/img/hippra/blank-profile.png";
+        public bool IsAnonymos { get; set; }
+        public bool ImOwner { get; set; }
 
         // case 
         public bool Status { get; set; } // true: open, false: closed   => should create enum for this
@@ -48,6 +49,18 @@ namespace Hippra.Models.ViewModel
         public DateTime DateClosed { get; set; }
         public CaseType Type { get; set; }
         public int Votes { get; set; }
+
+        public string TimeDifferenceText
+        {
+            get
+            {
+                var daysDifference = (DateTime.UtcNow - this.DateLastUpdated).Days;
+                if (daysDifference < 7)
+                    return daysDifference + " Days Ago";
+                else
+                    return daysDifference / 7 + " Weeks Ago";
+            }
+        }
 
         // info
 
@@ -83,14 +96,12 @@ namespace Hippra.Models.ViewModel
             pCase.DateLastUpdated = tCase.DateLastUpdated;
             pCase.Description = tCase.Description;
             pCase.Topic = tCase.Topic;
-            pCase.PosterID = tCase.PosterID;
-            pCase.PosterName = tCase.PosterName;
             pCase.Race = tCase.Race;
             pCase.Gender = tCase.Gender;
             pCase.Ethnicity = tCase.Ethnicity;
             pCase.ResponseNeeded = tCase.ResponseNeeded;
             pCase.MedicalCategory = tCase.MedicalCategory;
-            pCase.PosterSpecialty = tCase.PosterSpecialty;
+         
             pCase.MedicalSubCategory = tCase.MedicalSubCategory;
             if (tCase.Tags != null)
             {
@@ -100,9 +111,13 @@ namespace Hippra.Models.ViewModel
             //{
             //    pCase.Comments = tCase.Comments;
             //}
+            pCase.PosterId = tCase.UserId;
+  
             if (tCase.User != null)
             {
                 pCase.User = tCase.User;
+                pCase.PosterName = tCase.User.FullName;
+                pCase.PosterSpeciality = EnumsHelper.GetDisplayName(tCase.User.MedicalSpecialty);
             }
 
             pCase.PatientAge = tCase.PatientAge;

@@ -18,7 +18,8 @@
 @inject IHttpContextAccessor httpContextAccessor
 @inject IJSRuntime JSRuntime
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
-@inject HippraService hService
+@* @inject HippraService hService *@
+@inject ICaseService caseService;
 @inject ProfileService pService;
 @inject CommonService commonService;
 @using Microsoft.AspNetCore.Mvc.Rendering;
@@ -80,7 +81,7 @@
             <!-- Profile About -->
             <div class="profile-about">
                 <div class="content-heading">
-                    <h4>About @profile.FirstName</h4>
+                    <h4>About @profile.FullName</h4>
                 </div>
                 <p>@profile.Bio</p>
                 <hr>
@@ -130,20 +131,15 @@
                         <div class="profile-activities-item">
                             <div class="comment-user-info">
                                 <div class="comment-author">
-                                    @if (caseItem.User != null)
-                                    {
-                                        <img src="@caseItem.User.ProfileUrl" alt="@caseItem.User.FirstName">
-                                    }
-                                    else
-                                    {
-                                        <img src="/img/hippra/blank-profile.png" />
-                                    }
+                                    
+                                        <img src="@caseItem.PosterImg" alt="@caseItem.PosterName">
+                                 
                                    
                                 </div>
                                 <div class="comment-info">
-                                    <h6> @caseItem.User.FullName </h6>
-                                    <h6 class="light-text"> Disease Specialist </h6>
-                                    <h6 class="light-text">2 Weeks Ago @caseItem.DateLastUpdated.ToShortDateString()</h6>
+                                    <h6> @caseItem.PosterName </h6>
+                                    <h6 class="light-text"> @caseItem.PosterSpeciality </h6>
+                                    <h6 class="light-text">@caseItem.TimeDifferenceText</h6>
                                 </div>
                                 <div class="more-options"> <button> <img src="/frontend/Dashboard/img/icons/three-dots-green.svg" alt=""> </button> </div>
                             </div>
@@ -162,13 +158,13 @@
                                         {
                                             <li class="ask-for-help-case">Ask For Help Case</li>
                                         }
-                                    @*     @if (caseItem.Tags != null)
+                                        @if (caseItem.Tags != null)
                                         {
                                             @foreach (var tag in @caseItem.Tags)
                                             {
-                                                <li>@tag.Tag.Name</li>
+                                                <li>@tag.Name</li>
                                             }
-                                        } *@
+                                        }
                                     </ul>
                                 </div>
                                 <div>
@@ -192,7 +188,7 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private AuthenticationState authState { get; set; }
-    private List<CaseViewModel> ListOfCases { get; set; } = new List<CaseViewModel>();
+    private IList<CaseViewModel> ListOfCases { get; set; } = new List<CaseViewModel>();
     private ProfileViewModel profile { get; set; } = new ProfileViewModel();
     private string DisplayProfileUrl = "";
     private bool IsLoading = true;
@@ -248,11 +244,7 @@
 
     private async Task GetCases()
     {
-        ListOfCases = new List<CaseViewModel>();
-
-        var searchResults = await hService.GetMyCases(userId);
-
-        ListOfCases = CaseViewModel.FromEntityList(searchResults.Cases).ToList();
+        ListOfCases = await caseService.GetMyCases(userId);
         NrOfPosts = ListOfCases.Count;
         IsLoading = false;
     }
