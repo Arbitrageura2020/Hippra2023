@@ -93,10 +93,20 @@
                     }
                     else
                     {
-                        <button>
-                            <img src="/frontend//Dashboard/img/icons/thumbs-up-hollow.svg" alt="">
-                            <span>Like</span>
-                        </button>
+                        @if (CaseItem.LikedByCurrentUser)
+                        {
+                            <button>
+                                <img src="/frontend//Dashboard/img/icons/thumbs-up-hollow.svg" alt="">
+                                <span>Liked</span>
+                            </button>
+                        }
+                        else
+                        {
+                            <button>
+                                <img src="/frontend//Dashboard/img/icons/thumbs-up-hollow.svg" alt="">
+                                <span>Like</span>
+                            </button>
+                        }
                         <button>
                             <img src="/frontend/Dashboard/img/icons/comment.svg" alt="">
                             <span>Respond</span>
@@ -182,7 +192,7 @@
             <!-- Current Treatment Administered Content -->
             <div class="case-tab-content tab-case-one @(activeTab==1?"active":"")">
                 <p>
-                   @CaseItem.CurrentTreatmentAdministered
+                    @CaseItem.CurrentTreatmentAdministered
                 </p>
             </div>
             <!--  Treatment Outcomes Content -->
@@ -248,8 +258,8 @@
 
             returnUrl = returnUrl;
 
-            CaseItem = await caseService.GetCaseNoTracking(caseId);
-            
+            CaseItem = await caseService.GetCaseNoTracking(caseId, userId);
+
             if (CaseItem.PosterId == userId)
             {
                 isOwner = true;
@@ -281,5 +291,25 @@
     {
         activeTab = tab;
         StateHasChanged();
+    }
+
+    private async Task Like()
+    {
+        if (!CaseItem.LikedByCurrentUser)
+        {
+            var result = await caseService.AddLike(userId, caseId);
+            if (result)
+                CaseItem.LikedByCurrentUser = true;
+        }
+    }
+
+    private async Task UnLike()
+    {
+        if (CaseItem.LikedByCurrentUser)
+        {
+            var result = await caseService.RemoveLike(userId, caseId);
+            if (result)
+                CaseItem.LikedByCurrentUser = false;
+        }
     }
 }

@@ -34,8 +34,11 @@ namespace Hippra.Services
     public interface ICaseService
     {
         Task<IList<CaseViewModel>> GetMyCases(string userId);
-        Task<CaseViewModel> GetCaseNoTracking(int caseId);
+        Task<CaseViewModel> GetCaseNoTracking(int caseId, string currentUserId);
         Task<bool> AddNewCase(AddEditCaseViewModel inputCase);
+        Task<bool> CheckLike(string userId, int caseId);
+        Task<bool> AddLike(string userId, int caseId);
+        Task<bool> RemoveLike(string userId, int caseId);
 
         //comments
         Task<List<CaseCommentViewModel>> GetCommentsNoTracking(int caseId, string currentUserId);

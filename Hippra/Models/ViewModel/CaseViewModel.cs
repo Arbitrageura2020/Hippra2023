@@ -48,7 +48,8 @@ namespace Hippra.Models.ViewModel
         public DateTime DateLastUpdated { get; set; }
         public DateTime DateClosed { get; set; }
         public CaseType Type { get; set; }
-        public int Votes { get; set; }
+        public int NrOfLikes { get; set; }
+        public bool LikedByCurrentUser { get; set; }
 
         public string TimeDifferenceText
         {

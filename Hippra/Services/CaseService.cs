@@ -72,7 +72,7 @@ namespace Hippra.Services
             return result;
         }
 
-        public async Task<CaseViewModel> GetCaseNoTracking(int caseId)
+        public async Task<CaseViewModel> GetCaseNoTracking(int caseId, string currentUserId)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -103,7 +103,8 @@ namespace Hippra.Services
                 {
                     Name = t.Tag.Name,
                     TagId = t.TagId,
-                }).ToList()
+                }).ToList(),
+                LikedByCurrentUser = x.Likes.Any(y => y.LikedByUserId == currentUserId),
             }).FirstOrDefaultAsync();
             return result;
         }
@@ -174,6 +175,43 @@ namespace Hippra.Services
             using var _context = DbFactory.CreateDbContext();
 
             return _context.Cases.Include(x => x.MedicalSubCategory).AsNoTracking().Any(e => e.ID == id);
+        }
+
+        public async Task<bool> CheckLike(string userId, int caseId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            return await _context.CaseLikes.AnyAsync(v => v.LikedByUserId == userId && v.CaseId == caseId);
+        }
+
+        public async Task<bool> AddLike(string userId, int caseId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            _context.CaseLikes.Add(new CaseLike()
+            {
+                CaseId = caseId,
+                LikedByUserId = userId,
+                LikeDate = DateTime.UtcNow
+            });
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
+        public async Task<bool> RemoveLike(string userId, int caseId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var like = await _context.CaseLikes.FirstOrDefaultAsync(v => v.LikedByUserId == userId && v.CaseId == caseId);
+            if (like != null)
+            {
+                _context.CaseLikes.Remove(like);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
         }
 
 
