@@ -27,24 +27,30 @@
 <PageTitle>Settings</PageTitle>
 
 <div class="main-layout">
+
     <div class="tabs">
         <div class="tab">
             <input type="radio" id="profile-contact" name="tab-group" checked="">
-            <label for="profile-contact">Profile &amp; Contact</label>
+            <label for="profile-contact">Profile Information</label>
 
             <div class="tab-content">
                 <div class="settings-profile">
-                    <div class="settings-profile-form inside-scroll" style="max-height: 574px; padding-bottom: 20px;">
+                    <div class="settings-profile-form inside-scroll">
                         <EditForm Model="UserProfile" OnValidSubmit="SaveProfile">
                             <!-- Profile Picture -->
                             <div class="settings-title">
                                 <h4>Profile</h4>
                             </div>
                             <div class="settings-profile-top">
-
                                 <div class="settings-profile-picture">
-                                    <label for="uploadProfilePicture">Your Profile Picture</label>
-                                    @*   <input id="uploadProfilePictureInput" type="file" hidden=""> *@
+                                    @*    <input id="uploadProfilePictureInput" type="file" hidden="">
+                                    <div class="settings-profile-preview">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt="">
+                                    </div>
+                                    <button id="uploadProfilePictureBtn" type="button">
+                                    <img src="./img/icons/edit.svg" alt="">
+                                    <span>Edit</span>
+                                    </button> *@
                                     <div class="settings-profile-preview">
                                         <img style="background-image: url('@DisplayProfileUrl');background-size: 100%;" alt="">
 
@@ -54,16 +60,17 @@
                                         <span>Edit</span>
                                     </button>
                                     <InputFile id="uploadProfilePictureInput" hidden="" type="file" OnChange="@HandleUploadProf" @ref="_filePicker" />
-                                    @*   @ref="_filePicker" *@
                                 </div>
                                 <div class="settings-profile-inputs">
                                     <div class="form-group">
                                         <label for="">First Name</label>
                                         <input type="text" class="form-control" placeholder="First Name" @bind="UserProfile.FirstName">
+                                        <p class="validation-error">   <ValidationMessage For="() => UserProfile.FirstName" /></p>
                                     </div>
                                     <div class="form-group">
                                         <label for="">Last Name</label>
                                         <input type="text" class="form-control" placeholder="Last Name" @bind="UserProfile.LastName">
+                                        <p class="validation-error">   <ValidationMessage For="() => UserProfile.LastName" /></p>
                                     </div>
                                 </div>
                             </div>
@@ -71,49 +78,65 @@
                             <div class="settings-details">
                                 <div class="settings-row">
                                     <div class="form-group">
-                                        <label for="">Profession</label>
+                                        <label for="">Medical Specialties</label>
                                         <div class="form-select-wrapper">
-                                            <select class="form-select main" name="">
-                                                <option value="" selected="" disabled="" hidden="">Please select your profession</option>
-                                                <option value="option1">Option 1</option>
-                                                <option value="option2">Option 2</option>
-                                                <option value="option3">Option 3</option>
-                                            </select>
-                                            <img src="./img/icons/chevron-down.svg" alt="">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="">Medical Specialty</label>
-                                        <input type="text" class="form-control" placeholder="First Name" @bind="UserProfile.State">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="">Medical Specialty</label>
-                                        <div class="form-select-wrapper">
-                                            <select class="form-select main" name="" @bind="UserProfile.MedicalSpecialty">
-                                                <option value="0" disabled="" selected="">Please select your medical specialty</option>
+                                            @*   <select class="form-select main" name="">
+                                            <option value="" selected="" disabled="" hidden="">
+                                            Please select medical specialties
+                                            </option>
+                                            <option value="option1">Option 1</option>
+                                            <option value="option2">Option 2</option>
+                                            <option value="option3">Option 3</option>
+                                            </select> *@
+                                            <select class="form-select main" placeholder="Medical Specialty">
+                                                <option value="0" disabled="" selected="">Medical Specialty</option>
                                                 @foreach (MedicalSpecialtyType i in Enum.GetValues(typeof(MedicalSpecialtyType)))
                                                 {
                                                     <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
                                                 }
                                             </select>
+                                            <p class="validation-error">   <ValidationMessage For="() => UserProfile.MedicalSpecialty" /></p>
                                             <img src="./img/icons/chevron-down.svg" alt="">
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="">Timezone</label>
+                                        <label for="">Residency Hospital</label>
                                         <div class="form-select-wrapper">
-                                            <select class="form-select main" name="">
-                                                <option value="" selected="" disabled="" hidden="">Please select your country of residence</option>
-                                                <option value="option1">Option 1</option>
-                                                <option value="option2">Option 2</option>
-                                                <option value="option3">Option 3</option>
-                                            </select>
-                                            <img src="./img/icons/chevron-down.svg" alt="">
+                                            <input type="text" class="form-control" placeholder="" @bind="@UserProfile.ResidencyHospital">
+
                                         </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">ID Type</label>
+                                        <div class="form-select-wrapper">
+                                            <!-- <input
+                                              type="text"
+                                              class="form-control"
+                                              placeholder=""
+                                            /> -->
+                                            <p class="email-id">@EnumsHelper.GetDisplayName(UserProfile.AccountType)</p>
+                                        </div>
+                                    </div>
+                                    @if (UserProfile.AccountType == UserAccountType.Nurse)
+                                    {
+                                        <div class="form-group">
+                                            <label for="">ID.Me</label>
+                                            <div class="form-select-wrapper">
+                                                <input type="text" class="form-control" placeholder="" @bind="@UserProfile.IdMe">
+                                            </div>
+                                            <p class="validation-error">  <ValidationMessage For="() => UserProfile.IdMe" /></p>
+                                        </div>
+                                    }
+                                    <div class="form-group">
+                                        <label for="">National Provider Identifier Number</label>
+                                        <div class="form-select-wrapper">
+                                            <input type="text" class="form-control" placeholder="" @bind="@UserProfile.NPIN">
+                                        </div>
+                                        <p class="validation-error">  <ValidationMessage For="() => UserProfile.NPIN" /></p>
                                     </div>
                                     <div class="form-group settings-single">
                                         <label for="">Bio</label>
-                                        <textarea class="form-control bio-textarea" placeholder="Tell us a bit about yourself" @bind="UserProfile.Bio"></textarea>
+                                        <textarea class="form-control bio-textarea" placeholder="Tell us a bit about yourself" @bind="@UserProfile.Bio"></textarea>
                                     </div>
                                 </div>
                                 <!-- Contact Settings -->
@@ -122,27 +145,41 @@
                                         <h4>Contact</h4>
                                     </div>
                                     <div class="settings-row">
-                                        <div class="form-group phone">
-                                            <label for="">Phone Number</label>
-                                            <input type="number" class="form-control phone" placeholder="Please enter your phone number" @bind="UserProfile.PhoneNumber">
+                                        <div class="form-group">
+                                            <label for="">Country</label>
+                                            <div class="form-select-wrapper">
+                                                <select class="form-select main" name="">
+                                                    <option value="" selected="" disabled="" hidden="">
+                                                        Please select your country of residence
+                                                    </option>
+                                                    <option value="option1">Option 1</option>
+                                                    <option value="option2">Option 2</option>
+                                                    <option value="option3">Option 3</option>
+                                                </select>
+                                                <img src="./img/icons/chevron-down.svg" alt="">
+                                            </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="">Email</label>
-                                            <input type="text" class="form-control" placeholder="Please enter your email" @bind="UserProfile.Email">
+                                            <label for="">State </label>
+                                            <input type="text" class="form-control" placeholder="Please enter your state" @bind="@UserProfile.State">
                                         </div>
                                         <div class="form-group">
-                                            <label for="">State</label>
-                                            <input type="text" class="form-control" placeholder="Please enter your state" @bind="UserProfile.City">
+                                            <label for="">City <span>(Optional)</span> </label>
+                                            <input type="text" class="form-control" placeholder="Please enter your city" @bind="@UserProfile.City">
                                         </div>
                                         <div class="form-group">
-                                            <label for="">City</label>
-                                            <input type="text" class="form-control" placeholder="Please enter your city" @bind="UserProfile.State">
+                                            <label for="">
+                                                Phone Number <span>(Optional)</span>
+                                            </label>
+                                            <input type="tel" id="phone" name="phone" placeholder="000-000-0000" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" class="form-control" @bind="@UserProfile.PhoneNumber">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-submit">
-                                <button type="submit" class="btn btn-lg btn-green">Update</button>
+                                <button type="submit" class="btn btn-lg btn-green">
+                                    Update
+                                </button>
                             </div>
                         </EditForm>
                     </div>
@@ -152,152 +189,112 @@
 
         <div class="tab">
             <input type="radio" id="account-password" name="tab-group">
-            <label for="account-password">Account &amp; Password</label>
+            <label for="account-password">Sign in &amp; Security</label>
 
             <div class="tab-content">
                 <div class="settings-account">
                     <div class="settings-account-form inside-scroll">
-                        <form action="" method="post">
-                            <!-- Account -->
-                            <div class="settings-title">
-                                <h4>Account</h4>
-                            </div>
-                            <div class="settings-form">
-                                <div class="settings-row">
-                                    <div class="form-group">
-                                        <label for="">Email</label>
-                                        <input disabled="" value="cz335@georgetown.edu" placeholder="Email" type="text" class="form-control account-inputs" data-input="email">
-                                        <button type="button" data-button="email" class="setting-edit-action">
-                                            Edit
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="settings-row">
-                                    <div class="form-group">
-                                        <label for="">ID Type</label>
-                                        <input disabled="" value="Nurse Practitioner" type="text" class="form-control account-inputs" data-input="id-type">
-                                        <button type="button" data-button="id-type" class="setting-edit-action">
-                                            Edit
-                                        </button>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="">National Provider Identifier Number</label>
-                                        <input disabled="" value="" type="text" class="form-control account-inputs" data-input="npin">
-                                        <button type="button" data-button="npin" class="setting-edit-action">
-                                            Edit
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Password -->
-                            <div class="settings-title">
-                                <h4>Password</h4>
-                            </div>
-                            <div class="settings-form">
-                                <div class="settings-row">
-                                    <div class="form-group">
-                                        <label for="">Current password</label>
-                                        <input value="" placeholder="**********" type="password" class="form-control">
-                                    </div>
-                                    <div class="settings-password-action">
-                                        <a href="#" class="">Forgot password</a>
-                                    </div>
-                                </div>
-                                <div class="settings-row">
-                                    <div class="form-group">
-                                        <label for="">New password</label>
-                                        <input id="newPassword" value="" placeholder="**********" type="password" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="">Confirm Password</label>
-                                        <input id="confirmPassword" value="" placeholder="**********" type="password" class="form-control">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-submit">
-                                <button type="submit" class="btn btn-lg btn-green">
-                                    Save
-                                </button>
-                            </div>
-                        </form>
+                      
                     </div>
                 </div>
+
+                <ManagePassword/>
             </div>
         </div>
 
         <div class="tab">
             <input type="radio" id="notifications-subscriptions" name="tab-group">
-            <label for="notifications-subscriptions">Notifications &amp; Subscriptions</label>
+            <label for="notifications-subscriptions">Notifications</label>
             <div class="tab-content">
                 <div class="settings-notification">
                     <div class="settings-notification-form inside-scroll">
                         <form action="" method="post">
                             <div class="settings-notifications-list">
                                 <!-- Email Notification -->
-                                <div class="settings-notification-category">
-                                    <div class="settings-notification-main">
-                                        <h4>Email Notifications</h4>
-                                        <label class="form-switch">
-                                            <input id="emailNotification" type="checkbox">
-                                            <span class="form-slider"></span>
-                                        </label>
-                                        <p>Modify all</p>
-                                    </div>
-                                    <div class="settings-notification-item notification">
-                                        <h6>Chats</h6>
-                                        <label class="form-switch">
-                                            <input type="checkbox">
-                                            <span class="form-slider"></span>
-                                        </label>
-                                    </div>
-                                    <div class="settings-notification-item notification">
-                                        <h6>Updates on My Cases</h6>
-                                        <label class="form-switch">
-                                            <input type="checkbox">
-                                            <span class="form-slider"></span>
-                                        </label>
-                                    </div>
-                                    <div class="settings-notification-item notification">
-                                        <h6>Site Policies</h6>
-                                        <label class="form-switch">
-                                            <input type="checkbox">
-                                            <span class="form-slider"></span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <!-- Subscriptions   -->
-                                <div class="settings-notification-category">
-                                    <div class="settings-notification-main">
-                                        <h4>Subscriptions</h4>
-                                        <label class="form-switch">
-                                            <input id="subscriptionsNotification" type="checkbox">
-                                            <span class="form-slider"></span>
-                                        </label>
-                                        <p>Modify all</p>
-                                    </div>
-                                    <div class="settings-notification-item subscriptions">
-                                        <h6>Chats</h6>
-                                        <label class="form-switch">
-                                            <input type="checkbox">
-                                            <span class="form-slider"></span>
-                                        </label>
-                                    </div>
-                                    <div class="settings-notification-item subscriptions">
-                                        <h6>Updates on My Cases</h6>
-                                        <label class="form-switch">
-                                            <input type="checkbox">
-                                            <span class="form-slider"></span>
-                                        </label>
-                                    </div>
-                                    <div class="settings-notification-item subscriptions">
-                                        <h6>Site Policies</h6>
-                                        <label class="form-switch">
-                                            <input type="checkbox">
-                                            <span class="form-slider"></span>
-                                        </label>
-                                    </div>
-                                </div>
+                                <table class="notifications-table">
+                                    <tbody>
+                                        <tr>
+                                            <th>Notifications</th>
+                                            <th>In-App</th>
+                                            <th>Email</th>
+                                        </tr>
+                                        <tr>
+                                            <td>Comments on My Cases</td>
+                                            <td>
+                                                <label class="form-switch">
+                                                    <input type="checkbox">
+                                                    <span class="form-slider"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="form-switch">
+                                                    <input type="checkbox">
+                                                    <span class="form-slider"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Upvotes on my comments</td>
+                                            <td>
+                                                <label class="form-switch">
+                                                    <input type="checkbox">
+                                                    <span class="form-slider"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="form-switch">
+                                                    <input type="checkbox">
+                                                    <span class="form-slider"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>New cases from people I am following</td>
+                                            <td>
+                                                <label class="form-switch">
+                                                    <input type="checkbox">
+                                                    <span class="form-slider"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="form-switch">
+                                                    <input type="checkbox">
+                                                    <span class="form-slider"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Hippra Updates</td>
+                                            <td>
+                                                <label class="form-switch">
+                                                    <input type="checkbox">
+                                                    <span class="form-slider"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="form-switch">
+                                                    <input type="checkbox">
+                                                    <span class="form-slider"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Site Policies</td>
+                                            <td>
+                                                <label class="form-switch">
+                                                    <input type="checkbox">
+                                                    <span class="form-slider"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="form-switch">
+                                                    <input type="checkbox">
+                                                    <span class="form-slider"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                             <div class="setting"></div>
                             <div class="form-submit">
@@ -311,6 +308,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 @code {

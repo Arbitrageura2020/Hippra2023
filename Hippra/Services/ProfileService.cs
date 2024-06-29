@@ -26,6 +26,7 @@ using Hippra.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Policy;
 using Microsoft.AspNetCore.Components;
+using Hippra.Models.Enums;
 
 namespace Hippra.Services
 {
@@ -112,6 +113,7 @@ namespace Hippra.Services
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
+
                 rProfile = ProfileViewModel.FromEntity(user);
 
             }
@@ -249,69 +251,26 @@ namespace Hippra.Services
             return 1;
         }
 
-        public async Task<int> UpdatePassword(AppUser user, string oldPassword, string newPassword)
+        public async Task<Result> UpdatePassword(string userId, string oldPassword, string newPassword)
         {
 
-
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
-            if (!changePasswordResult.Succeeded)
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
             {
-                //foreach (var error in changePasswordResult.Errors)
-                //{
-                //    ModelState.AddModelError(string.Empty, error.Description);
-                //}
-                return -1;
+                var changePasswordResult = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+                if (!changePasswordResult.Succeeded)
+                {
+                    return Result.Failure(changePasswordResult.Errors.Select(x => x.Description).ToList());
+                }
+                return Result.Success(1);
             }
             // NOTE: THIS WILL FAIL AS OF ASPNETCORE 3.1 blazor due to fact that cannot update cookie directly
             //await _signInManager.RefreshSignInAsync(user);
             //await _signInManager.SignOutAsync();
 
             //StatusMessage = "Your password has been changed.";
-            return 1;
-
+            return Result.Failure(new List<string>() { "The user is not found." });
         }
-
-        public async Task<int> UpdatePassword(int userId, string oldPassword, string newPassword)
-        {
-            var user = await UserManagerExtensions.FindByPublicIDNoTrackAsync(_userManager, userId);
-
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
-            if (!changePasswordResult.Succeeded)
-            {
-                //foreach (var error in changePasswordResult.Errors)
-                //{
-                //    ModelState.AddModelError(string.Empty, error.Description);
-                //}
-                return -1;
-            }
-            // NOTE: THIS WILL FAIL AS OF ASPNETCORE 3.1 blazor due to fact that cannot update cookie directly
-            //await _signInManager.RefreshSignInAsync(user);
-            //await _signInManager.SignOutAsync();
-
-            //StatusMessage = "Your password has been changed.";
-            return 1;
-
-        }
-
-        //public async Task<string> DownloadPersonalData(AppUser user)
-        //{
-        //    if (user == null)
-        //    {
-        //        return "";
-        //    }
-
-        //    // Only include personal data for download
-        //    var personalData = new Dictionary<string, string>();
-        //    var personalDataProps = typeof(AppUser).GetProperties().Where(
-        //                    prop => Attribute.IsDefined(prop, typeof(PersonalDataAttribute)));
-        //    foreach (var p in personalDataProps)
-        //    {
-        //        personalData.Add(p.Name, p.GetValue(user)?.ToString() ?? "null");
-        //    }
-
-        //    //Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
-        //    return JsonConvert.SerializeObject(personalData);
-        //}
 
         public async Task<string> DownloadPersonalData(int userId)
         {
@@ -335,32 +294,7 @@ namespace Hippra.Services
             return JsonConvert.SerializeObject(personalData);
         }
 
-        //public async Task<int> DeleteAccount(AppUser user, string password)
-        //{
-
-        //    var RequirePassword = await _userManager.HasPasswordAsync(user);
-        //    if (RequirePassword)
-        //    {
-        //        if (!await _userManager.CheckPasswordAsync(user, password))
-        //        {
-        //            return -1;
-        //        }
-        //    }
-
-        //    var result = await _userManager.DeleteAsync(user);
-        //    var userId = await _userManager.GetUserIdAsync(user);
-        //    if (!result.Succeeded)
-        //    {
-        //        return -1;
-        //    }
-
-        //    return 0;
-
-        //    //await _signInManager.SignOutAsync();
-        //    //return Redirect("~/");
-
-        //}
-        public async Task<int> DeleteAccount(int userId, string password)
+             public async Task<int> DeleteAccount(int userId, string password)
         {
             var user = await UserManagerExtensions.FindByPublicIDNoTrackAsync(_userManager, userId);
 
@@ -424,34 +358,36 @@ namespace Hippra.Services
             return await _context.Users.AnyAsync(x => x.Email == email.ToLower());
         }
 
-        public async Task UpdateUserProfile(ProfileViewModel usr)
+        public async Task UpdateUserProfile(ProfileViewModel inputModel)
         {
-            var user = await _userManager.FindByIdAsync(usr.Userid);
+            var user = await _userManager.FindByIdAsync(inputModel.Userid);
 
             if (user != null)
             {
-                user.FirstName = usr.FirstName;
-                user.LastName = usr.LastName;
-                user.NPIN = user.NPIN;
-                user.MedicalSpecialty = usr.MedicalSpecialty;
-                user.AmericanBoardCertified = usr.AmericanBoardCertified;
-                user.ResidencyHospital = usr.ResidencyHospital;
-                user.MedicalSchoolAttended = usr.MedicalSchoolAttended;
-                user.EducationDegree = usr.EducationDegree;
-                user.Address = usr.Address;
-                user.Zipcode = usr.Zipcode;
-                user.State = usr.State;
-                user.City = usr.City;
-                user.PhoneNumber = usr.PhoneNumber; // check this
-                user.Bio = usr.Bio;
-
+                user.FirstName = inputModel.FirstName;
+                user.LastName = inputModel.LastName;
+                user.NPIN = inputModel.NPIN;
+                user.MedicalSpecialty = inputModel.MedicalSpecialty;
+                user.AmericanBoardCertified = inputModel.AmericanBoardCertified;
+                user.ResidencyHospital = inputModel.ResidencyHospital;
+                user.MedicalSchoolAttended = inputModel.MedicalSchoolAttended;
+                user.EducationDegree = inputModel.EducationDegree;
+                user.Address = inputModel.Address;
+                user.Zipcode = inputModel.Zipcode;
+                user.State = inputModel.State;
+                user.City = inputModel.City;
+                user.Country = inputModel.Country;
+                user.PhoneNumber = inputModel.PhoneNumber; // check this
+                user.Bio = inputModel.Bio;
+                if (user.AccountType == UserAccountType.Nurse)
+                    user.IDMe = inputModel.IdMe;
                 await _userManager.UpdateAsync(user);
                 await _signInManager.RefreshSignInAsync(user);
             }
 
         }
 
-        public async Task UpdateUserProfilePicture(string userId,string profilePicture)
+        public async Task UpdateUserProfilePicture(string userId, string profilePicture)
         {
             var user = await _userManager.FindByIdAsync(userId);
 

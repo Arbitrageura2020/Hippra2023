@@ -21,7 +21,9 @@ namespace Hippra.Models.POCO
 
         [Display(Name = "National Provider Identifier Number")]
         public int NPIN { get; set; }
-
+        [Display(Name = "ID.Me")]
+        public int IdMe { get; set; }
+        public UserAccountType AccountType { get; set; }
 
         public string UserName { get; set; }
         public string Email { get; set; }
@@ -53,6 +55,9 @@ namespace Hippra.Models.POCO
         [Display(Name = "City")]
         public string City { get; set; }
 
+        [Display(Name = "Country")]
+        public string Country { get; set; }
+
         [Display(Name = "Contact Number")]
         [Phone]
         public string PhoneNumber { get; set; }
@@ -80,6 +85,7 @@ namespace Hippra.Models.POCO
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 NPIN = user.NPIN,
+                IdMe = user.IDMe,
                 MedicalSpecialty = user.MedicalSpecialty,
                 AmericanBoardCertified = user.AmericanBoardCertified,
                 Email = user.Email,
@@ -97,7 +103,8 @@ namespace Hippra.Models.POCO
                 PublicId = user.PublicId,
                 ProfileUrl = user.ProfileUrl,
                 BackgroundUrl = user.BackgroundUrl,
-                Bio = user.Bio
+                Bio = user.Bio,
+                AccountType = user.AccountType,
             };
             return result;
         }
