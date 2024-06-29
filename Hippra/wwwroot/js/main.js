@@ -1,27 +1,53 @@
+window.mainScripts = {
+    setupProfileDropdown: function ()
+    {
+
+        // Handle Profile Dropdown
+        const profileDropdownBtn = document.querySelector(".nav-profile .profile-btn");
+        const profileDropdownMenu = document.querySelector(".nav-profile-dropdown");
+
+        if (profileDropdownBtn) {
+            profileDropdownBtn.addEventListener("click", (e) => {
+                const icon = profileDropdownBtn.querySelector(".profile-icon");
+
+                icon.classList.toggle("rotate");
+
+                profileDropdownMenu.classList.toggle("visible");
+            });
+        }
+    },
+
+        // Handle Toggle Search Dropdown
+    toggleSearchDropdown: function () {
+        const searchDropdown = document.querySelector("#search-dropdown");
+        if (searchDropdown) {
+            searchDropdown.classList.toggle("visible");
+        }
+    },
+
+    // Handle Toggle Search Filter
+    toggleSearchFilter: function () {
+        const searchFilterIcon = document.querySelector("#search-filter-icon");
+        const searchFilterBox = document.querySelector("#search-filter-box");
+        if (searchFilterIcon) {
+            const isOpen = searchFilterIcon.src.includes("close.svg");
+            searchFilterIcon.src = isOpen
+                ? "./img/icons/search-settings.svg"
+                : "./img/icons/close.svg";
+            searchFilterBox.classList.toggle("visible");
+        }
+    }
+
+}
+
 // Nav search
 const searchInput = document.querySelector("#nav-search");
-const searchDropdown = document.querySelector("#search-dropdown");
+
 const searchFilter = document.querySelector("#search-filter");
-const searchFilterIcon = document.querySelector("#search-filter-icon");
-const searchFilterBox = document.querySelector("#search-filter-box");
 
-// Handle Toggle Search Dropdown
-const toggleSearchDropdown = () => {
-    if (searchDropdown) {
-        searchDropdown.classList.toggle("visible");
-    }
-};
 
-// Handle Toggle Search Filter
-const toggleSearchFilter = () => {
-    if (searchFilterIcon) {
-        const isOpen = searchFilterIcon.src.includes("close.svg");
-        searchFilterIcon.src = isOpen
-            ? "./img/icons/search-settings.svg"
-            : "./img/icons/close.svg";
-        searchFilterBox.classList.toggle("visible");
-    }
-};
+
+
 
 
 // Sidebar Menu Active by url

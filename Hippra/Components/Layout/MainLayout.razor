@@ -48,61 +48,60 @@
                         <span class="nav-notification-count">10</span>
                     </div>
                     <div class="nav-profile">
-                        <button class="profile-btn" @onclick="ToggleProfileDropdown">
+                        <button class="profile-btn">
                             <img class="profile-img"
                                  src="@ProfileUrl"
                                  alt="">
                             <img class="profile-icon" src="./img/icons/chevron-down.svg" alt="">
                         </button>
                         <!-- Nav Profile Dropdown -->
-                        @if (ShowProfileDropdown)
-                        {
-                            <div class="nav-profile-dropdown visible">
-                                <div class="nav-profile-dropdown-inner">
-                                    <div class="nav-dropdown-user">
-                                        <div class="nav-dropdown-user-img">
-                                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU"
-                                                 alt="">
-                                        </div>
-                                        <div class="nav-dropdown-user-info">
-                                            <h4>@FullUserName</h4>
-                                            <p>@UserType</p>
-                                        </div>
+
+                        <div class="nav-profile-dropdown ">
+                            <div class="nav-profile-dropdown-inner">
+                                <div class="nav-dropdown-user">
+                                    <div class="nav-dropdown-user-img">
+                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&usqp=CAU"
+                                             alt="">
                                     </div>
-                                    <div class="nav-dropdown-links">
-                                        <ul>
-                                            <li>
-                                                <a href="profile/@userId">
-                                                    <img src="./img/icons/profile-settings.svg" alt=""> <span>
-                                                        Profile
-                                                        Settings
-                                                    </span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="profile.html">
-                                                    <img src="./img/icons/help-center.svg" alt=""> <span>
-                                                        Help
-                                                        Center
-                                                    </span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="profile.html">
-                                                    <img src="./img/icons/upgrade-tier.svg" alt=""> <span>
-                                                        Upgrade
-                                                        Tier
-                                                    </span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="FTLogoff" class="logout"><img src="./img/icons/logout.svg" alt=""> <span>Signout</span></a>
-                                            </li>
-                                        </ul>
+                                    <div class="nav-dropdown-user-info">
+                                        <h4>@FullUserName</h4>
+                                        <p>@UserType</p>
                                     </div>
                                 </div>
+                                <div class="nav-dropdown-links">
+                                    <ul>
+                                        <li>
+                                            <a href="profile/@userId">
+                                                <img src="./img/icons/profile-settings.svg" alt=""> <span>
+                                                    Profile
+                                                    Settings
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="profile.html">
+                                                <img src="./img/icons/help-center.svg" alt=""> <span>
+                                                    Help
+                                                    Center
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="profile.html">
+                                                <img src="./img/icons/upgrade-tier.svg" alt=""> <span>
+                                                    Upgrade
+                                                    Tier
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="FTLogoff" class="logout"><img src="./img/icons/logout.svg" alt=""> <span>Signout</span></a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
-                        }
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -127,7 +126,6 @@
     public bool HasSidebar = false;
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
-    public bool ShowProfileDropdown = false;
     private string userId = "";
     private int publicId = 0;
     private string ProfileUrl { get; set; } = "/img/hippra/blank-profile.png";
@@ -151,7 +149,7 @@
 
             ProfileUrl = user.FindFirst(c => c.Type == "ProfilePicture")?.Value;
             userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            FullUserName = user.FindFirst(c => c.Type == "FullName")?.Value; 
+            FullUserName = user.FindFirst(c => c.Type == "FullName")?.Value;
             UserType = user.FindFirst(c => c.Type == "AccountType")?.Value;
         }
         else
@@ -160,25 +158,18 @@
         }
     }
 
-    public void ToggleProfileDropdown()
-    {
-        ShowProfileDropdown = !ShowProfileDropdown;
-    }
-
-
     public void ToggleSidebar()
     {
         HasSidebar = !HasSidebar;
     }
 
-    // private async Task ToggleProfileDropdown()
-    // {
-    //     await JSRuntime.InvokeVoidAsync("handleScrollable");
-        // }
-
-
-
-
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("mainScripts.setupProfileDropdown");
+        }
+    }
 
 
 
