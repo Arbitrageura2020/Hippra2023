@@ -16,9 +16,7 @@ namespace Hippra.Models.ViewModel
             Tags = new List<CaseTagViewModel>();
             Comments = new List<CaseCommentViewModel>();
         }
-        public string Priority { get; set; } = "";
-        public string ParsedCategory { get; set; } = "";
-        public string ParsedSubCategory { get; set; } = "";
+
         public string ParsedGender { get; set; } = "";
         public string ParsedRace { get; set; } = "";
         public string ParsedEthnicity { get; set; } = "";
@@ -67,13 +65,6 @@ namespace Hippra.Models.ViewModel
 
         public string Topic { get; set; }
         public string Description { get; set; }
-        public CaseResponseLevelType ResponseNeeded { get; set; } // 0: high, 1: mid, 2: low 
-
-        public MedicalCategory MedicalCategoryOld { get; set; } // => should create enum for this
-        public int MedicalSubCategoryId { get; set; } = 1;
-        public MedicalSubCategory MedicalSubCategory { get; set; }
-
-        public MedicalCategory MedicalCategory { get; set; }
 
         public int PatientAge { get; set; }
         public GenderType Gender { get; set; } // 0 Male, 1, Female, 2 Neutral 
@@ -100,10 +91,6 @@ namespace Hippra.Models.ViewModel
             pCase.Race = tCase.Race;
             pCase.Gender = tCase.Gender;
             pCase.Ethnicity = tCase.Ethnicity;
-            pCase.ResponseNeeded = tCase.ResponseNeeded;
-            pCase.MedicalCategory = tCase.MedicalCategory;
-         
-            pCase.MedicalSubCategory = tCase.MedicalSubCategory;
             if (tCase.Tags != null)
             {
                 pCase.Tags = CaseTagViewModel.FromEntityList(tCase.Tags).ToList();
@@ -126,11 +113,8 @@ namespace Hippra.Models.ViewModel
             pCase.CurrentTreatmentAdministered = tCase.CurrentTreatmentAdministered;
             pCase.TreatmentOutcomes = tCase.TreatmentOutcomes;
             pCase.LabValues = tCase.LabValues;
-            pCase.ParsedCategory = EnumsHelper.GetDisplayName(tCase.MedicalCategory);
-            pCase.ParsedSubCategory = tCase.MedicalSubCategory!.Name;
             pCase.ParsedGender = EnumsHelper.GetDisplayName(tCase.Gender);
             pCase.ParsedEthnicity = EnumsHelper.GetDisplayName(tCase.Ethnicity);
-            pCase.Priority = EnumsHelper.GetDisplayName(tCase.ResponseNeeded);
             pCase.ParsedRace = EnumsHelper.GetDisplayName(tCase.Race);
             pCase.Status = tCase.Status;
             pCase.ParsedStatus = ConversionExtensions.ParseStatus(tCase.Status);

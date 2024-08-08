@@ -84,7 +84,7 @@ namespace Hippra.Services
                 DateLastUpdated = x.DateLastUpdated,
                 PosterName = x.User.FullName,
                 PosterId = x.User.Id,
-                PosterSpeciality = @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty),
+                PosterSpeciality = x.User.MedicalSpecialty!=null?@EnumsHelper.GetDisplayName(x.User.MedicalSpecialty):"",
                 PosterImg = x.User.ProfileUrl,
                 CurrentStageOfDisease = x.CurrentStageOfDisease,
                 CurrentTreatmentAdministered = x.CurrentTreatmentAdministered,
@@ -93,8 +93,6 @@ namespace Hippra.Services
                 Ethnicity = x.Ethnicity,
                 Gender = x.Gender,
                 Type = x.Type,
-                MedicalCategory = x.MedicalCategory,
-                MedicalSubCategory = x.MedicalSubCategory,
                 Race = x.Race,
                 PatientAge = x.PatientAge,
                 TreatmentOutcomes = x.TreatmentOutcomes,
@@ -131,7 +129,7 @@ namespace Hippra.Services
             newCase.LabValues = inputCase.LabValues;
             newCase.CurrentStageOfDisease = inputCase.CurrentStageOfDisease;
             newCase.imgUrl = inputCase.imgUrl;
-
+            newCase.PostedAnonymosley=inputCase.PostAnonymosly;
             newCase.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
             newCase.TreatmentOutcomes = inputCase.TreatmentOutcomes;
             if (inputCase.SelectedTags != null)

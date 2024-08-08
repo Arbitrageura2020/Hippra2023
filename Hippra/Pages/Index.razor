@@ -228,30 +228,12 @@
             //Count = await hService.GetMyCaseCount(usr.PublicId);
         }
 
-        //foreach (var i in cases)
-        //{
-
-        //	SearchResults.Add(new ParsedCase()
-        //	{
-        //		ID = i.ID,
-        //		Topic = i.Topic,
-        //		Description = i.Description,
-        //		DateCreated = i.DateCreated,
-        //		Priority = ParsePriority(i.ResponseNeeded),
-        //		ParsedCategory = ParseCategoryFromSub(i.MedicalCategory),
-        //		ParsedSubCategory = ParseSubCategory(i.MedicalCategory)
-        //	});
-        //}
-
         SearchResults = cases.Select(i => new CaseViewModel()
             {
                 ID = i.ID,
                 Topic = i.Topic,
                 Description = i.Description,
                 DateCreated = i.DateCreated,
-                Priority = EnumsHelper.GetDisplayName(i.ResponseNeeded),
-                //   ParsedCategory = Enums.GetDisplayName(i.MedicalCategory),
-                ParsedSubCategory = i.MedicalSubCategory!.Name
             }).ToList();
 
         //history stuffs
@@ -449,10 +431,6 @@
         pCase = CaseViewModel.FromEntity(tCase);
 
         priorityRadio = new PriorityModel();
-        priorityRadio.Priority = tCase.ResponseNeeded;
-        //  bCategory = ParseCategoryValueFromSub(tCase.MedicalCategory);
-        //  bSubCategory = tCase.MedicalCategory.ToString();
-        //  await SwitchSubCategory(bCategory);
         bGender = tCase.Gender.ToString();
         bEthnicity = tCase.Ethnicity.ToString();
         bRace = tCase.Race.ToString();

@@ -224,7 +224,7 @@
     private string TagFieldErrorMessage = "";
     private bool isTagOk = true;
     private bool IsAskHelpCase = true;
-
+    private string userId { get; set; } = "";
     private string seletedItems { get; set; }
 
 
@@ -238,8 +238,30 @@
 
     protected override async Task OnInitializedAsync()
     {
-      
-        this.AllTags = await commonService.GetAllTags();
+
+
+        authState = await authenticationStateTask;
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            try
+            {
+                userId = user.Claims.FirstOrDefault(s => s.Type == "UserId")?.Value;
+                CaseModel.UserId = userId;
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            this.AllTags = await commonService.GetAllTags();
+            StateHasChanged();
+        }
+        else
+        {
+            // shouldn't get here
+        }
 
     }
 
@@ -252,23 +274,13 @@
     private async Task CreateCase()
     {
         CaseModel.imgUrl = imgUrl;
-        if (this.IsAskHelpCase)
-            CaseModel.Type = CaseType.AskForHelp;
-        else
-            CaseModel.Type = CaseType.ClinicalKnowledge;
+        CaseModel.UserId = userId;
         CaseModel.SelectedTags = CaseModel.SelectedTagsObjects.Select(x => x.ID).ToArray();
         var result = await caseService.AddNewCase(CaseModel);
         if (result)
             NavigationManager.NavigateTo("/");
         else
             hasError = true;
-    }
-
-
-    private async Task OnSelectionChanged(ChangeEventArgs eventArgs)
-    {
-        // var selection = await GetSelections(_selectReference);
-        // Model.SelectedOptions = selection;
     }
 
 }
