@@ -88,28 +88,7 @@
                                             <img src="./img/icons/chevron-down.svg" alt="">
                                         </div>
                                     </div>
-                                    <div class="form-multi-select">
-                                        <div class="form-select-wrapper">
-                                            <select class="form-select mini" @bind="@CaseModel.MedicalCategory">
-                                                <option value="0" selected>Select category</option>
-                                                @foreach (MedicalCategory i in Enum.GetValues(typeof(MedicalCategory)))
-                                                {
-                                                    <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
-                                                }
-                                            </select>
-                                            <img src="./img/icons/chevron-down.svg" alt="">
-                                        </div>
-                                        <div class="form-select-wrapper">
-                                            <select class="form-select mini" name="" @bind="@CaseModel.MedicalSubCategoryId">
-                                                <option value="0" selected="" hidden="">Medical Specialty</option>
-                                                @foreach (var i in AllSubCategoryList.Where(x => x.MedicalCategory == CaseModel.MedicalCategory))
-                                                {
-                                                    <option value="@i.ID">@i.Name</option>
-                                                }
-                                            </select>
-                                            <img src="./img/icons/chevron-down.svg" alt="">
-                                        </div>
-                                    </div>
+                            
                                 </div>
                                 <div class="form-group">
                                     <label for="">Case Information</label>
@@ -128,18 +107,6 @@
                                     <div class="form-group file">
                                         @* <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg> *@
                                         <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
-                                    </div>
-                                </div>
-                                <div class="form-group post-urgency">
-                                    <div class="form-select-wrapper">
-                                        <select class="form-select mini" name="" @bind="@CaseModel.ResponseNeeded">
-                                            <option value="0" selected="" hidden="">Urgency</option>
-                                            @foreach (CaseResponseLevelType i in Enum.GetValues(typeof(CaseResponseLevelType)))
-                                            {
-                                                <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
-                                            }
-                                        </select>
-                                        <img src="./img/icons/chevron-down.svg" alt="">
                                     </div>
                                 </div>
                                 <div class="form-select-wrapper">
@@ -198,8 +165,6 @@
 
     private AddEditCaseViewModel CaseModel { get; set; } = new AddEditCaseViewModel() { };
 
-    private List<MedicalSubCategory> CurrentSubCategoryList { get; set; } = new List<MedicalSubCategory>();
-    private List<MedicalSubCategory> AllSubCategoryList { get; set; } = new List<MedicalSubCategory>();
     private List<Tag> AllTags { get; set; } = new List<Tag>();
     private string debug { get; set; } = "";
     private const int MAXTAGS = 25;
@@ -225,7 +190,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        this.AllSubCategoryList = await commonService.GetAllSubcategories();
+    
         this.AllTags = await commonService.GetAllTags();
 
         returnUrl = returnUrl + caseId;
@@ -315,10 +280,5 @@
         this.StateHasChanged();
     }
 
-    private async void SwitchCategory(MedicalCategory category)
-    {
-        this.CurrentSubCategoryList = this.AllSubCategoryList.Where(x => x.MedicalCategory == category).ToList();
-        this.CaseModel.MedicalSubCategoryId = 0;
-    }
 }
 

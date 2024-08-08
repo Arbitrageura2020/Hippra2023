@@ -988,9 +988,6 @@ namespace Hippra.Services
 
             caseObject.Topic = inputCase.Topic;
             caseObject.Description = inputCase.Description;
-            caseObject.ResponseNeeded = inputCase.ResponseNeeded;
-            caseObject.MedicalCategory = inputCase.MedicalCategory;
-            caseObject.MedicalSubCategoryId = inputCase.MedicalSubCategoryId;
             caseObject.PatientAge = inputCase.PatientAge;
 
             caseObject.Gender = inputCase.Gender;

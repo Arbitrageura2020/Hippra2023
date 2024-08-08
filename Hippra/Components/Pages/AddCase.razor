@@ -31,184 +31,173 @@
 @inject IJSRuntime JSRuntime
 @inject IAuthorizationService AuthorizationService
 
-<div class="main-layout @mainItemClass">
-    <div class="container">
-        <div class="main-tab-layout">
-            <!-- Tabs -->
-            <div class="post-header">
-                <div class="post-head-left">
-                    <div class="post-tab">
-                        <button class="post-tab-btn @AskHelpCaseClass" data-target="post-ask-4-content" data-action="ask-4-action" @onclick="(() => this.IsAskHelpCase=true)">
-                            ASK-4-HELP CASES
-                        </button>
-                    </div>
-                </div>
-                <div class="post-head-right">
-                    <div class="post-tab">
-                        <button class="post-tab-btn  @ClinicalKnowledgeCaseClass" data-target="post-clinical-content" data-action="clinical-action" @onclick="(() => this.IsAskHelpCase=false)">
-                            CLINICAL KNOWLEDGE SHARING
-                        </button>
-                    </div>
+<div class="container">
+    <!-- Ask 4 -->
+    <div id="post-ask-4-content" class="post-tab-content">
+        <div class="content-left">
+            <!-- Ask-4 Form -->
+            <section class="dashboard-content">
+                <div class="content-form inside-scroll">
+                    <EditForm Model="@CaseModel" OnValidSubmit="@CreateCase">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="form-group">
+                            <h3>Case Title *</h3>
 
-                    <div class="heading-actions">
-                    </div>
-                </div>
-            </div>
-            <div id="post-ask-4-content" class="post-tab-content active">
-                <div class="" style="width:100%">
-                    <!-- Ask-4 Form -->
-                    <section class="dashboard-content">
-                        <div class="content-form inside-scroll" style="padding-bottom: 20px;">
-                            <EditForm Model="@CaseModel" OnValidSubmit="@CreateCase">
-                                <DataAnnotationsValidator />
-                                <ValidationSummary />
-                                <div class="form-group">
-                                    <label for="">Title</label>
-                                    @*      <input class="form-control" type="text" placeholder="Title"> *@
-                                    <InputText class="form-control" placeholder="Title" @bind-Value="@CaseModel.Topic" />
-                                    <ValidationMessage For="() => CaseModel.Topic" />
-                                </div>
-                                <div class="form-group">
-                                    <label for="">Description</label>
-                                    <textarea class="form-control textarea" placeholder="Description" @bind="@CaseModel.Description"></textarea>
-                                    <ValidationMessage For="() => CaseModel.Description" />
-                                </div>
-
-                                <!-- Multi Mini Inputs -->
-                                <div class="form-group multi">
-                                    <label for="">Patient Information</label>
-                                    <div class="form-multi-inputs">
-                                        <input class="form-control mini" type="text" placeholder="Age" @bind="@CaseModel.PatientAge">
-                                        <div class="form-select-wrapper">
-                                            <select class="form-select mini" name="" @bind="@CaseModel.Race">
-                                                @foreach (RaceType i in Enum.GetValues(typeof(RaceType)))
-                                                {
-                                                    <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
-                                                }
-
-                                            </select>
-                                            <img src="./img/icons/chevron-down.svg" alt="">
-                                        </div>
-                                        <div class="form-select-wrapper">
-                                            <select class="form-select mini" name="" @bind="@CaseModel.Gender" placeholder="Gender">
-                                                @foreach (GenderType i in Enum.GetValues(typeof(GenderType)))
-                                                {
-                                                    <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
-                                                }
-
-                                            </select>
-                                            <img src="./img/icons/chevron-down.svg" alt="">
-                                        </div>
-                                        <div class="form-select-wrapper">
-                                            <select class="form-select mini" name="" @bind="@CaseModel.Ethnicity" placeholder="Ethnicity">
-                                                @foreach (EthnicityType i in Enum.GetValues(typeof(EthnicityType)))
-                                                {
-                                                    <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
-                                                }
-
-                                            </select>
-                                            <img src="./img/icons/chevron-down.svg" alt="">
-                                        </div>
+                            <InputText class="form-control" type="text" placeholder="Title" @bind-Value="@CaseModel.Topic" />
+                            <ValidationMessage For="() => CaseModel.Topic" />
+                        </div>
+                        <div class="form-group">
+                            <h3>Type of case *</h3>
+                            <InputRadioGroup @bind-Value="@CaseModel.Type">
+                                @foreach (CaseType i in Enum.GetValues(typeof(CaseType)))
+                                {
+                                    <div>
+                                        <label>
+                                            <InputRadio Value="@i" />
+                                            @EnumsHelper.GetDisplayName(i)
+                                        </label>
                                     </div>
-                                    <div class="form-multi-select">
-                                        <div class="form-select-wrapper">
-                                            <select class="form-select mini" @bind="@CaseModel.MedicalCategory" @onclick="()=>SwitchCategory(CaseModel.MedicalCategory)">
-                                                <option value="0" selected>Select category</option>
-                                                @foreach (MedicalCategory i in Enum.GetValues(typeof(MedicalCategory)))
-                                                {
-                                                    <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
-                                                }
-                                            </select>
-                                            <img src="./img/icons/chevron-down.svg" alt="">
-                                            <ValidationMessage For="() => CaseModel.MedicalCategory" />
-                                        </div>
-                                        <div class="form-select-wrapper">
-                                            <select class="form-select mini" name="" @bind="@CaseModel.MedicalSubCategoryId">
-                                                <option value="0" selected="" hidden="">Medical Specialty</option>
-                                                @foreach (var i in @CurrentSubCategoryList)
-                                                {
-                                                    <option value="@i.ID">@i.Name</option>
-                                                }
-                                            </select>
-                                            <img src="./img/icons/chevron-down.svg" alt="">
-                                            <ValidationMessage For="() => CaseModel.MedicalSubCategoryId" />
-                                        </div>
-                                    </div>
+                                }
+                            </InputRadioGroup>
+
+                        </div>
+                        <div class="form-group">
+                            <h3>Description *</h3>
+                            <textarea class="form-control textarea" placeholder="Description" @bind="@CaseModel.Description"></textarea>
+                            <ValidationMessage For="() => CaseModel.Description" />
+                        </div>
+
+                        <!-- Multi Mini Inputs -->
+                        <div class="form-group multi">
+                            <h3>Patient Demographics</h3>
+                            <div class="form-multi-inputs">
+                                <div class="form-row">
+                                    <label for="age">Age</label>
+                                    <input class="form-control mini" type="text" placeholder="Age" @bind="@CaseModel.PatientAge">
                                 </div>
-                                <div class="form-group">
-                                    <label for="">Case Information</label>
-                                    <textarea class="form-control case-textarea" placeholder="Lab Values" @bind="CaseModel.LabValues"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <textarea class="form-control case-textarea" placeholder="Current Stage of Disease" @bind="CaseModel.CurrentStageOfDisease"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <textarea class="form-control case-textarea" placeholder="Current Treatment Administered" @bind="CaseModel.CurrentTreatmentAdministered"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <textarea class="form-control case-textarea" placeholder="Treatment Outcomes" @bind="CaseModel.TreatmentOutcomes"></textarea>
-                                </div>
-                                <div class="ask-4-file">
-                                    <div class="form-group file">
-                                        <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg>
-                                    </div>
-                                </div>
-                                <div class="form-group post-urgency">
+                                <div class="form-row">
+                                    <label for="race">Race</label>
+                                    @*    <input class="form-control mini" type="text" id="race" placeholder="Race"> *@
                                     <div class="form-select-wrapper">
-                                        <select class="form-select mini" name="" @bind="@CaseModel.ResponseNeeded">
-                                            <option value="0" selected="" hidden="">Urgency</option>
-                                            @foreach (CaseResponseLevelType i in Enum.GetValues(typeof(CaseResponseLevelType)))
+                                        <select class="form-select mini" name="" @bind="@CaseModel.Race">
+                                            @foreach (RaceType i in Enum.GetValues(typeof(RaceType)))
                                             {
                                                 <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
                                             }
+
                                         </select>
                                         <img src="./img/icons/chevron-down.svg" alt="">
-                                        <ValidationMessage For="() => CaseModel.ResponseNeeded" />
                                     </div>
                                 </div>
-                                <div class="form-select-wrapper">
-                                @*     <InputSelect class="form-select mini" @bind-Value="@CaseModel.SelectedTags">
-                                        @foreach (var i in AllTags)
-                                        {
-                                            <option value="@i.ID">@i.Name</option>
-                                        }
-                                    </InputSelect>
-                                    <img src="./img/icons/chevron-down.svg" alt=""> *@
+                                <div class="form-row">
+                                    <label for="gender">Gender</label>
+                                    <div class="form-select-wrapper">
+                                        <select class="form-select mini" name="" @bind="@CaseModel.Gender" placeholder="Gender">
+                                            @foreach (GenderType i in Enum.GetValues(typeof(GenderType)))
+                                            {
+                                                <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
+                                            }
 
-                                    <FluentAutocomplete Id="my-customized"
-                                                        @ref="ContactList"
-                                                        TOption="Tag"
-                                                        Width="100%"
-                                                        Placeholder="search"
-                                                        OnOptionsSearch="@OnSearch"
-                                                        MaximumSelectedOptions="2"
-                                                        OptionText="@(item => item.Name)"
-                                                        Virtualize="true"
-                                                        OptionStyle="min-height: 40px;"
-                                                        @bind-SelectedOptions="@CaseModel.SelectedTagsObjects" />
-                                    <ValidationMessage For="() => CaseModel.SelectedTagsObjects" />
-                                 
+                                        </select>
+                                        <img src="./img/icons/chevron-down.svg" alt="">
+                                    </div>
                                 </div>
+                                <div class="form-row">
+                                    <label for="ethnicity">Ethnicity</label>
+                                    <div class="form-select-wrapper">
+                                        <select class="form-select mini" name="" @bind="@CaseModel.Ethnicity" placeholder="Ethnicity">
+                                            @foreach (EthnicityType i in Enum.GetValues(typeof(EthnicityType)))
+                                            {
+                                                <option value="@i">@EnumsHelper.GetDisplayName(i)</option>
+                                            }
 
-
-
-                                <div class="ask-4-file">
-                                    <button class="btn btn-sm btn-orange btn-roboto" type="submit">Post</button>
+                                        </select>
+                                        <img src="./img/icons/chevron-down.svg" alt="">
+                                    </div>
                                 </div>
-                            </EditForm>
+                            </div>
                         </div>
-                    </section>
 
+                        <div class="form-group">
+                            <h3>Case Information</h3>
+                            <label>Lab Values</label>
+                            <textarea class="form-control case-textarea" placeholder="Lab Values" @bind="CaseModel.LabValues"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Current Stage of Disease</label>
+                            <textarea class="form-control case-textarea" placeholder="Current Stage of Disease" @bind="CaseModel.CurrentStageOfDisease"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Current Treatment Administered</label>
+                            <textarea class="form-control case-textarea" placeholder="Current Treatment Administered" @bind="CaseModel.CurrentTreatmentAdministered"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Treatment Outcomes</label>
+                            <textarea class="form-control case-textarea" placeholder="Treatment Outcomes" @bind="CaseModel.TreatmentOutcomes"></textarea>
+                        </div>
+
+                        <div class="ask-4-file">
+                            <h3>File Upload</h3>
+                            <div class="form-group file">
+                                <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg>
+                            </div>
+                        </div>
+
+                        <div class="form-group topicsdiv">
+                            <h3>Topics *</h3>
+                     @*        <input type="text" class="form-control tag-search" placeholder="Add Tag(s) to so that users know what your case is about."> *@
+                            <FluentAutocomplete Id="my-customized"
+                                                @ref="ContactList"
+                                                TOption="Tag"
+                                                Width="100%"
+                                                Placeholder="Add Tag(s) to so that users know what your case is about."
+                                                OnOptionsSearch="@OnSearch"
+                                                MaximumSelectedOptions="2"
+                                                OptionText="@(item => item.Name)"
+                                                Virtualize="true"
+                                                OptionStyle="min-height: 40px;"
+                                                Class="form-control tag-search"
+                                                @bind-SelectedOptions="@CaseModel.SelectedTagsObjects" />
+                            <ValidationMessage For="() => CaseModel.SelectedTagsObjects" />
+                        </div>
+
+
+                        <h3>Post Anonymously ?</h3>
+                        <p>
+                            You can post a case as a anonymous user. This means that
+                            users on hippra platform won't be able to see your name,
+                            speciality, profile picture or any of your details in
+                            this post. Note that your details will still be
+                            collected by Hippra platform but they won't be visible
+                            to other users.
+                        </p>
+                        <br>
+                        <div>
+                            <input type="checkbox" id="anonymousPost" @bind="@CaseModel.PostAnonymosly">
+                            <label for="anonymousPost">I understand and want to post anonymously</label>
+                        </div>
+                        <div class="form-group post-case-actions">
+                            <button class="btn btn-sm btn-roboto green-btn" type="submit">
+                                Post Case
+                            </button>
+                            <button class="btn btn-sm btn-roboto">Cancel</button>
+                        </div>
+                    </EditForm>
                 </div>
 
-            </div>
+                @*          <div class="form-group post-case-actions">
+                <button class="btn btn-sm btn-roboto green-btn">
+                Post Case
+                </button>
+                <button class="btn btn-sm btn-roboto">Cancel</button>
+                </div> *@
 
-
+            </section>
         </div>
 
     </div>
 </div>
-
 
 @code {
     [Parameter]
@@ -221,9 +210,6 @@
 
     private AddEditCaseViewModel CaseModel { get; set; } = new AddEditCaseViewModel() { };
 
-
-    private List<MedicalSubCategory> CurrentSubCategoryList { get; set; } = new List<MedicalSubCategory>();
-    private List<MedicalSubCategory> AllSubCategoryList { get; set; } = new List<MedicalSubCategory>();
     private List<Tag> AllTags { get; set; } = new List<Tag>();
     private string debug { get; set; } = "";
 
@@ -239,34 +225,8 @@
     private bool isTagOk = true;
     private bool IsAskHelpCase = true;
 
-    private string seletedItems{ get; set; }
-    private string AskHelpCaseClass
-    {
-        get
-        {
-            if (this.IsAskHelpCase)
-                return "active";
-            else return "";
-        }
-    }
-    private string ClinicalKnowledgeCaseClass
-    {
-        get
-        {
-            if (!this.IsAskHelpCase)
-                return "active";
-            else return "";
-        }
-    }
-    private string mainItemClass
-    {
-        get
-        {
-            if (this.IsAskHelpCase)
-                return "orange";
-            else return "";
-        }
-    }
+    private string seletedItems { get; set; }
+
 
     FluentAutocomplete<Tag> ContactList = default!;
     IEnumerable<Tag> SelectedItems = Array.Empty<Tag>();
@@ -278,10 +238,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        this.AllSubCategoryList = await commonService.GetAllSubcategories();
+      
         this.AllTags = await commonService.GetAllTags();
-        //  this.ContactList = await commonService.GetAllTags();
-        SwitchCategory(MedicalCategory.MED);
+
     }
 
 
@@ -305,12 +264,6 @@
             hasError = true;
     }
 
-
-    private async void SwitchCategory(MedicalCategory category)
-    {
-        this.CurrentSubCategoryList = this.AllSubCategoryList.Where(x => x.MedicalCategory == category).ToList();
-        this.CaseModel.MedicalSubCategoryId = 0;
-    }
 
     private async Task OnSelectionChanged(ChangeEventArgs eventArgs)
     {

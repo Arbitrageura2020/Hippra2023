@@ -77,11 +77,7 @@ namespace Hippra.Extensions
             viewModel.Race = @case.Race;
             viewModel.Gender = @case.Gender;
             viewModel.Ethnicity = @case.Ethnicity;
-            viewModel.ResponseNeeded = @case.ResponseNeeded;
-            viewModel.MedicalCategory = @case.MedicalCategory;
-            //viewModel.PosterSpecialty = @case.PosterSpecialty;
-            viewModel.MedicalSubCategory = @case.MedicalSubCategory;
-            viewModel.MedicalSubCategoryId = @case.MedicalSubCategoryId;
+
             if (@case.Tags != null)
             {
                 viewModel.SelectedTags = @case.Tags.Select(x => x.Tag.ID).ToArray();

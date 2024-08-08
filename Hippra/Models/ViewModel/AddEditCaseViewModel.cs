@@ -21,7 +21,7 @@ namespace Hippra.Models.ViewModel
         public AppUser User { get; set; }
         public string PosterName { get; set; }
         public string PosterSpecialty { get; set; }
-
+        public bool PostAnonymosly { get; set; }
 
         // case 
         public bool Status { get; set; }
@@ -38,18 +38,9 @@ namespace Hippra.Models.ViewModel
         public string Topic { get; set; }
         [Required]
         public string Description { get; set; }
-        //[MinLength(1,ErrorMessage ="Please select urgency")]
-        public CaseResponseLevelType ResponseNeeded { get; set; }
-
-        //[MinLength(1, ErrorMessage = "Please medical category")]
-        [EnumDataType(typeof(MedicalCategory), ErrorMessage = "Please enter a valid category")]
-        public MedicalCategory MedicalCategory { get; set; }
-        //[MinLength(1, ErrorMessage = "Please select medical subcategory")]
-        public int MedicalSubCategoryId { get; set; } = 1;
-        public MedicalSubCategory MedicalSubCategory { get; set; }
 
         //[MinLength(1, ErrorMessage = "Please select at least one tag")]
-        public int[]? SelectedTags { get; set; } 
+        public int[]? SelectedTags { get; set; }
 
         [Required]
 

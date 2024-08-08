@@ -124,9 +124,6 @@ namespace Hippra.Services
             newCase.Type = inputCase.Type;
             newCase.Topic = inputCase.Topic;
             newCase.Description = inputCase.Description;
-            newCase.ResponseNeeded = inputCase.ResponseNeeded;
-            newCase.MedicalCategory = inputCase.MedicalCategory;
-            newCase.MedicalSubCategoryId = inputCase.MedicalSubCategoryId;
             newCase.PatientAge = inputCase.PatientAge;
             newCase.Gender = inputCase.Gender;
             newCase.Race = inputCase.Race;
