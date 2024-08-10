@@ -27,6 +27,7 @@
 @inject ProfileService pService
 @inject IAuthorizationService AuthorizationService
 @inject ICaseService caseService
+@inject IFollowService followService;
 <div class="case-layout">
     <div class="case-top">
         <div class="case-top-action">
@@ -71,7 +72,18 @@
                     <div class="case-profile-info">
                         <div>
                             <h4><a href="/profile/@CaseItem.PosterId">@CaseItem.PosterName</a></h4>
-                            <p class="color-green">Follow</p>
+                            @if (!isOwner)
+                            {
+                                @if (isFollowed)
+                                {
+                                    <p class="color-green" @onclick="@RemoveFromFollowerList">Followed</p>
+                                }
+                                else
+                                {
+                                    <p class="color-green" @onclick="@AddToFollowerList">Follow+</p>
+                                }
+                            }
+
                         </div>
 
                         <div class="case-content-date">
@@ -95,14 +107,14 @@
                     {
                         @if (CaseItem.LikedByCurrentUser)
                         {
-                            <button>
+                            <button @onclick="Like">
                                 <img src="/frontend//Dashboard/img/icons/thumbs-up-hollow.svg" alt="">
                                 <span>Liked</span>
                             </button>
                         }
                         else
                         {
-                            <button>
+                            <button @onclick="UnLike">
                                 <img src="/frontend//Dashboard/img/icons/thumbs-up-hollow.svg" alt="">
                                 <span>Like</span>
                             </button>
@@ -222,6 +234,7 @@
     private int status { get; set; } = 0;
 
     private bool isOwner { get; set; } = false;
+    private bool isFollowed = false;
     private string returnUrl { get; set; } = "/";
 
     private CaseViewModel CaseItem { get; set; } = new CaseViewModel();
@@ -250,6 +263,17 @@
             try
             {
                 userId = user.Claims.FirstOrDefault(s => s.Type == "UserId")?.Value;
+
+                CaseItem = await caseService.GetCaseNoTracking(caseId, userId);
+
+                if (CaseItem.PosterId == userId)
+                {
+                    isOwner = true;
+                }
+
+                isFollowed = await followService.CheckFollower(userId, CaseItem.PosterId);
+                dataReady = true;
+
             }
             catch (FormatException e)
             {
@@ -258,14 +282,7 @@
 
             returnUrl = returnUrl;
 
-            CaseItem = await caseService.GetCaseNoTracking(caseId, userId);
 
-            if (CaseItem.PosterId == userId)
-            {
-                isOwner = true;
-            }
-
-            dataReady = true;
             StateHasChanged();
         }
         else
@@ -311,5 +328,22 @@
             if (result)
                 CaseItem.LikedByCurrentUser = false;
         }
+    }
+
+    private async Task AddToFollowerList()
+    {
+        await followService.AddFollower(CaseItem.PosterId, userId);
+        isFollowed = true;
+        // await addToHistory("followed");
+        // await Notify(-1);
+        StateHasChanged();
+    }
+
+    private async Task RemoveFromFollowerList()
+    {
+        await followService.RemoveFollower(CaseItem.PosterId, userId);
+        isFollowed = false;
+        // await addToHistory("unfollowed");
+        StateHasChanged();
     }
 }

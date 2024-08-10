@@ -1520,3 +1520,13 @@ select {
             width: 30px;
         }
 }
+
+.validation-message {
+    color: #e94238;
+    font-family: Open Sans;
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 0;
+    height: 0;
+    text-align: left;
+}

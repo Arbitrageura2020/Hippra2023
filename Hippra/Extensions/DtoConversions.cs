@@ -78,9 +78,10 @@ namespace Hippra.Extensions
             viewModel.Gender = @case.Gender;
             viewModel.Ethnicity = @case.Ethnicity;
 
-            if (@case.Tags != null)
+            if (@case.Tags != null && @case.Tags.Count > 0)
             {
-                viewModel.SelectedTags = @case.Tags.Select(x => x.Tag.ID).ToArray();
+                viewModel.SelectedTagsObjects = @case.Tags.Select(x => x.Tag).ToArray();
+                viewModel.SelectedTags = @case.Tags.Select(x => x.TagId).ToArray();
             }
             //if (@case.Comments != null)
             //{

@@ -147,7 +147,7 @@ namespace Hippra.Services
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var result = await _context.Cases.Where(x => x.ID == caseId).Include(c => c.MedicalSubCategory).Include(c => c.Tags).Include(x => x.User).FirstOrDefaultAsync();
+            var result = await _context.Cases.Where(x => x.ID == caseId).Include(x => x.User).Include(c => c.Tags).ThenInclude(x => x.Tag).FirstOrDefaultAsync();
             return result;
         }
 
@@ -186,7 +186,7 @@ namespace Hippra.Services
 
         }
 
-    
+
 
 
 
@@ -208,9 +208,6 @@ namespace Hippra.Services
                 caseObject.Status = false;
             }
 
-            // caseObject.UserId = userInfo!.Id;
-            //caseObject.PosterName = userInfo.FirstName;
-            //caseObject.PosterSpecialty = Enums.GetDisplayName(userInfo.MedicalSpecialty);
             caseObject.DateLastUpdated = DateTime.Now;
 
             caseObject.Topic = inputCase.Topic;
@@ -227,13 +224,13 @@ namespace Hippra.Services
             caseObject.TreatmentOutcomes = inputCase.TreatmentOutcomes;
             caseObject.imgUrl = inputCase.imgUrl;
             caseObject.Tags = new List<PostTags>();
-            if (inputCase.SelectedTags != null && inputCase.SelectedTags.Count() > 0)
+            if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
             {
-                foreach (var tagId in inputCase.SelectedTags)
+                foreach (var tag in inputCase.SelectedTagsObjects)
                 {
                     caseObject.Tags.Add(new PostTags()
                     {
-                        TagId = tagId,
+                        TagId = tag.ID,
                         CaseID = caseObject.ID,
                     });
                 }
@@ -326,7 +323,7 @@ namespace Hippra.Services
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var result = await _context.PostTags.Include(x=>x.Tag).AsNoTracking().Where(c => c.CaseID == caseId).ToListAsync();
+            var result = await _context.PostTags.Include(x => x.Tag).AsNoTracking().Where(c => c.CaseID == caseId).ToListAsync();
             return result;
 
         }
@@ -379,7 +376,7 @@ namespace Hippra.Services
 
             return result;
         }
-      
+
         // history type
         public async Task<int> AddHistory(PostHistory newHistory)
         {
@@ -420,7 +417,7 @@ namespace Hippra.Services
             PostHistory h = await _context.PostHistories.FirstOrDefaultAsync(h => h.ID == id);
             return h;
         }
-     
+
 
         //Stats
         //public async Task<Stats> GetStats(int postId)
@@ -433,7 +430,7 @@ namespace Hippra.Services
         //    stats.Answers = await _context.CaseComments.AsNoTracking().CountAsync(c => c.PosterId == postId && c.PosterId != c.Case.PosterID);
         //    return stats;
         //}
-      
+
         //Connections
         public async Task<bool> AddConnection(Connection conn)
         {
