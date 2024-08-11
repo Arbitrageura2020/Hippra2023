@@ -11,7 +11,7 @@ namespace Hippra.Models.ViewModel
     {
         public AddEditCaseViewModel()
         {
-            this.SelectedTags = Array.Empty<int>();
+            this.SelectedTagsObjects = new List<Tag>();
         }
 
         public int ID { get; set; }
@@ -39,11 +39,9 @@ namespace Hippra.Models.ViewModel
         [Required]
         public string Description { get; set; }
 
-        //[MinLength(1, ErrorMessage = "Please select at least one tag")]
-        public int[]? SelectedTags { get; set; }
+
 
         [Required]
-
         public int PatientAge { get; set; }
         public GenderType Gender { get; set; } // 0 Male, 1, Female, 2 Neutral 
         public RaceType Race { get; set; }
@@ -54,7 +52,8 @@ namespace Hippra.Models.ViewModel
         public string TreatmentOutcomes { get; set; }
         public string imgUrl { get; set; }
 
-        public IEnumerable<Tag> SelectedTagsObjects { get; set; } = new List<Tag>();
+        [MinLength(1, ErrorMessage = "Please select at least one tag")]
+        public IEnumerable<Tag> SelectedTagsObjects { get; set; }
 
     }
 }

@@ -133,17 +133,17 @@ namespace Hippra.Models.ViewModel
         public int TagId { get; set; }
         public string Name { get; set; }
 
-        public static CaseTagViewModel FromEntity(PostTags tag)
+        public static CaseTagViewModel FromEntity(Tag tag)
         {
 
             return new CaseTagViewModel()
             {
-                TagId = tag.TagId,
-                Name = tag.Tag.Name
+                TagId = tag.ID,
+                Name = tag.Name
             };
         }
 
-        public static IList<CaseTagViewModel> FromEntityList(ICollection<PostTags> items)
+        public static IList<CaseTagViewModel> FromEntityList(ICollection<Tag> items)
         {
             return items.Select(x => FromEntity(x)).ToList();
         }

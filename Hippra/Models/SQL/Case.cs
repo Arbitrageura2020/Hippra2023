@@ -42,7 +42,7 @@ namespace Hippra.Models.SQL
         public string CurrentTreatmentAdministered { get; set; }
         public string TreatmentOutcomes { get; set; }
         public string imgUrl { get; set; }
-        public List<PostTags> Tags { get; set; }
+        public List<Tag> Tags { get; set; }
         public List<CaseLike> Likes { get; set; }
         public List<CaseComment> Comments { get; set; }
 

@@ -147,7 +147,7 @@ namespace Hippra.Services
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var result = await _context.Cases.Where(x => x.ID == caseId).Include(x => x.User).Include(c => c.Tags).ThenInclude(x => x.Tag).FirstOrDefaultAsync();
+            var result = await _context.Cases.Where(x => x.ID == caseId).Include(x => x.User).Include(c => c.Tags).FirstOrDefaultAsync();
             return result;
         }
 
@@ -223,17 +223,10 @@ namespace Hippra.Services
             caseObject.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
             caseObject.TreatmentOutcomes = inputCase.TreatmentOutcomes;
             caseObject.imgUrl = inputCase.imgUrl;
-            caseObject.Tags = new List<PostTags>();
+ 
             if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
             {
-                foreach (var tag in inputCase.SelectedTagsObjects)
-                {
-                    caseObject.Tags.Add(new PostTags()
-                    {
-                        TagId = tag.ID,
-                        CaseID = caseObject.ID,
-                    });
-                }
+                caseObject.Tags = inputCase.SelectedTagsObjects.ToList();
             }
 
             try
@@ -310,49 +303,28 @@ namespace Hippra.Services
         }
 
         // Tags
-        public async Task<bool> AddTag(PostTags Tag)
+
+        public async Task<List<Tag>> GetTagsNoTracking(int caseId)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            _context.PostTags.Add(Tag);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-        public async Task<List<PostTags>> GetTagsNoTracking(int caseId)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            var result = await _context.PostTags.Include(x => x.Tag).AsNoTracking().Where(c => c.CaseID == caseId).ToListAsync();
+            var result = await _context.PostTags.Include(x => x.Tag).Select(x => x.Tag).ToListAsync();
             return result;
 
         }
-        public async Task<bool> DeleteTag(PostTags tag)
-        {
-            using var _context = DbFactory.CreateDbContext();
 
-            var CaseTag = await _context.PostTags.FirstOrDefaultAsync(t => t.ID == tag.ID);
-
-            if (CaseTag != null)
-            {
-                _context.PostTags.Remove(CaseTag);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            return false;
-        }
         public async Task<List<int>> GetCasesIdByTag(int tagId)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var CaseTag = await _context.PostTags.AsNoTracking().Where(t => t.TagId == tagId).ToListAsync();
+            var CaseTag = await _context.PostTags.AsNoTracking().Where(t => t.TagsId == tagId).ToListAsync();
             List<int> result = new List<int>();
             if (CaseTag != null)
             {
 
                 foreach (var item in CaseTag)
                 {
-                    result.Add(item.CaseID);
+                    result.Add(item.CasesID);
                 }
             }
 
@@ -363,7 +335,7 @@ namespace Hippra.Services
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var CaseTag = await _context.PostTags.AsNoTracking().Where(t => t.TagId == tagId).Include(x => x.Case).ThenInclude(x => x.User).ToListAsync();
+            var CaseTag = await _context.PostTags.AsNoTracking().Where(t => t.TagsId == tagId).Include(x => x.Case).ThenInclude(x => x.User).ToListAsync();
             List<Case> result = new List<Case>();
             if (CaseTag != null)
             {

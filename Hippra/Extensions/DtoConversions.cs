@@ -80,8 +80,7 @@ namespace Hippra.Extensions
 
             if (@case.Tags != null && @case.Tags.Count > 0)
             {
-                viewModel.SelectedTagsObjects = @case.Tags.Select(x => x.Tag).ToArray();
-                viewModel.SelectedTags = @case.Tags.Select(x => x.TagId).ToArray();
+                viewModel.SelectedTagsObjects = @case.Tags.ToArray();
             }
             //if (@case.Comments != null)
             //{

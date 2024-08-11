@@ -148,7 +148,7 @@
                             <h3>Topics *</h3>
                      @*        <input type="text" class="form-control tag-search" placeholder="Add Tag(s) to so that users know what your case is about."> *@
                             <FluentAutocomplete Id="my-customized"
-                                                @ref="ContactList"
+                                                @ref="TagsList"
                                                 TOption="Tag"
                                                 Width="100%"
                                                 Placeholder="Add Tag(s) to so that users know what your case is about."
@@ -216,20 +216,13 @@
     private string fileName;
     private string imgUrl;
 
-    private const int MAXTAGS = 25;
     private bool isSubmitted = false;
-    private string newTag = "";
-    public List<string> tagList = new List<string>();
-    private bool isDeleteTag = false;
-    private string TagFieldErrorMessage = "";
-    private bool isTagOk = true;
+
     private bool IsAskHelpCase = true;
     private string userId { get; set; } = "";
     private string seletedItems { get; set; }
 
-
-    FluentAutocomplete<Tag> ContactList = default!;
-    IEnumerable<Tag> SelectedItems = Array.Empty<Tag>();
+    FluentAutocomplete<Tag> TagsList = default!;
 
     private void OnSearch(OptionsSearchEventArgs<Tag> e)
     {
@@ -275,7 +268,6 @@
     {
         CaseModel.imgUrl = imgUrl;
         CaseModel.UserId = userId;
-        CaseModel.SelectedTags = CaseModel.SelectedTagsObjects.Select(x => x.ID).ToArray();
         var result = await caseService.AddNewCase(CaseModel);
         if (result)
             NavigationManager.NavigateTo("/");

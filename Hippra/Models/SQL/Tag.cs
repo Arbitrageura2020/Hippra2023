@@ -10,5 +10,7 @@ namespace Hippra.Models.SQL
         public int ID { get; set; }
         public string Name { get; set; }
 
+        public List<Case> Cases { get; set; }
+
     }
 }

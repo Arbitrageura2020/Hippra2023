@@ -65,8 +65,8 @@ namespace Hippra.Services
                 //ImOwner = x.UserId == currentUserId
                 Tags = x.Tags.Select(t => new CaseTagViewModel()
                 {
-                    Name = t.Tag.Name,
-                    TagId = t.TagId,
+                    Name = t.Name,
+                    TagId = t.ID,
                 }).ToList()
             }).AsNoTracking().ToListAsync();
             return result;
@@ -99,8 +99,8 @@ namespace Hippra.Services
                 Status = x.Status,
                 Tags = x.Tags.Select(t => new CaseTagViewModel()
                 {
-                    Name = t.Tag.Name,
-                    TagId = t.TagId,
+                    Name = t.Name,
+                    TagId = t.ID,
                 }).ToList(),
                 LikedByCurrentUser = x.Likes.Any(y => y.LikedByUserId == currentUserId),
             }).FirstOrDefaultAsync();
@@ -132,17 +132,9 @@ namespace Hippra.Services
             newCase.PostedAnonymosley=inputCase.PostAnonymosly;
             newCase.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
             newCase.TreatmentOutcomes = inputCase.TreatmentOutcomes;
-            if (inputCase.SelectedTags != null)
+            if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
             {
-                newCase.Tags = new List<PostTags>();
-                foreach (var tagId in inputCase.SelectedTags)
-                {
-                    newCase.Tags.Add(new PostTags()
-                    {
-                        TagId = tagId,
-                        CaseID = newCase.ID,
-                    });
-                }
+                newCase.Tags = inputCase.SelectedTagsObjects.ToList();
             }
 
             try
