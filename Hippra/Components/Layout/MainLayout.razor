@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
+@using Microsoft.FluentUI.AspNetCore.Components
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -119,7 +120,7 @@
         </div>
     </div>
 </main>
-
+<FluentDialogProvider @rendermode="RenderMode.InteractiveServer" /> 
 
 @code {
 

@@ -48,7 +48,7 @@ namespace Hippra.Services
             using var _context = DbFactory.CreateDbContext();
             if (request != null)
             {
-                if (request.Type == NotificationType.AddedComment)
+                if (request.Type == NotificationType.AddedComment||request.Type==NotificationType.AddedUpVote)
                 {
                     var receiverId = _context.Cases.Where(x => x.ID == request.PostID).Select(x => x.UserId).AsNoTracking().FirstOrDefault();
                     if (receiverId != null)
@@ -59,7 +59,8 @@ namespace Hippra.Services
                             CreationDate = DateTime.UtcNow,
                             CaseId = request.PostID,
                             Type = request.Type,
-                            ReceiverUserID = receiverId
+                            ReceiverUserID = receiverId,
+                            CommentId = request.CommentId,
                         };
                         _context.Notifications.Add(notification);
                     }

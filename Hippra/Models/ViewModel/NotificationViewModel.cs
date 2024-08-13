@@ -17,17 +17,31 @@ namespace Hippra.Models.ViewModel
         public bool IsNotificationRead { get; set; }
         public DateTime CreationDate { get; set; }
         public int PostID { get; set; }
-        public int CommentId { get; set; }
+        public long CommentId { get; set; }
 
         public string PostTitle { get; set; }
         public string SenderImage { get; set; }
+
+        public bool IsGeneralNotification
+        {
+            get
+            {
+                var isGeneral = true;
+                if (this.Type == NotificationType.AddedComment ||
+                    this.Type == NotificationType.AddedUpVote ||
+                    this.Type == NotificationType.PostLiked)
+                    isGeneral = false;
+                return isGeneral;
+
+            }
+        }
 
         public string NavigationLink
         {
             get
             {
                 var link = "#";
-                if(Type==NotificationType.AddedComment)
+                if (Type == NotificationType.AddedComment)
                 {
                     link = "/viewcase/" + this.PostID;
                 }

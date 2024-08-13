@@ -16,10 +16,12 @@
 @inject ProfileService pService
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
 @inject IAuthorizationService AuthorizationService
 @inject CommonService commonService;
 @inject INotificationsService notificationsService;
 @inject ICaseService caseService;
+@inject IDialogService dialogService
 <section class="case-comment">
     <div class="case-comment-form editing-comment">
         <EditForm Model="@newComment" OnValidSubmit="@AddComment" FormName="AddCommentForm">
@@ -34,6 +36,7 @@
                         {
                             <div class="files">
                                 <p>@document.Name</p>
+                                <button @onclick="(e => { DeleteUploadedFile(document); })">Delete</button>
                             </div>
                         }
                     }
@@ -86,7 +89,12 @@
                         {
                             <button class="comment-edit" @onclick="(e => { EditComment(comment.ID); })">
                                 <img src="/frontend/Dashboard/img/icons/edit-icon.svg" alt="">
-                                Edit @comment.ID
+                                Edit 
+                            </button>
+
+                            <button class="comment-edit" @onclick="(e => { DeleteComment(comment); })">
+                                <img src="/frontend/Dashboard/img/icons/edit-icon.svg" alt="">
+                                Delete 
                             </button>
                         }
                         else
@@ -280,21 +288,38 @@
 
     public async Task DeleteComment(CaseCommentViewModel commentObject)
     {
-        isSubmitted = false;
+        var dialogParameters = new DialogParameters
+            {
+                Title = "Delete Comment",
+                PreventDismissOnOverlayClick = true,
+                PreventScroll = true
+            };
 
-        var result = await caseService.DeleteComment(commentObject.ID, userId);
-
-        isSubmitted = true;
-
-        if (result)
+        var dialog = await dialogService.ShowConfirmationAsync(
+            "Are you sure you want to delete this comment?",
+            "Yes",
+            "No",
+            "Delete Comment?");
+        var result = await dialog.Result;
+        if (!result.Cancelled)
         {
-            CommentList.Remove(commentObject);
-            // CommentList = await hService.GetCommentsNoTracking(caseId);
+            isSubmitted = false;
+
+            var deleteResult = await caseService.DeleteComment(commentObject.ID, userId);
+
+            isSubmitted = true;
+
+            if (deleteResult)
+            {
+                CommentList.Remove(commentObject);
+                // CommentList = await hService.GetCommentsNoTracking(caseId);
+            }
+
+            await commonService.addToHistoryComment("deleted a comment on", caseInfo);
+
+            this.StateHasChanged();
         }
-
-        await commonService.addToHistoryComment("deleted a comment on", caseInfo);
-
-        this.StateHasChanged();
+   
     }
 
     public async Task DeleteSavedFile(CaseCommentViewModel commentObject, CaseCommentFile file)
@@ -310,6 +335,12 @@
             // CommentList = await hService.GetCommentsNoTracking(caseId);
         }
 
+        this.StateHasChanged();
+    }
+
+    public async Task DeleteUploadedFile(IBrowserFile file)
+    {
+        NewCaseUploadedFiles.Remove(file);
         this.StateHasChanged();
     }
 
@@ -420,6 +451,16 @@
         if (!isVoted)
         {
             await caseService.AddVote(userId, commentId);
+            //add notification
+            AddNotificationDto request = new AddNotificationDto()
+                {
+                    SenderUserID = userId,
+                    Type = NotificationType.AddedUpVote,
+                    PostID = caseId,
+                    CommentId = commentId
+                };
+
+            await notificationsService.AddNotification(request);
         }
     }
 
@@ -431,4 +472,6 @@
             await caseService.AddVote(userId, commentId);
         }
     }
+
+
 }

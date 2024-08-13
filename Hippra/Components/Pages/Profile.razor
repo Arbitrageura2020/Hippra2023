@@ -27,6 +27,7 @@
 @inject IAuthorizationService AuthorizationService
 @inject IHttpContextAccessor httpContextAccessor
 @inject IFollowService followService;
+@inject INotificationsService notificationsService;
 <div class="profile-layout">
     <!-- Profile Top Frame -->
     <section class="profile-frame no-pad">
@@ -64,9 +65,9 @@
                     }
                     else
                     {
-                        <button type="" class="btn btn-sm btn-green">
+                        <a href="/settings" class="btn btn-sm btn-green">
                             Edit Profile
-                        </button>
+                        </a>
                     }
                 </div>
             </div>
@@ -131,10 +132,10 @@
                         <div class="profile-activities-item">
                             <div class="comment-user-info">
                                 <div class="comment-author">
-                                    
-                                        <img src="@caseItem.PosterImg" alt="@caseItem.PosterName">
-                                 
-                                   
+
+                                    <img src="@caseItem.PosterImg" alt="@caseItem.PosterName">
+
+
                                 </div>
                                 <div class="comment-info">
                                     <h6> @caseItem.PosterName </h6>
@@ -173,7 +174,7 @@
                                 </div>
                             </div>
                         </div>
-                      
+
                     }
 
                 </div>
@@ -256,6 +257,16 @@
         NrOfFollowers++;
         // await addToHistory("followed");
         // await Notify(-1);
+
+        //add notification
+        AddNotificationDto request = new AddNotificationDto()
+            {
+                SenderUserID = currentUserId,
+                Type = NotificationType.Followed,
+                ReceiverUserID = userId
+            };
+
+        await notificationsService.AddNotification(request);
         StateHasChanged();
     }
 

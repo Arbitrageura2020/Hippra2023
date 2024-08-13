@@ -14,7 +14,7 @@ namespace Hippra.Models.SQL
         public DateTime CreationDate { get; set; }
         public int CaseId { get; set; }
         public Case Case { get; set; }
-        public int CommentId { get; set; }
+        public long CommentId { get; set; }
 
     }
 }
