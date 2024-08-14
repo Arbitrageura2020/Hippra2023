@@ -75,7 +75,7 @@
                             </div>
                             <div class="comment-info">
                                 <div>
-
+0
                                     <h6>
                                         <span>@comment.PosterName</span>
                                     </h6>
@@ -89,21 +89,21 @@
                         {
                             <button class="comment-edit" @onclick="(e => { EditComment(comment.ID); })">
                                 <img src="/frontend/Dashboard/img/icons/edit-icon.svg" alt="">
-                                Edit 
+                                Edit
                             </button>
 
                             <button class="comment-edit" @onclick="(e => { DeleteComment(comment); })">
                                 <img src="/frontend/Dashboard/img/icons/edit-icon.svg" alt="">
-                                Delete 
+                                Delete
                             </button>
                         }
-                        else
-                        {
-                            <button class="comment-edit" @onclick="(e => { ReportComment(comment.ID); })">
+                       @*  else
+                        { *@
+                            <button class="comment-edit" @onclick="(e => { EditInDialog(comment.ID); })">
                                 <img src="/frontend/Dashboard/img/icons/report-icon.svg" alt="">
                                 Report
                             </button>
-                        }
+                       @*  } *@
                         <p>
                             @comment.Comment
                         </p>
@@ -319,7 +319,7 @@
 
             this.StateHasChanged();
         }
-   
+
     }
 
     public async Task DeleteSavedFile(CaseCommentViewModel commentObject, CaseCommentFile file)
@@ -473,5 +473,42 @@
         }
     }
 
+
+    // Open the dialog for the item
+    private async Task EditInDialog(long commentId)
+    {
+        var parameters = new DialogParameters
+            {
+                Title = "Report Comment",
+                PreventDismissOnOverlayClick = true,
+                PreventScroll = true
+            };
+        var model = new ReportCommentViewModel() { CommentId = commentId };
+        var dialog = await dialogService.ShowDialogAsync<ReportComment>(model, parameters);
+        var dialogResult = await dialog.Result;
+        await HandleEditConcertDialogResult(dialogResult, commentId);
+    }
+
+    // Handle the result of the edit dialog/panel
+    private async Task HandleEditConcertDialogResult(DialogResult result, long commentId)
+    {
+        // If cancelled, return
+        if (result.Cancelled)
+        {
+            return;
+        }
+
+        // If the data is not null, update the item
+        if (result.Data is not null)
+        {
+            var updatedItem = result.Data as ReportCommentViewModel;
+            if (updatedItem is null)
+            {
+                return;
+            }
+
+           //report comment call service method
+        }
+    }
 
 }

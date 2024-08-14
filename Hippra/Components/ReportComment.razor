@@ -1,0 +1,40 @@
+﻿@using Hippra.Models.ViewModel
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<ReportCommentViewModel>
+
+<FluentDialogHeader ShowDismiss="false">
+    <FluentStack VerticalAlignment="VerticalAlignment.Center">
+
+        <FluentLabel Typo="Typography.PaneHeader">
+            @Dialog.Instance.Parameters.Title
+        </FluentLabel>
+    </FluentStack>
+</FluentDialogHeader>
+
+
+<FluentTextArea Label="Description" @bind-Value="@Content.ReportText" />
+
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Accent"  OnClick="@SaveAsync">Save</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@CancelAsync">Cancel</FluentButton>
+</FluentDialogFooter>
+
+@code {
+
+    [Parameter]
+    public ReportCommentViewModel Content { get; set; } = default!;
+
+    [CascadingParameter]
+    public Microsoft.FluentUI.AspNetCore.Components.FluentDialog Dialog { get; set; } = default!;
+
+    private async Task SaveAsync()
+    {
+        await Dialog.CloseAsync(Content);
+    }
+
+    private async Task CancelAsync()
+    {
+        await Dialog.CancelAsync();
+    }
+}

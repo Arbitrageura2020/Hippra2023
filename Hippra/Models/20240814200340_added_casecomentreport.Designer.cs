@@ -4,6 +4,7 @@ using Hippra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hippra.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240814200340_added_casecomentreport")]
+    partial class added_casecomentreport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -384,11 +387,17 @@ namespace Hippra.Migrations
                     b.Property<long>("CommentId")
                         .HasColumnType("bigint");
 
+                    b.Property<int>("PosterID")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("VoteDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("VoterID")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
