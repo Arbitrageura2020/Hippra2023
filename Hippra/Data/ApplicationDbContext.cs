@@ -26,9 +26,6 @@ namespace Hippra.Data
 
         public DbSet<CaseCommentVote> CaseCommentVotes { get; set; }
 
-        public DbSet<Connection> Connections { get; set; }
-
-
         public DbSet<Notification> Notifications { get; set; }
 
         public DbSet<Follow> Follows { get; set; }
