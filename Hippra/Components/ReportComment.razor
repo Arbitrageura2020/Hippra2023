@@ -2,23 +2,36 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @implements IDialogContentComponent<ReportCommentViewModel>
+<div class="report-section">
+    <FluentDialogHeader ShowDismiss="false">
+        <FluentStack VerticalAlignment="VerticalAlignment.Center">
 
-<FluentDialogHeader ShowDismiss="false">
-    <FluentStack VerticalAlignment="VerticalAlignment.Center">
+            <FluentLabel Typo="Typography.PaneHeader">
+                <h4>Submit a report</h4>
+            </FluentLabel>
+        </FluentStack>
+    </FluentDialogHeader>
 
-        <FluentLabel Typo="Typography.PaneHeader">
-            @Dialog.Instance.Parameters.Title
-        </FluentLabel>
-    </FluentStack>
-</FluentDialogHeader>
+  
+        <p>
+            Thank you for looking out for yourself and fellow Hippra users by
+            reporting things that break the rules. Let us know what's happening,
+            and we'll look into it.
+        </p>
 
 
-<FluentTextArea Label="Description" @bind-Value="@Content.ReportText" />
+    <form action="">
+        <textarea @bind="@Content.ReportText" placeholder="Write about your report..." rows="8" cols="50" required></textarea>
+    </form>
 
-<FluentDialogFooter>
-    <FluentButton Appearance="Appearance.Accent"  OnClick="@SaveAsync">Save</FluentButton>
-    <FluentButton Appearance="Appearance.Neutral" OnClick="@CancelAsync">Cancel</FluentButton>
-</FluentDialogFooter>
+    <FluentDialogFooter>
+        <div class="option-btns">
+            <FluentButton OnClick="@SaveAsync">Save</FluentButton>
+            <FluentButton OnClick="@CancelAsync">Cancel</FluentButton>
+        </div>
+    </FluentDialogFooter>
+
+</div>
 
 @code {
 

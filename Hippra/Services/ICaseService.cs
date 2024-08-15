@@ -53,5 +53,6 @@ namespace Hippra.Services
         Task<bool> CheckVote(string voterId, long commentId);
         Task<bool> AddVote(string voterId, long commentId);
         Task<bool> RemoveVote(string voterId, long commentId);
+        Task<bool> ReportComment(string userId, long commentId, int caseId, string reportText);
     }
 }

@@ -1,0 +1,32 @@
+﻿.report-section {
+    position: absolute;
+    width: min-content;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+    .report-section h4 {
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .report-section textarea {
+        margin-top: 10px;
+        border: 1px solid #e0e4ec;
+        border-radius: 10px;
+    }
+
+        .report-section textarea::placeholder {
+            padding: 10px;
+        }
+
+.option-btns button {
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    background: #d9d9d9;
+    padding: 10px 30px 10px 30px;
+    border-radius: 50px;
+    cursor: pointer;
+}

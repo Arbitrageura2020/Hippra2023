@@ -401,5 +401,21 @@ namespace Hippra.Services
 
             return false;
         }
+
+        public async Task<bool> ReportComment(string userId,long commentId,int caseId, string reportText)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            _context.CaseCommentReports.Add(new CaseCommentReport()
+            {
+                CommentId = commentId,
+                UserId = userId,
+                DateAdded = DateTime.UtcNow,
+                CaseId = caseId,    
+                ReportText= reportText
+            });
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

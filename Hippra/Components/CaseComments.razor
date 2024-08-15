@@ -479,7 +479,7 @@
     {
         var parameters = new DialogParameters
             {
-                Title = "Report Comment",
+                Title = "Submit a report",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true
             };
@@ -507,7 +507,7 @@
                 return;
             }
 
-           //report comment call service method
+            var serviceCassResult = caseService.ReportComment(userId, commentId, caseId, updatedItem.ReportText);
         }
     }
 
