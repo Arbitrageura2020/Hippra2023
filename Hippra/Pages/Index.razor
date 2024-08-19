@@ -27,6 +27,7 @@
 @inject NavigationManager NavigationManager
 @inject ProfileService pService
 @inject HippraService hService
+@inject IHistoryLogService historyLogService;
 @inject IAuthorizationService AuthorizationService
 
 
@@ -255,7 +256,7 @@
             {
                 newHistory.Detail = '"' + searchString + '"';
             }
-            hService.AddHistory(newHistory);
+          await  historyLogService.AddHistory(newHistory);
         }
 
     }

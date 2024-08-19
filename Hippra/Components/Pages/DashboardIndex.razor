@@ -25,6 +25,7 @@
 @*@inject SignInManager<AppUser> SignInManager
 	@inject UserManager<AppUser> UserManager*@
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject IHistoryLogService historyLogService;
 @inject ProfileService pService
 @inject HippraService hService
 @inject IAuthorizationService AuthorizationService
@@ -264,7 +265,7 @@
             {
                 newHistory.Detail = '"' + searchString + '"';
             }
-            hService.AddHistory(newHistory);
+            await historyLogService.AddHistory(newHistory);
         }
 
     }

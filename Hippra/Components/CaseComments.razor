@@ -18,7 +18,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
 @inject IAuthorizationService AuthorizationService
-@inject CommonService commonService;
+@inject IHistoryLogService historyLogService;
 @inject INotificationsService notificationsService;
 @inject ICaseService caseService;
 @inject IDialogService dialogService
@@ -315,7 +315,7 @@
                 // CommentList = await hService.GetCommentsNoTracking(caseId);
             }
 
-            await commonService.addToHistoryComment("deleted a comment on", caseInfo);
+            await historyLogService.addToHistoryComment("deleted a comment on", caseInfo);
 
             this.StateHasChanged();
         }
@@ -372,7 +372,7 @@
             NewCaseUploadedFiles.Clear();
             //  CommentList = await hService.GetCommentsNoTracking(caseId);
 
-            await commonService.addToHistoryComment("added a comment on", caseInfo);
+            await historyLogService.addToHistoryComment("added a comment on", caseInfo);
 
 
             //add notification

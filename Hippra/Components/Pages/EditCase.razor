@@ -30,7 +30,7 @@
 @inject HippraService hService
 @inject IAuthorizationService AuthorizationService
 @inject CommonService commonService;
-
+@inject IHistoryLogService historyLogService;
 <div class="container">
     <!-- Ask 4 -->
     <div id="post-ask-4-content" class="post-tab-content">
@@ -288,11 +288,11 @@
         var result = await hService.EditCase(CaseModel);
         if (isCaseClose)
         {
-            await commonService.AddToHistory("closed a case", this.CaseModel);
+            await historyLogService.AddToHistory("closed a case", this.CaseModel);
         }
         else
         {
-            await commonService.AddToHistory("edited a case", this.CaseModel);
+            await historyLogService.AddToHistory("edited a case", this.CaseModel);
         }
 
         NavigationManager.NavigateTo(returnUrl);

@@ -349,46 +349,7 @@ namespace Hippra.Services
             return result;
         }
 
-        // history type
-        public async Task<int> AddHistory(PostHistory newHistory)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            _context.PostHistories.Add(newHistory);
-            await _context.SaveChangesAsync();
-            return newHistory.ID;
-        }
-        public async Task<HistoryResultModel> GetPostHistories(int posterID, int targetPage, int PageSize)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            List<PostHistory> histories = await _context.PostHistories.Where(c => c.PosterID == posterID).OrderByDescending(s => s.CreationDate).Skip((targetPage - 1) * PageSize).Take(PageSize).ToListAsync();
-            //var h = histories.OrderByDescending(h => h.CreationDate);
-            HistoryResultModel result = new HistoryResultModel();
-            result.Histories = histories;
-            result.TotalCount = await _context.PostHistories.AsNoTracking().CountAsync(s => s.PosterID == posterID);
-            return result;
-        }
-
-        public async Task<HistoryResultModel> GetPostHistories(int posterID)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            List<PostHistory> histories = await _context.PostHistories.Where(c => c.PosterID == posterID).OrderByDescending(s => s.CreationDate).ToListAsync();
-            //var h = histories.OrderByDescending(h => h.CreationDate);
-            HistoryResultModel result = new HistoryResultModel();
-            result.Histories = histories;
-            result.TotalCount = await _context.PostHistories.AsNoTracking().CountAsync(s => s.PosterID == posterID);
-            return result;
-        }
-
-        public async Task<PostHistory> GetHistoryByIDs(int id)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            PostHistory h = await _context.PostHistories.FirstOrDefaultAsync(h => h.ID == id);
-            return h;
-        }
+   
 
 
         //Stats

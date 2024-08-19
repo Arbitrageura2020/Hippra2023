@@ -96,6 +96,7 @@ builder.Services.AddTransient<CommonService>();
 builder.Services.AddTransient<AzureStorage>();
 builder.Services.AddTransient<INotificationsService, NotificationsService>();
 builder.Services.AddTransient<IFollowService, FollowService>();
+builder.Services.AddTransient<IHistoryLogService, HistoryLogService>();
 builder.Services.AddTransient<ICaseService, CaseService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AppUser>>();
