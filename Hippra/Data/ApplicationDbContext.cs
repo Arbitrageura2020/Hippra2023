@@ -22,7 +22,7 @@ namespace Hippra.Data
 
         public DbSet<CaseTag> PostTags { get; set; }
 
-        public DbSet<PostHistory> PostHistories { get; set; }
+        public DbSet<HistoryLog> HistoryLogs { get; set; }
 
         public DbSet<CaseCommentVote> CaseCommentVotes { get; set; }
 

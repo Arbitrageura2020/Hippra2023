@@ -1,4 +1,5 @@
 ﻿using Hippra.Data;
+using Hippra.Models.DTO;
 using Hippra.Models.POCO;
 using Hippra.Models.SQL;
 using Hippra.Models.ViewModel;
@@ -12,16 +13,15 @@ namespace Hippra.Services
 {
     public interface IHistoryLogService
     {
-        Task<int> AddHistory(PostHistory newHistory);
-        Task<HistoryResultModel> GetPostHistories(int posterID, int targetPage, int PageSize);
+        Task<long> AddHistory(AddHistoryLogDto newHistory);
+        Task<HistoryResultModel> GetPostHistories(string posterID, int targetPage, int PageSize);
 
-        Task<HistoryResultModel> GetPostHistories(int posterID);
+        Task<HistoryResultModel> GetPostHistories(string posterID);
 
-        Task<PostHistory> GetHistoryByIDs(int id);
+        Task<HistoryLog> GetHistoryByIDs(int id);
 
         Task AddToHistory(string historyType, AddEditCaseViewModel caseItem);
 
-        Task<int> addToHistory(string historyType, AppUser user);
 
         Task addToHistoryComment(string historyType, Case c);
     }

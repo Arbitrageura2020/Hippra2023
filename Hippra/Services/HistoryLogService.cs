@@ -1,4 +1,5 @@
 ﻿using Hippra.Data;
+using Hippra.Models.DTO;
 using Hippra.Models.POCO;
 using Hippra.Models.SQL;
 using Hippra.Models.ViewModel;
@@ -26,43 +27,50 @@ namespace Hippra.Services
         }
 
         // history type
-        public async Task<int> AddHistory(PostHistory newHistory)
+        public async Task<long> AddHistory(AddHistoryLogDto newHistory)
         {
             using var _context = DbFactory.CreateDbContext();
-
-            _context.PostHistories.Add(newHistory);
+            var historyLogItem = new HistoryLog();
+            historyLogItem.PostID = newHistory.PostID;
+            historyLogItem.CommentId = newHistory.CommentId;
+            historyLogItem.UserId=newHistory.UserId;
+            historyLogItem.Detail = newHistory.Detail;
+            historyLogItem.Tag = newHistory.Tag;    
+            historyLogItem.Type = newHistory.Type;
+            historyLogItem.AddedOn = DateTime.Now;
+            _context.HistoryLogs.Add(historyLogItem);
             await _context.SaveChangesAsync();
-            return newHistory.ID;
+            return historyLogItem.ID;
         }
-        public async Task<HistoryResultModel> GetPostHistories(int posterID, int targetPage, int PageSize)
+        public async Task<HistoryResultModel> GetPostHistories(string posterID, int targetPage, int PageSize)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            List<PostHistory> histories = await _context.PostHistories.Where(c => c.PosterID == posterID).OrderByDescending(s => s.CreationDate).Skip((targetPage - 1) * PageSize).Take(PageSize).ToListAsync();
+            List<HistoryLog> histories = await _context.HistoryLogs.Where(c => c.UserId == posterID).OrderByDescending(s => s.AddedOn).Skip((targetPage - 1) * PageSize).Take(PageSize).ToListAsync();
             //var h = histories.OrderByDescending(h => h.CreationDate);
             HistoryResultModel result = new HistoryResultModel();
             result.Histories = histories;
-            result.TotalCount = await _context.PostHistories.AsNoTracking().CountAsync(s => s.PosterID == posterID);
+            result.TotalCount = await _context.HistoryLogs.AsNoTracking().CountAsync(s => s.UserId == posterID);
             return result;
         }
 
-        public async Task<HistoryResultModel> GetPostHistories(int posterID)
+        public async Task<HistoryResultModel> GetPostHistories(string posterID)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            List<PostHistory> histories = await _context.PostHistories.Where(c => c.PosterID == posterID).OrderByDescending(s => s.CreationDate).ToListAsync();
+            List<HistoryLog> histories = await _context.HistoryLogs.Where(c => c.UserId == posterID).OrderByDescending(s => s.AddedOn).ToListAsync();
             //var h = histories.OrderByDescending(h => h.CreationDate);
             HistoryResultModel result = new HistoryResultModel();
             result.Histories = histories;
-            result.TotalCount = await _context.PostHistories.AsNoTracking().CountAsync(s => s.PosterID == posterID);
+            result.TotalCount = await _context.HistoryLogs.AsNoTracking().CountAsync(s => s.UserId == posterID);
             return result;
         }
 
-        public async Task<PostHistory> GetHistoryByIDs(int id)
+        public async Task<HistoryLog> GetHistoryByIDs(int id)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            PostHistory h = await _context.PostHistories.FirstOrDefaultAsync(h => h.ID == id);
+            HistoryLog h = await _context.HistoryLogs.FirstOrDefaultAsync(h => h.ID == id);
             return h;
         }
 
@@ -103,58 +111,30 @@ namespace Hippra.Services
         public async Task AddToHistory(string historyType, AddEditCaseViewModel caseItem)
         {
             //history stuffs
-            PostHistory newHistory = new PostHistory();
-            newHistory.ID = 0;
-            newHistory.PostID = caseItem.ID;
-            newHistory.CreationDate = DateTime.Now;
-            newHistory.PosterID = caseItem.PosterID;
-            //  newHistory.UserDisplayName = fullName;
-            newHistory.Title = caseItem.Topic;
-            newHistory.Detail = caseItem.Description;
-            newHistory.HistoryTypes = historyType;
-            await this.AddHistory(newHistory).ConfigureAwait(false);
+            //PostHistory newHistory = new PostHistory();
+            //newHistory.ID = 0;
+            //newHistory.PostID = caseItem.ID;
+            //newHistory.CreationDate = DateTime.Now;
+            //newHistory.PosterID = caseItem.PosterID;
+            ////  newHistory.UserDisplayName = fullName;
+            //newHistory.Title = caseItem.Topic;
+            //newHistory.Detail = caseItem.Description;
+            //newHistory.HistoryTypes = historyType;
+            //await this.AddHistory(newHistory).ConfigureAwait(false);
         }
 
-        public async Task<int> addToHistory(string historyType, AppUser user)
-        {
-            //history stuffs
-            PostHistory newHistory = new PostHistory();
-            newHistory.ID = 0;
-            newHistory.PostID = user.PublicId;
-            newHistory.CreationDate = DateTime.Now;
-            newHistory.PosterID = user.PublicId;
-            newHistory.UserID = user.PublicId;
-            newHistory.UserDisplayName = user.FirstName;
-            newHistory.UserDisplayName2 = user.FirstName + " " + user.LastName;
-            if (historyType == "Invited")
-            {
-                newHistory.Title = user.FirstName + " " + user.LastName + "to connect.";
-            }
-            else
-            {
-                newHistory.Title = "on " + user.FirstName + " " + user.LastName + "'s Hippra page";
-            }
 
-            newHistory.Detail = "";
-            newHistory.HistoryTypes = historyType;
-            return await this.AddHistory(newHistory);
-        }
 
         public async Task addToHistoryComment(string historyType, Case c)
         {
-            var userInfo = await _userManager.GetUserAsync(WebContext.User);
             //history stuffs
-            PostHistory newHistory = new PostHistory();
-            newHistory.ID = 0;
+            AddHistoryLogDto newHistory = new AddHistoryLogDto();
             newHistory.PostID = c.ID;
-            newHistory.UserID = userInfo.PublicId;
-            newHistory.CreationDate = DateTime.Now;
-            newHistory.PosterID = userInfo.PublicId;
+            newHistory.UserId = c.UserId;
             //newHistory.UserDisplayName = userInfo.FullName;
             //newHistory.UserDisplayName2 = c.PosterName;
-            newHistory.Title = c.Topic;
+            newHistory.Type = Models.Enums.HistoryLogType.NewCommentAdded;
             newHistory.Detail = c.Description;
-            newHistory.HistoryTypes = historyType;
             await this.AddHistory(newHistory);
         }
     }

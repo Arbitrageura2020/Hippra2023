@@ -249,22 +249,21 @@
         //history stuffs
         if (searchString != "")
         {
-            PostHistory newHistory = new PostHistory();
-            newHistory.ID = 0;
-            newHistory.PostID = pCase.ID;
-            newHistory.CreationDate = DateTime.Now;
-            newHistory.PosterID = userId;
-            //  newHistory.UserDisplayName = fullName;
-            newHistory.Title = "Hippra";
-            newHistory.HistoryTypes = "searched ";
-            if (filters.showTagOnly)
-            {
-                newHistory.Detail = "tag [" + searchString + "]";
-            }
-            else
-            {
-                newHistory.Detail = '"' + searchString + '"';
-            }
+            AddHistoryLogDto newHistory = new AddHistoryLogDto();
+            // newHistory.PostID = pCase.ID;
+            // newHistory.CreationDate = DateTime.Now;
+            // newHistory.UserId = userId;
+            // //  newHistory.UserDisplayName = fullName;
+            // newHistory.Title = "Hippra";
+            // newHistory.HistoryTypes = "searched ";
+            // if (filters.showTagOnly)
+            // {
+            //     newHistory.Detail = "tag [" + searchString + "]";
+            // }
+            // else
+            // {
+            //     newHistory.Detail = '"' + searchString + '"';
+            // }
             await historyLogService.AddHistory(newHistory);
         }
 
