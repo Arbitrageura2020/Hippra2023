@@ -10,7 +10,7 @@
 @inject HippraService hService
 @inject UserManager<AppUser> UserManager
 @inject IHttpContextAccessor httpContextAccessor
-<div class="dashboard-cases inside-scroll" style="max-height: 1000px; padding-bottom: 20px;">
+<div>
     <!-- Ask-4 Help Loop Started -->
     @if (IsLoading)
     {
@@ -18,58 +18,74 @@
     }
     else
     {
-        @if (Count > 0)
+        foreach (var item in SearchResults)
         {
 
-            foreach (var item in SearchResults)
-            {
-                <div class="dashboard-case-item">
-                    <div class="case-tags">
-                        <!-- Case Item Tags Loop Here -->
-                     @*    @if (item.Tags != null)
+            <div class="card">
+                <div class="card-header">
+                    <div class="profile-info">
+                        @* href=@($"/viewcase/{c.ID}") *@
+                        <div>
+                            @if (item.User != null)
+                            {
+                                <img src="@item.User.ProfileUrl" alt="@item.User.FirstName" class="profile-img">
+                            }
+                            else
+                            {
+                                <img src="/img/hippra/blank-profile.png" class="profile-img" />
+                            }
+                            <p class="profile-name">@item.User.FullName</p>
+                            <p class="profile-title">@EnumsHelper.GetDisplayName(@item.User.MedicalSpecialty) · Posted 2 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="more-options">...</div>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">@item.Topic</h4>
+                    <p class="card-text">   @item.Description.Left(200) ...</p>
+                </div>
+                <div class="card-footer">
+                    <div class="tags">
+                        @if (@item.Type == CaseType.ClinicalKnowledge)
                         {
-                            <ul>
-                                @foreach (var tag in item.Tags)
-                                {
-                                    <li><a href="">@tag.Tag</a></li>
-                                }
-                            </ul>
-                        } *@
+                            <span class="tag">Clinical Knowledge Sharing Case</span>
+                        }
+                        @if (@item.Type == CaseType.AskForHelp)
+                        {
+                            <span class="tag">Ask For Help Case</span>
+                        }
+                        @if (@item.Tags != null)
+                        {
+                            @foreach (var tag in @item.Tags)
+                            {
+                                <span class="tag">@tag.Name</span>
+                            }
+                        }
+
                     </div>
-                    <div class="case-caption">
-                        <a href=@($"/viewcase/{item.ID}")>@item.Topic</a>
-                    </div>
-                    <div class="case-action">
-                        <button>
-                            <img src="./img/icons/chat.svg" alt="">
-                            <span>Reply</span>
-                        </button>
-                        <button>
-                            <img src="./img/icons/share.svg" alt="">
-                            <span>Share</span>
-                        </button>
+                    <div class="card-interactions">
+                        <span class="likes"><i class="fas fa-thumbs-up"></i> @item.NrOfLikes Likes</span>
+                        <span class="comments"><i class="fas fa-comments"></i> 20 Comments</span>
                     </div>
                 </div>
-            }
-        }
-        else
-        {
-            <div>No Case Found. Try Modify Search Criteria or Filter.</div>
+            </div>
+
+
         }
     }
+    else
+    {
+    <div>No Case Found. Try Modify Search Criteria or Filter.</div>
+    }
+
 
 </div>
 
 @code {
     private bool IsLoading = false;
     private string searchString { get; set; } = "";
-    private List<CaseViewModel> SearchResults { get; set; } = new List<CaseViewModel>();
-    private List<Case> cases { get; set; } = new List<Case>();
+    private IList<CaseViewModel> SearchResults { get; set; } = new List<CaseViewModel>();
 
-    public int CurrentPage { get; set; } = 1;
-    public int Count { get; set; }
-    public int PageSize { get; set; } = 10;
-    public int TotalPages => (int)Math.Ceiling(decimal.Divide(Count, PageSize));
     private string userId = "";
     protected override async Task OnInitializedAsync()
     {
@@ -92,19 +108,9 @@
 
     private async Task GetSearchResults()
     {
-        SearchResults = new List<CaseViewModel>();
 
-        var searchResults = await hService.GetAllCases(CaseType.AskForHelp);
 
-        Count = searchResults.TotalCount;
-
-        SearchResults = searchResults.Cases.Select(i => new CaseViewModel()
-            {
-                ID = i.ID,
-                Topic = i.Topic,
-                Description = i.Description,
-                DateCreated = i.DateCreated,
-            }).ToList();
+        SearchResults = await hService.GetAllCases(CaseType.AskForHelp);
 
         IsLoading = false;
     }

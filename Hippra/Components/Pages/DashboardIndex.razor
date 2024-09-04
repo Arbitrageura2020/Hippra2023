@@ -30,39 +30,70 @@
 @inject HippraService hService
 @inject IAuthorizationService AuthorizationService
 @attribute [Authorize]
-
 <div class="dashboard-layout">
-    <!-- Dashboard ASK-4-HELP -->
     <div class="dashboard-left">
-        <div class="main-header">
-            <div class="heading orange">
-                <h3>ASK-4-HELP CASES</h3>
+        <!-- Left side content goes here -->
+
+
+        <div class="d-flex flex-column button-container">
+            <div class="mb-2"> <h2>Explore Healthcare Topics</h2></div>
+            <div>
+                <button class="btn btn-primary">Following</button>
+                <button class="btn btn-primary">Family Medicine</button>
+                <button class="btn btn-primary">Women's Health</button>
+                <button class="btn btn-primary">Pediatrics</button>
+                <button class="btn btn-primary">Rare Diseases</button>
+                <button class="btn btn-primary">+</button>
             </div>
         </div>
-        <section class="dashboard-content">
-         @*    <div class="dashboard-case-create">
-                <form action="" method="post">
-                    <div class="form-group create-case">
-                        <input class="form-case" type="text" placeholder="What case would you like to share today?">
-                        <button type="button">
-                            <img src="./img/icons/extra.svg" alt="">
-                        </button>
-                    </div>
-                    <div class="form-group create-case-actions">
-                        <button type="button" class="btn btn-sm btn-gray  btn-high-radius btn-roboto">Add Tags</button>
-                        <button class="btn btn-sm btn-orange  btn-roboto">Post</button>
-                    </div>
-                </form>
-            </div> *@
-            <HelpCases />
-        </section>
-    </div>
+        <br>
 
-    <!-- Dashboard CLINICAL KNOWLEDGE SHARING -->
-    <div class="dashboard-right">
-        <Cases />
+
+        <!-- Topics -->
+         <HelpCases />
+        
+    </div>
+    <!-- Topics end-->
+    <div class="dashboard-right d-flex flex-column">
+        <div class="dashboard-right-top d-flex flex-column p-3 ">
+            <!-- Top right content goes here -->
+            <div class="mb-3"><h3>Trending Clinical Cases</h3></div>
+
+            <div class="trending-case ">
+                <div class="trending-case-img">
+                    <a href="profile.html"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt=""></a>
+                    <p>Kimberly Mastrangelo · Women's Health Specialist</p>
+                </div>
+                <h6>Warning Signs of Hypertension during Pregnancy?</h6>
+                <p>15 Likes · 9 comments</p>
+            </div>
+            <hr>
+
+
+        </div>
+        <div class="dashboard-right-bottom d-flex flex-column p-3">
+            <!-- Bottom right content goes here -->
+            <div class="mb-3"><h3>Medical Experts to follow</h3></div>
+            <div class="experts-card d-flex">
+                <div class="d-flex gap-2">
+                    <div class="expert-img">
+                        <a href="profile.html"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt=""></a>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h6 class="mb-0 fw-bold">Jerry Helfer</h6>
+                        <p class="post-meta">Family Medicine Specialist</p>
+                        <p class="post-meta">Georgetown Hospital · USA</p>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn follow-btn ">Follow</button>
+                </div>
+            </div>
+            <hr>
+        </div>
     </div>
 </div>
+
 
 
 

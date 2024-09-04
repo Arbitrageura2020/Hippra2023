@@ -2,6 +2,7 @@
 @using Hippra.Models.DTO
 @using Hippra.Models.Enums
 @using Hippra.Models.SQL
+@using Hippra.Models.ViewModel
 @using Hippra.Services
 @inject IJSRuntime JSRuntime
 @inject HippraService hService
@@ -38,7 +39,7 @@
             @if (Count > 0)
             {
 
-                foreach (var c in cases)
+                foreach (var c in SearchResults)
                 {
                     <div class="main-article-item">
                         <div class="article-date">
@@ -102,8 +103,7 @@
 @code {
     private bool IsLoading = false;
     private string searchString { get; set; } = "";
-    // private List<ParsedCase> SearchResults { get; set; } = new List<ParsedCase>();
-    private List<Case> cases { get; set; } = new List<Case>();
+    private IList<CaseViewModel> SearchResults { get; set; } = new List<CaseViewModel>();
 
     public int CurrentPage { get; set; } = 1;
     public int Count { get; set; }
@@ -129,8 +129,7 @@
     private async Task GetSearchResults()
     {
         // SearchResults = new List<ParsedCase>();
-        cases = new List<Case>();
-
+       
         // int tSubCategory = -1;
         // int tPriority = -1;
         // if (!string.IsNullOrEmpty(filters.SubCategory))
@@ -150,9 +149,8 @@
 
         // if (actionOptions == 0)
         // {
-        var searchResults = await hService.GetAllCases(CaseType.ClinicalKnowledge);
-        cases = searchResults.Cases;
-        Count = searchResults.TotalCount;
+        SearchResults = await hService.GetAllCases(CaseType.ClinicalKnowledge);
+
         //cases = await hService.GetCasesNoTracking(searchString, filters.showClosed, tSubCategory, targetPage, PageSize, -1);
         //Count = await hService.GetCaseCount();
         // }
@@ -182,10 +180,7 @@
         //         User=i.User
         //     }).ToList();
 
-        if (SortByRecent)
-            cases = cases.OrderByDescending(x => x.DateLastUpdated).ToList();
-        else
-            cases = cases.OrderByDescending(x => x.Votes).ToList();
+    
         IsLoading = false;
 
     }

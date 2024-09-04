@@ -81,15 +81,40 @@ namespace Hippra.Services
             return _context.Cases.Include(x => x.MedicalSubCategory).AsNoTracking().Where(s => s.PosterID == profileId).Count();
         }
 
-        public async Task<SearchResultModel> GetAllCases(CaseType type)
+        public async Task<IList<CaseViewModel>> GetAllCases(CaseType type)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            List<Case> cases = await _context.Cases.Where(x => x.Type == type).Include(c => c.MedicalSubCategory).Include(c => c.Tags).Include(x => x.User).OrderByDescending(s => s.DateCreated).AsNoTracking().ToListAsync();
-            SearchResultModel result = new SearchResultModel();
-            result.TotalCount = cases.Count;
-            result.Cases = cases;
-            return result;
+            List<CaseViewModel> cases = await _context.Cases.Where(x => x.Type == type).Include(c => c.Tags).Include(x => x.User).OrderByDescending(s => s.DateCreated).Select(x => new CaseViewModel()
+            {
+                ID = x.ID,
+                Description = x.Description,
+                Topic = x.Topic,
+                DateLastUpdated = x.DateLastUpdated,
+                PosterName = x.User.FullName,
+                PosterId = x.User.Id,
+                PosterSpeciality = x.User.MedicalSpecialty != null ? @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty) : "",
+                PosterImg = x.User.ProfileUrl,
+                CurrentStageOfDisease = x.CurrentStageOfDisease,
+                CurrentTreatmentAdministered = x.CurrentTreatmentAdministered,
+                DateCreated = x.DateCreated,
+                LabValues = x.LabValues,
+                Ethnicity = x.Ethnicity,
+                Gender = x.Gender,
+                Type = x.Type,
+                Race = x.Race,
+                PatientAge = x.PatientAge,
+                TreatmentOutcomes = x.TreatmentOutcomes,
+                Status = x.Status,
+                Tags = x.Tags.Select(t => new CaseTagViewModel()
+                {
+                    Name = t.Name,
+                    TagId = t.ID,
+                }).ToList(),
+                User=x.User,
+            }).AsNoTracking().ToListAsync();
+
+            return cases;
         }
 
         public async Task<SearchResultModel> GetMyCases(string userId)
@@ -223,7 +248,7 @@ namespace Hippra.Services
             caseObject.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
             caseObject.TreatmentOutcomes = inputCase.TreatmentOutcomes;
             caseObject.imgUrl = inputCase.imgUrl;
- 
+
             if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
             {
                 caseObject.Tags = inputCase.SelectedTagsObjects.ToList();
@@ -349,7 +374,7 @@ namespace Hippra.Services
             return result;
         }
 
-   
+
 
 
         //Stats
@@ -364,7 +389,7 @@ namespace Hippra.Services
         //    return stats;
         //}
 
-       
+
         // image upload
         public async Task<string> UploadImgToAzureAsync(Stream fileStream, string fileName)
         {
