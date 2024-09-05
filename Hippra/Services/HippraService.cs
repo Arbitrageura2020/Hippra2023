@@ -164,13 +164,6 @@ namespace Hippra.Services
             return result;
         }
 
-        public async Task<Case> GetCase(int CaseId)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            var result = await _context.Cases.FirstOrDefaultAsync(c => c.ID == CaseId);
-            return result;
-        }
         public async Task<Case> GetCaseNoTracking(int caseId)
         {
             using var _context = DbFactory.CreateDbContext();
@@ -178,45 +171,6 @@ namespace Hippra.Services
             var result = await _context.Cases.Where(x => x.ID == caseId).Include(x => x.User).Include(c => c.Tags).FirstOrDefaultAsync();
             return result;
         }
-
-        public async Task<bool> AddCase(Case Case)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            _context.Cases.Add(Case);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<int> CreateEmptyCase(int userId)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            string key = $"{Guid.NewGuid().ToString()}";
-            int id = -1;
-
-            Case c = new Case();
-            c.PosterID = userId;
-            c.Description = key;
-            _context.Cases.Add(c);
-            _context.SaveChanges();
-
-            c = await _context.Cases.FirstOrDefaultAsync(s => s.Description == key);
-            if (c != null)
-            {
-                id = c.ID;
-                c.Description = "";
-                _context.Cases.Update(c);
-                await _context.SaveChangesAsync();
-            }
-            return id;
-
-        }
-
-
-
-
 
         [Authorize]
         public async Task<bool> EditCase(AddEditCaseViewModel inputCase)
