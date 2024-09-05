@@ -81,11 +81,11 @@ namespace Hippra.Services
             return _context.Cases.Include(x => x.MedicalSubCategory).AsNoTracking().Where(s => s.PosterID == profileId).Count();
         }
 
-        public async Task<IList<CaseViewModel>> GetAllCases(CaseType type)
+        public async Task<IList<CaseViewModel>> GetExploreTopics(List<int> selectedTags)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            List<CaseViewModel> cases = await _context.Cases.Where(x => x.Type == type).Include(c => c.Tags).Include(x => x.User).OrderByDescending(s => s.DateCreated).Select(x => new CaseViewModel()
+            List<CaseViewModel> cases = await _context.Cases.Where(x => x.UserId != null && x.Tags.Select(t => t.ID).Intersect(selectedTags).Any()).Include(c => c.Tags).OrderByDescending(s => s.DateCreated).Select(x => new CaseViewModel()
             {
                 ID = x.ID,
                 Description = x.Description,
@@ -95,24 +95,42 @@ namespace Hippra.Services
                 PosterId = x.User.Id,
                 PosterSpeciality = x.User.MedicalSpecialty != null ? @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty) : "",
                 PosterImg = x.User.ProfileUrl,
-                CurrentStageOfDisease = x.CurrentStageOfDisease,
-                CurrentTreatmentAdministered = x.CurrentTreatmentAdministered,
                 DateCreated = x.DateCreated,
-                LabValues = x.LabValues,
-                Ethnicity = x.Ethnicity,
-                Gender = x.Gender,
-                Type = x.Type,
-                Race = x.Race,
-                PatientAge = x.PatientAge,
-                TreatmentOutcomes = x.TreatmentOutcomes,
-                Status = x.Status,
                 Tags = x.Tags.Select(t => new CaseTagViewModel()
                 {
                     Name = t.Name,
                     TagId = t.ID,
                 }).ToList(),
-                User=x.User,
+                NrOfLikes = x.Likes.Count,
+                NrOfComments = x.Comments.Count,
             }).AsNoTracking().ToListAsync();
+
+            return cases;
+        }
+
+        public async Task<IList<CaseViewModel>> GetTrendingPosts()
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            List<CaseViewModel> cases = await _context.Cases.Where(x => x.UserId != null).Include(c => c.Tags).Select(x => new CaseViewModel()
+            {
+                ID = x.ID,
+                Description = x.Description,
+                Topic = x.Topic,
+                DateLastUpdated = x.DateLastUpdated,
+                PosterName = x.User.FullName,
+                PosterId = x.User.Id,
+                PosterSpeciality = x.User.MedicalSpecialty != null ? @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty) : "",
+                PosterImg = x.User.ProfileUrl,
+                DateCreated = x.DateCreated,
+                Tags = x.Tags.Select(t => new CaseTagViewModel()
+                {
+                    Name = t.Name,
+                    TagId = t.ID,
+                }).ToList(),
+                NrOfLikes = x.Likes.Count,
+                NrOfComments = x.Comments.Count,
+            }).AsNoTracking().OrderByDescending(x=>x.NrOfLikes).ThenByDescending(x=>x.NrOfComments).Take(3).ToListAsync();
 
             return cases;
         }
@@ -128,21 +146,6 @@ namespace Hippra.Services
             return result;
         }
 
-        public async Task<List<Case>> GetCases(int CurrentPage, int PageSize, int id)
-        {
-            using var _context = DbFactory.CreateDbContext();
-
-            List<Case> cases = null;
-            if (id == -1)
-            {
-                cases = await _context.Cases.OrderByDescending(s => s.DateCreated).Include(c => c.Comments).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
-            }
-            else
-            {
-                cases = await _context.Cases.Where(u => u.PosterID == id).OrderByDescending(s => s.DateCreated).Include(c => c.Comments).Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToListAsync();
-            }
-            return cases;
-        }
         public async Task<SearchResultModel> GetCasesNoTracking(string searchString, bool showClosed, bool showTagOnly, int SubCategory, int Priority, int CurrentPage, int PageSize, int id, List<int> caseIDs)
         {
             using var _context = DbFactory.CreateDbContext();

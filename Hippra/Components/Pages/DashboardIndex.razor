@@ -50,26 +50,13 @@
 
 
         <!-- Topics -->
-         <HelpCases />
-        
+        <ExploreTopics />
+
     </div>
     <!-- Topics end-->
     <div class="dashboard-right d-flex flex-column">
         <div class="dashboard-right-top d-flex flex-column p-3 ">
-            <!-- Top right content goes here -->
-            <div class="mb-3"><h3>Trending Clinical Cases</h3></div>
-
-            <div class="trending-case ">
-                <div class="trending-case-img">
-                    <a href="profile.html"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt=""></a>
-                    <p>Kimberly Mastrangelo · Women's Health Specialist</p>
-                </div>
-                <h6>Warning Signs of Hypertension during Pregnancy?</h6>
-                <p>15 Likes · 9 comments</p>
-            </div>
-            <hr>
-
-
+            <TrendingTopics />
         </div>
         <div class="dashboard-right-bottom d-flex flex-column p-3">
             <!-- Bottom right content goes here -->
@@ -115,71 +102,7 @@
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private AuthenticationState authState { get; set; }
     private ClaimsPrincipal user { get; set; }
-
-    public int CurrentPage { get; set; } = 1;
-    public int Count { get; set; }
-    public int PageSize { get; set; } = 10;
-    public int TotalPages => (int)Math.Ceiling(decimal.Divide(Count, PageSize));
-    public List<FTPaginationModel> paginationData = new List<FTPaginationModel>();
-
-    private bool hasError { get; set; } = false;
-    private int status { get; set; } = 0;
-    private bool IsLoading = false;
-    private string searchString { get; set; } = "";
-
-    private bool showFilters { get; set; } = false;
-
-    private async Task toggleFilters()
-    {
-        showFilters = !showFilters;
-    }
-    private FilterModel filters { get; set; } = new FilterModel();
-    public class FilterModel
-    {
-        public bool showClosed { get; set; } = false;
-        public string SubCategory { get; set; } = "-1";
-        public string Priority { get; set; } = "-1";
-        public bool showTagOnly { get; set; } = false;
-    }
-    private List<SelectListItem> SubCategoryFilterList { get; set; } = new List<SelectListItem>(){
-            new SelectListItem { Value = "-1", Text = "No Filters" }
-            };
-
-
-    private List<CaseViewModel> SearchResults { get; set; } = new List<CaseViewModel>();
-    private List<Case> cases { get; set; } = new List<Case>();
-
-
-
-    private int actionOptions { get; set; } = 0; // 0 = all, 1 = my posts
-    private string mTitle { get; set; } = "Post New Case";
-    private bool mIsCreate = true;
-    private bool viewMode = true;
-
-    private CaseViewModel pCase { get; set; } = new CaseViewModel();
-
-    private string cssAllActive { get; set; } = "active";
-    private string cssMyActive { get; set; } = "";
-
-
-    private string debug { get; set; } = "";
-
-    private PriorityModel priorityRadio = new PriorityModel();
-    public class PriorityModel
-    {
-        [Range(0, 2)]
-        public CaseResponseLevelType Priority { get; set; }
-    }
-
-    private PhysicianProfileModel pProfile = new PhysicianProfileModel();
-    public class PhysicianProfileModel
-    {
-        public int ProfileId { get; set; } = -1;
-        public string Name { get; set; } = "";
-        public string Specialty { get; set; } = "";
-        public bool Certified { get; set; } = false;
-    }
-
+    private IList<CaseViewModel> SearchResults { get; set; } = new List<CaseViewModel>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -204,20 +127,8 @@
             }
 
 
-            await GetSearchResults(CurrentPage);
+            await GetSearchResults();
 
-            if (Count > PageSize)
-            {
-                for (int i = 1; i <= TotalPages; i++)
-                {
-                    paginationData.Add(new FTPaginationModel()
-                        {
-                            id = i
-                        });
-                }
-                var pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
-                pg.isActive = true;
-            }
 
         }
     }
@@ -230,168 +141,18 @@
     }
 
 
-    private async Task GetSearchResults(int targetPage)
+    private async Task GetSearchResults()
     {
         SearchResults = new List<CaseViewModel>();
-        cases = new List<Case>();
-
-        int tSubCategory = -1;
-        int tPriority = -1;
-        if (!string.IsNullOrEmpty(filters.SubCategory))
-        {
-            tSubCategory = Int32.Parse(filters.SubCategory);
-        }
-        if (!string.IsNullOrEmpty(filters.Priority))
-        {
-            tPriority = Int32.Parse(filters.Priority);
-        }
-
-        List<int> caseListContainTag = new List<int>();
-        // if (filters.showTagOnly)
-        // {
-        //     caseListContainTag = await hService.GetCasesIdByTag(searchString);
-        // }
-
-        if (actionOptions == 0)
-        {
-            var searchResults = await hService.GetCasesNoTracking(searchString, filters.showClosed, filters.showTagOnly, tSubCategory, tPriority, targetPage, PageSize, -1, caseListContainTag);
-            cases = searchResults.Cases;
-            Count = searchResults.TotalCount;
-            //cases = await hService.GetCasesNoTracking(searchString, filters.showClosed, tSubCategory, targetPage, PageSize, -1);
-            //Count = await hService.GetCaseCount();
-        }
-        else
-        {
-            var searchResults = await hService.GetCasesNoTracking(searchString, filters.showClosed, filters.showTagOnly, tSubCategory, tPriority, targetPage, PageSize, userId, caseListContainTag);
-            cases = searchResults.Cases;
-            Count = searchResults.TotalCount;
-            //cases = await hService.GetCasesNoTracking(searchString, filters.showClosed, tSubCategory, targetPage, PageSize, usr.PublicId);
-            //Count = await hService.GetMyCaseCount(usr.PublicId);
-        }
-
-        SearchResults = cases.Select(i => new CaseViewModel()
-            {
-                ID = i.ID,
-                Topic = i.Topic,
-                Description = i.Description,
-                DateCreated = i.DateCreated,
-            }).ToList();
-
-        //history stuffs
-        if (searchString != "")
-        {
-            AddHistoryLogDto newHistory = new AddHistoryLogDto();
-            // newHistory.PostID = pCase.ID;
-            // newHistory.CreationDate = DateTime.Now;
-            // newHistory.UserId = userId;
-            // //  newHistory.UserDisplayName = fullName;
-            // newHistory.Title = "Hippra";
-            // newHistory.HistoryTypes = "searched ";
-            // if (filters.showTagOnly)
-            // {
-            //     newHistory.Detail = "tag [" + searchString + "]";
-            // }
-            // else
-            // {
-            //     newHistory.Detail = '"' + searchString + '"';
-            // }
-            await historyLogService.AddHistory(newHistory);
-        }
+       
 
     }
-    private async Task searchHandler()
-    {
-        IsLoading = true;
-        if (actionOptions == 1)
-        {
-            await ShowMyCases();
-        }
-        else
-        {
-            await ShowAllCases();
-        }
-    }
-
-
-    private async Task ChangePage(int targetPage)
-    {
-
-        await GetSearchResults(targetPage);
-
-        var pg = paginationData.FirstOrDefault(s => s.isActive);
-        pg.isActive = false;
-        CurrentPage = targetPage;
-        pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
-        pg.isActive = true;
-        this.StateHasChanged();
-    }
-
-    private async Task ShowAllCases()
-    {
-        actionOptions = 0;
-        CurrentPage = 1;
-        await GetSearchResults(CurrentPage);
-
-        if (Count > PageSize)
-        {
-            paginationData = new List<FTPaginationModel>();
-            for (int i = 1; i <= TotalPages; i++)
-            {
-                paginationData.Add(new FTPaginationModel()
-                    {
-                        id = i
-                    });
-            }
-            var pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
-            pg.isActive = true;
-        }
-
-        mTitle = "All Cases";
-        cssAllActive = "active";
-        cssMyActive = "";
-
-        this.StateHasChanged();
-        IsLoading = false;
-        //await JSRuntime.InvokeAsync<string>("blazorExtensions.toggleModal", "mPostModal");
-    }
-    private async Task ShowMyCases()
-    {
-        actionOptions = 1;
-        CurrentPage = 1;
-        await GetSearchResults(CurrentPage);
-
-        if (Count > PageSize)
-        {
-            paginationData = new List<FTPaginationModel>();
-            for (int i = 1; i <= TotalPages; i++)
-            {
-                paginationData.Add(new FTPaginationModel()
-                    {
-                        id = i
-                    });
-            }
-            var pg = paginationData.FirstOrDefault(s => s.id == CurrentPage);
-            pg.isActive = true;
-        }
-
-        cssAllActive = "";
-        cssMyActive = "active";
-
-        mTitle = "My Cases";
-        this.StateHasChanged();
-        IsLoading = false;
-        //await JSRuntime.InvokeAsync<string>("blazorExtensions.toggleModal", "mPostModal");
-    }
-
+  
     // ver 2
     private async Task NavToCreateCase()
     {
         NavigationManager.NavigateTo("/createcase");
     }
-
-
-    private string verStr { get; set; } = "Page (New)";
-
 
 
 }

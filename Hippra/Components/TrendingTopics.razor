@@ -1,0 +1,70 @@
+﻿@using Hippra.Extensions
+@using Hippra.Models.DTO
+@using Hippra.Models.Enums
+@using Hippra.Models.SQL
+@using Hippra.Models.ViewModel
+@using Hippra.Services
+@inject IJSRuntime JSRuntime
+@inject HippraService hService
+
+<div class="mb-3"><h3>Trending Clinical Cases</h3></div>
+
+        <!-- Clinical Knowledge Loop Here -->
+        @if (IsLoading)
+        {
+            <p><em>Loading ...</em></p>
+        }
+        else
+        {
+            
+                foreach (var item in SearchResults)
+                {
+
+                <!-- Top right content goes here -->
+             
+
+                <div class="trending-case ">
+                    <div class="trending-case-img">
+                        <a href="profile.html"><img src="@item.PosterImg" alt=""></a>
+                        <p>@item.PosterName · @item.PosterSpeciality</p>
+                    </div>
+                    <h6>@item.Topic</h6>
+                    <p>@item.NrOfLikes Likes · @item.NrOfComments comments</p>
+                </div>
+                <hr>
+                }
+       
+
+        }
+
+
+
+@code {
+    private bool IsLoading = false;
+
+    private IList<CaseViewModel> SearchResults { get; set; } = new List<CaseViewModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetSearchResults();
+    }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     //if (firstRender)
+    //     //{
+    //     await JSRuntime.InvokeVoidAsync("handlePageScrollable");
+    //     await JSRuntime.InvokeVoidAsync("InitCasePage");
+    //     //}
+    // }
+
+
+    private async Task GetSearchResults()
+    {
+        SearchResults = await hService.GetTrendingPosts();
+
+
+        IsLoading = false;
+
+    }
+}

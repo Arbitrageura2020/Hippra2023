@@ -26,16 +26,16 @@
                     <div class="profile-info">
                         @* href=@($"/viewcase/{c.ID}") *@
                         <div>
-                            @if (item.User != null)
-                            {
-                                <img src="@item.User.ProfileUrl" alt="@item.User.FirstName" class="profile-img">
-                            }
-                            else
-                            {
-                                <img src="/img/hippra/blank-profile.png" class="profile-img" />
-                            }
-                            <p class="profile-name">@item.User.FullName</p>
-                            <p class="profile-title">@EnumsHelper.GetDisplayName(@item.User.MedicalSpecialty) · Posted 2 hours ago</p>
+                            @* @if (!String.IsNullOrWhiteSpace(item.PosterImg))
+                    { *@
+                            <img src="@item.PosterImg" alt="" class="profile-img">
+                            @* } *@
+                            @*   else
+                    {
+                    <img src="/img/hippra/blank-profile.png" class="profile-img" />
+                    } *@
+                            <p class="profile-name">@item.PosterName</p>
+                            <p class="profile-title">@item.PosterSpeciality· Posted @item.TimeDifferenceText </p>
                         </div>
                     </div>
                     <div class="more-options">...</div>
@@ -65,7 +65,7 @@
                     </div>
                     <div class="card-interactions">
                         <span class="likes"><i class="fas fa-thumbs-up"></i> @item.NrOfLikes Likes</span>
-                        <span class="comments"><i class="fas fa-comments"></i> 20 Comments</span>
+                        <span class="comments"><i class="fas fa-comments"></i> @item.NrOfComments Comments</span>
                     </div>
                 </div>
             </div>
@@ -73,17 +73,12 @@
 
         }
     }
-    else
-    {
-    <div>No Case Found. Try Modify Search Criteria or Filter.</div>
-    }
 
 
 </div>
 
 @code {
     private bool IsLoading = false;
-    private string searchString { get; set; } = "";
     private IList<CaseViewModel> SearchResults { get; set; } = new List<CaseViewModel>();
 
     private string userId = "";
@@ -109,8 +104,8 @@
     private async Task GetSearchResults()
     {
 
-
-        SearchResults = await hService.GetAllCases(CaseType.AskForHelp);
+        var selectedTags = new List<int>() { 7 };
+        SearchResults = await hService.GetExploreTopics(selectedTags);
 
         IsLoading = false;
     }
