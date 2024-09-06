@@ -117,5 +117,25 @@ namespace Hippra.Services
             var followers = await _context.Follows.CountAsync(c => c.FollowerUserID == userId);
             return followers;
         }
+
+        public async Task<IList<ProfileViewModel>> GetExpertsToFollow(string currentUserId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            List<ProfileViewModel> users = await _context.Users.Where(x=>x.Id!=currentUserId).Select(x => new ProfileViewModel()
+            {
+               FirstName=x.FirstName,
+               LastName=x.LastName,
+                Userid = x.Id,
+                MedicalSpecialty =x.MedicalSpecialty,
+                ProfileUrl =x.ProfileUrl,
+                Address =x.Address,
+                ResidencyHospital =x.ResidencyHospital,
+                Country =x.Country,
+                NrOfFollowers=  _context.Follows.Count(c => c.FollowingUserID == x.Id)
+            }).AsNoTracking().OrderByDescending(x=>x.NrOfFollowers).ToListAsync();
+
+            return users;
+        }
     }
 }

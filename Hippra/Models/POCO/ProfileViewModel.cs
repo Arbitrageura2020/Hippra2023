@@ -73,7 +73,7 @@ namespace Hippra.Models.POCO
 
         public string FullName { get { return this.FirstName + " " + this.LastName; } }
 
-        private int NrOfFollowers { get; set; }
+        public int NrOfFollowers { get; set; }
         private int NrOfFollowing { get; set; }
         private int NrOfPosts { get; set; }
         public static ProfileViewModel FromEntity(AppUser user)

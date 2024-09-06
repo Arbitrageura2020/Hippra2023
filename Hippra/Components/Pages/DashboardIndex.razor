@@ -60,22 +60,7 @@
         </div>
         <div class="dashboard-right-bottom d-flex flex-column p-3">
             <!-- Bottom right content goes here -->
-            <div class="mb-3"><h3>Medical Experts to follow</h3></div>
-            <div class="experts-card d-flex">
-                <div class="d-flex gap-2">
-                    <div class="expert-img">
-                        <a href="profile.html"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcbfVKJItm9_BW4pJtHNj-FWzkuDYLeA6_UA&amp;usqp=CAU" alt=""></a>
-                    </div>
-                    <div class="d-flex flex-column">
-                        <h6 class="mb-0 fw-bold">Jerry Helfer</h6>
-                        <p class="post-meta">Family Medicine Specialist</p>
-                        <p class="post-meta">Georgetown Hospital · USA</p>
-                    </div>
-                </div>
-                <div>
-                    <button class="btn follow-btn ">Follow</button>
-                </div>
-            </div>
+            <ExpertsToFollow />
             <hr>
         </div>
     </div>
@@ -144,10 +129,10 @@
     private async Task GetSearchResults()
     {
         SearchResults = new List<CaseViewModel>();
-       
+
 
     }
-  
+
     // ver 2
     private async Task NavToCreateCase()
     {

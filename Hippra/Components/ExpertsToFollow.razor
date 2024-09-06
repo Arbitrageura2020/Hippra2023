@@ -1,0 +1,68 @@
+﻿@using Hippra.Extensions
+@using Hippra.Models.DTO
+@using Hippra.Models.Enums
+@using Hippra.Models.POCO
+@using Hippra.Models.SQL
+@using Hippra.Models.ViewModel
+@using Hippra.Services
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+@inject IAuthorizationService AuthorizationService
+@inject IHttpContextAccessor httpContextAccessor
+@inject IFollowService followService;
+<div class="mb-3"><h3>Medical Experts to follow</h3></div>
+@if (IsLoading)
+{
+    <p>Loading please wait</p>
+}
+else
+{
+    foreach (var profile in profiles)
+    {
+        <div class="experts-card d-flex">
+            <div class="d-flex gap-2">
+                <div class="expert-img">
+                    <a href="/profile/@profile.Userid"><img src="@profile.ProfileUrl" alt=""></a>
+                </div>
+                <div class="d-flex flex-column">
+                    <h6 class="mb-0 fw-bold">@profile.FullName</h6>
+                    <p class="post-meta">@EnumsHelper.GetDisplayName(profile.MedicalSpecialty)</p>
+                    <p class="post-meta">@profile.ResidencyHospital · @profile.Country</p>
+                </div>
+            </div>
+            <div>
+                <button class="btn follow-btn ">Follow</button>
+            </div>
+        </div>
+    }
+}
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private AuthenticationState authState { get; set; }
+    private string currentUserId { get; set; }
+    private bool IsLoading = true;
+    private IList<ProfileViewModel> profiles { get; set; } = new List<ProfileViewModel>();
+    protected override async Task OnInitializedAsync()
+    {
+        authState = await authenticationStateTask;
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            try
+            {
+                currentUserId = user.Claims.FirstOrDefault(s => s.Type == "UserId")?.Value;
+                profiles = await followService.GetExpertsToFollow(currentUserId);
+                IsLoading = false;
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+
+    }
+
+}

@@ -42,5 +42,6 @@ namespace Hippra.Services
         Task<int> GetNrOfFollowers(string userId);
 
         Task<int> GetNrOfFollowing(string userId);
+        Task<IList<ProfileViewModel>> GetExpertsToFollow(string currentUserId);
     }
 }
