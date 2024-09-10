@@ -12,6 +12,7 @@ namespace Hippra.Models.ViewModel
         public AddEditCaseViewModel()
         {
             this.SelectedTagsObjects = new List<Tag>();
+            this.Files = new List<CaseFileViewModel>();
         }
 
         public int ID { get; set; }
@@ -54,6 +55,7 @@ namespace Hippra.Models.ViewModel
 
         [MinLength(1, ErrorMessage = "Please select at least one tag")]
         public IEnumerable<Tag> SelectedTagsObjects { get; set; }
+        public List<CaseFileViewModel> Files { get; set; }
 
     }
 }

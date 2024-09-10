@@ -140,7 +140,30 @@
                         <div class="ask-4-file">
                             <h3>File Upload</h3>
                             <div class="form-group file">
-                                <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg>
+                                @* <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg> *@
+
+                                @if (@CaseModel.Files != null)
+                                {
+                                    @foreach (var document in CaseModel.Files)
+                                    {
+                                        <div class="files">
+                                            <p>
+                                                @document.FileName <button class="attach-btn" @onclick="(e => { DeleteSavedFile(document); })">    <img src="/img/icons/delete-icon.svg" alt=""></button>
+
+                                            </p>
+                                        </div>
+                                    }
+                                }
+                                @if (NewCaseUploadedFiles != null)
+                                {
+                                    @foreach (var document in NewCaseUploadedFiles)
+                                    {
+                                        <div class="files">
+                                            <p>@document.Name</p>
+                                            <button @onclick="(e => { DeleteUploadedFile(document); })"> <img src="/img/icons/delete-icon.svg" alt=""></button>
+                                        </div>
+                                    }
+                                }
                             </div>
                         </div>
 
@@ -210,13 +233,14 @@
     private bool isSubmitted = false;
 
 
-    private string fileName;
-    private string imgUrl;
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private AuthenticationState authState { get; set; }
     private string userId { get; set; } = "";
     private string seletedItems { get; set; }
+    private List<IBrowserFile> NewCaseUploadedFiles = new();
+    private long maxFileSize = 1024 * 1024 * 100;
+    private int maxAllowedFiles = 3;
 
     private string mainItemClass
     {
@@ -245,11 +269,9 @@
                     return;
                 }
                 CaseModel = caseItem.ToViewModelCase();
-                
+
                 //pCase.Comments = await hService.GetCommentsNoTracking(caseId);
 
-                fileName = "c" + CaseModel.ID;
-                imgUrl = CaseModel.imgUrl;
             }
             catch (FormatException e)
             {
@@ -283,8 +305,6 @@
     {
         HistoryLog newHistory = new HistoryLog();
 
-        CaseModel.imgUrl = imgUrl;
-
         var result = await hService.EditCase(CaseModel);
         if (isCaseClose)
         {
@@ -305,6 +325,28 @@
         // isCaseClose = !isCaseClose;
         // await hService.CloseCase(pCase.ID);
         // pCase.Status = !pCase.Status;
+
+        this.StateHasChanged();
+    }
+
+    public async Task DeleteUploadedFile(IBrowserFile file)
+    {
+        NewCaseUploadedFiles.Remove(file);
+        this.StateHasChanged();
+    }
+
+    public async Task DeleteSavedFile(CaseFileViewModel file)
+    {
+
+        // var result = await caseService.DeleteCommentFile(file.ID, userId);
+
+
+
+        // if (result.IsSuccess)
+        // {
+        //     commentObject.Files.Remove(file);
+        //     // CommentList = await hService.GetCommentsNoTracking(caseId);
+        // }
 
         this.StateHasChanged();
     }
