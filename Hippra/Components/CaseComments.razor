@@ -22,6 +22,7 @@
 @inject INotificationsService notificationsService;
 @inject ICaseService caseService;
 @inject IDialogService dialogService
+
 <section class="case-comment">
     <div class="case-comment-form editing-comment">
         <EditForm Model="@newComment" OnValidSubmit="@AddComment" FormName="AddCommentForm">
@@ -36,7 +37,7 @@
                         {
                             <div class="files">
                                 <p>@document.Name</p>
-                                <button @onclick="(e => { DeleteUploadedFile(document); })">Delete</button>
+                                <button @onclick="(e => { DeleteUploadedFile(document); })"> <img src="/img/icons/delete-icon.svg" alt=""></button>
                             </div>
                         }
                     }
@@ -54,9 +55,6 @@
                 </div>
 
             </div>
-            @*        <div class="border">
-            <CmtImgUpload @bind-fileName="fileName" @bind-imgUrl="imgUrl" @bind-isSubmitted="isSubmitted"></CmtImgUpload>
-            </div> *@
         </EditForm>
     </div>
     <div class="case-comments">
@@ -75,7 +73,6 @@
                             </div>
                             <div class="comment-info">
                                 <div>
-0
                                     <h6>
                                         <span>@comment.PosterName</span>
                                     </h6>
@@ -88,22 +85,22 @@
                         @if (comment.PosterId == userId)
                         {
                             <button class="comment-edit" @onclick="(e => { EditComment(comment.ID); })">
-                                <img src="/frontend/Dashboard/img/icons/edit-icon.svg" alt="">
+                                <img src="/img/icons/edit-icon.svg" alt="">
                                 Edit
                             </button>
 
                             <button class="comment-edit" @onclick="(e => { DeleteComment(comment); })">
-                                <img src="/frontend/Dashboard/img/icons/edit-icon.svg" alt="">
+                                <img src="/img/icons/edit-icon.svg" alt="">
                                 Delete
                             </button>
                         }
-                       @*  else
-                        { *@
-                            <button class="comment-edit" @onclick="(e => { EditInDialog(comment.ID); })">
-                                <img src="/frontend/Dashboard/img/icons/report-icon.svg" alt="">
-                                Report
-                            </button>
-                       @*  } *@
+                        @*  else
+            { *@
+                        <button class="comment-edit" @onclick="(e => { EditInDialog(comment.ID); })">
+                            <img src="/img/icons/report-icon.svg" alt="">
+                            Report
+                        </button>
+                        @*  } *@
                         <p>
                             @comment.Comment
                         </p>
@@ -115,11 +112,11 @@
                                 </div>
                             }
                         </div>
-                        @comment.Votes Upvotes
+                        @*  @comment.Votes Upvotes *@
                         @if (comment.PosterId != userId)
                         {
                             <button class="upvote-btn" @onclick="(e => { AddVote(comment.ID); })">
-                                <img src="/frontend/Dashboard/img/icons/upward-arrow-hollow.svg" alt="">
+                                <img src="/img/icons/upward-arrow-hollow.svg" alt="">
                                 Upvote
                             </button>
                         }
@@ -140,7 +137,7 @@
                                         {
                                             <div class="files">
                                                 <p>
-                                                    @document.FileName <button @onclick="(e => { DeleteSavedFile(comment, document); })"> delete file</button>
+                                                    @document.FileName <button class="attach-btn" @onclick="(e => { DeleteSavedFile(comment, document); })">    <img src="/img/icons/delete-icon.svg" alt=""></button>
 
                                                 </p>
                                             </div>
@@ -158,12 +155,12 @@
                                 </div>
                                 <div class="comment-btns">
                                     <button class="attach-btn" id="uploadFileButton" type="button" @onclick="OpenFilePickerEdit">
-                                        <img src="/frontend/Dashboard/img/icons/attachment.svg" alt="">
+                                        <img src="/img/icons/attachment.svg" alt="">
                                         Attach files
                                     </button>
                                     <InputFile id="uploadFileInputEdit" hidden="" type="file" OnChange="@HandleUploadFileEdit" @ref="_filePickerEdit" multiple />
                                     <div class="last-two-btns">
-                                        <button @onclick="(e => { EditCommentId=-1; })">Cancel @comment.ID</button>
+                                        <button @onclick="(e => { EditCommentId=-1; })">Cancel </button>
                                         <button type="submit" disabled="@(!isSubmitted)"> @(isUpdated ? "Update Comment" : "Saving ...")  </button>
                                     </div>
                                 </div>

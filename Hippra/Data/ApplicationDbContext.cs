@@ -34,9 +34,10 @@ namespace Hippra.Data
 
         public DbSet<MedicalSubCategory> MedicalSubCategories { get; set; }
         public DbSet<CaseCommentFile> CaseCommentFiles { get; set; }
+        
         public DbSet<CaseLike> CaseLikes { get; set; }
         public DbSet<CaseCommentReport> CaseCommentReports { get; set; }
-        
+        public DbSet<CaseFiles> CaseFiles { get; set; }
 
     }
 }

@@ -102,6 +102,13 @@ namespace Hippra.Services
                     Name = t.Name,
                     TagId = t.ID,
                 }).ToList(),
+                Files = x.Files.Select(t => new CaseFileViewModel()
+                {
+                   ID=t.ID,
+                   FileName=t.FileName,
+                   FileType = t.FileType,   
+                   FileLink = t.FileLink,
+                }).ToList(),
                 LikedByCurrentUser = x.Likes.Any(y => y.LikedByUserId == currentUserId),
             }).FirstOrDefaultAsync();
             return result;

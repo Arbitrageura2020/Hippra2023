@@ -27,6 +27,7 @@
 @inject IAuthorizationService AuthorizationService
 @inject ICaseService caseService
 @inject IFollowService followService;
+
 <div class="case-layout">
     <div class="case-top">
         <div class="case-top-action">
@@ -60,8 +61,6 @@
                                 <li><a @onclick="(e => { searchCasesContainTag(tag.Name); })">@tag.Name</a></li>
                             }
                         }
-                        @*          <li>Diseases &amp; Disorders of the Blood</li>
-                    <li>Immunologic Disorders</li> *@
                     </ul>
                 </div>
             </div>
@@ -70,7 +69,7 @@
                     <img src="@CaseItem.PosterImg" alt="">
                     <div class="case-profile-info">
                         <div>
-                            <h4><a href="/profile/@CaseItem.PosterId">@CaseItem.PosterName</a></h4>
+                            <h4>@CaseItem.PosterName</h4>
                             @if (!isOwner)
                             {
                                 @if (isFollowed)
@@ -82,11 +81,10 @@
                                     <p class="color-green" @onclick="@AddToFollowerList">Follow+</p>
                                 }
                             }
-
                         </div>
 
                         <div class="case-content-date">
-                            <p>@CaseItem.PosterSpeciality</p>
+                            <p>Specialist in @CaseItem.PosterSpeciality</p>
                             <p>Last Updated: @CaseItem.DateLastUpdated.ToShortDateString()</p>
                         </div>
                     </div>
@@ -98,7 +96,7 @@
                     @if (isOwner)
                     {
                         <a href="/editcase/@caseId">
-                            <img src="/frontend/Dashboard/img/icons/new-edit.svg" alt="">
+                            <img src="/img/icons/new-edit.svg" alt="">
                             <span>Edit</span>
                         </a>
                     }
@@ -113,16 +111,18 @@
                         }
                         else
                         {
-                            <button @onclick="UnLike">
-                                <img src="/frontend//Dashboard/img/icons/thumbs-up-hollow.svg" alt="">
+                            <button>
+                                <img src="/img/icons/thumbs-up-hollow.svg" alt="">
                                 <span>Like</span>
                             </button>
                         }
                         <button>
-                            <img src="/frontend/Dashboard/img/icons/comment.svg" alt="">
+                            <img src="/img/icons/comment.svg" alt="">
                             <span>Respond</span>
                         </button>
                     }
+
+
                 </div>
                 <!----------------------------------------------------------------------Edit - End  -->
             </div>
@@ -138,16 +138,16 @@
                                 </li>
                                 <li>
                                     <span>Gender:</span>
-                                    <span class="light-text"> @CaseItem.Gender </span>
+                                    <span class="light-text"> Male </span>
                                 </li>
                                 <li>
                                     <span>Race:</span>
-                                    <span class="light-text"> @CaseItem.Race </span>
+                                    <span class="light-text"> Asian </span>
                                 </li>
                                 <li>
                                     <span>Ethnicity:</span>
                                     <span class="light-text">
-                                        @CaseItem.Ethnicity
+                                        Not Hispanic or Latino
                                     </span>
                                 </li>
                                 <!----------------------------------------------------------------------Edit - End  -->
@@ -187,38 +187,98 @@
                 </div>
             </div>
         </section>
+        <!-- Case Tabs Here -->
         <section class="case-tabs">
             <div class="case-tab-top">
                 <div class="case-tab-left">
-                    <button class="case-tab-btn @(activeTab==1?"active":"")" @onclick="()=>ToggleTab(1)" data-target="tab-case-one">
+                    <button class="case-tab-btn active" data-target="tab-case-one">
                         Current Treatment Administered
                     </button>
                 </div>
                 <div class="case-tab-right">
-                    <button class="case-tab-btn @(activeTab==2?"active":"")" @onclick="()=>ToggleTab(2)" data-target="tab-case-two">
+                    <button class="case-tab-btn" data-target="tab-case-two">
                         Treatment Outcomes
                     </button>
                 </div>
             </div>
             <!-- Current Treatment Administered Content -->
-            <div class="case-tab-content tab-case-one @(activeTab==1?"active":"")">
+            <div class="case-tab-content tab-case-one active">
                 <p>
                     @CaseItem.CurrentTreatmentAdministered
                 </p>
             </div>
-            <!--  Treatment Outcomes Content -->
-            <div class="case-tab-content tab-case-two @(activeTab==1?"active":"")">
-                <p>
-                    @CaseItem.TreatmentOutcomes
-                </p>
+        </section>
+        <section class="case-tabs">
+            <div class="case-info-title">
+                <h4>Relevant Files</h4>
+                <hr>
+            </div>
+            <div class="relevant-files-container">
+                @if (CaseItem.Files != null)
+                {
+                    @foreach (var document in CaseItem.Files)
+                    {
+                        <div class="relevant-file"> <a href="@document.FileLink">@document.FileName</a></div>
+                    }
+                }
+            </div>
+        </section>
+        <section class="case-tabs">
+            <div class="case-content-meta">
+                <div class="case-profile">
+                    <img src="@CaseItem.PosterImg" alt="">
+                    <div class="case-profile-info">
+                        <div>
+                            <h4>@CaseItem.PosterName</h4>
+                            @if (!isOwner)
+                            {
+                                @if (isFollowed)
+                                {
+                                    <p class="color-green" @onclick="@RemoveFromFollowerList">Followed</p>
+                                }
+                                else
+                                {
+                                    <p class="color-green" @onclick="@AddToFollowerList">Follow+</p>
+                                }
+                            }
+
+                        </div>
+
+                        <div class="case-content-date">
+                            <p>Specialist in @CaseItem.PosterSpeciality</p>
+                            <p>Last Updated: @CaseItem.DateLastUpdated.ToShortDateString()</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="case-content-actions">
+
+                    @if (!isOwner)
+                    {
+                        @if (CaseItem.LikedByCurrentUser)
+                        {
+                            <button @onclick="Like">
+                                <img src="/frontend//Dashboard/img/icons/thumbs-up-hollow.svg" alt="">
+                                <span>Liked</span>
+                            </button>
+                        }
+                        else
+                        {
+                            <button>
+                                <img src="/img/icons/thumbs-up-hollow.svg" alt="">
+                                <span>Like</span>
+                            </button>
+                        }
+                    }
+                </div>
             </div>
         </section>
     }
-
     @if (dataReady)
     {
         <CaseComments caseId="@CaseItem.ID" isOpened="true" />
     }
+
 </div>
 
 @code {

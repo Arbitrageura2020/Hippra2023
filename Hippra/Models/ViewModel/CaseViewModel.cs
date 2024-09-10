@@ -14,7 +14,7 @@ namespace Hippra.Models.ViewModel
         public CaseViewModel()
         {
             Tags = new List<CaseTagViewModel>();
-            Comments = new List<CaseCommentViewModel>();
+            Files = new List<CaseFileViewModel>();
         }
 
         public string ParsedGender { get; set; } = "";
@@ -77,7 +77,7 @@ namespace Hippra.Models.ViewModel
         public string TreatmentOutcomes { get; set; }
 
         public List<CaseTagViewModel> Tags { get; set; }
-        public List<CaseCommentViewModel> Comments { get; set; }
+        public IList<CaseFileViewModel> Files { get; set; }
         public static CaseViewModel FromEntity(Case tCase)
         {
 
@@ -96,12 +96,12 @@ namespace Hippra.Models.ViewModel
             {
                 pCase.Tags = CaseTagViewModel.FromEntityList(tCase.Tags).ToList();
             }
-            //if (tCase.Comments != null)
-            //{
-            //    pCase.Comments = tCase.Comments;
-            //}
+            if (tCase.Files != null)
+            {
+                pCase.Files = CaseFileViewModel.FromEntityList(tCase.Files).ToList();
+            }
             pCase.PosterId = tCase.UserId;
-  
+
             if (tCase.User != null)
             {
                 pCase.User = tCase.User;
@@ -145,6 +145,37 @@ namespace Hippra.Models.ViewModel
         }
 
         public static IList<CaseTagViewModel> FromEntityList(ICollection<Tag> items)
+        {
+            return items.Select(x => FromEntity(x)).ToList();
+        }
+    }
+
+    public class CaseFileViewModel
+    {
+        public long ID { get; set; }
+        public string UploadedByUserId { get; set; }
+        public string Container { get; set; }
+        public string FileName { get; set; }
+        public string FileLink { get; set; }
+        public string FileType { get; set; }
+        public DateTime UploadDate { get; set; }
+
+        public static CaseFileViewModel FromEntity(CaseFiles file)
+        {
+
+            return new CaseFileViewModel()
+            {
+                ID = file.ID,
+                Container = file.Container,
+                FileName = file.FileName,
+                FileType = file.FileType,
+                UploadDate = file.UploadDate,
+                FileLink = file.FileLink,
+                UploadedByUserId = file.UploadedByUserId
+            };
+        }
+
+        public static IList<CaseFileViewModel> FromEntityList(ICollection<CaseFiles> items)
         {
             return items.Select(x => FromEntity(x)).ToList();
         }

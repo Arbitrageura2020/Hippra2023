@@ -9,33 +9,33 @@
 
 <div class="mb-3"><h3>Trending Clinical Cases</h3></div>
 
-        <!-- Clinical Knowledge Loop Here -->
-        @if (IsLoading)
-        {
-            <p><em>Loading ...</em></p>
-        }
-        else
-        {
-            
-                foreach (var item in SearchResults)
-                {
+<!-- Clinical Knowledge Loop Here -->
+@if (IsLoading)
+{
+    <p><em>Loading ...</em></p>
+}
+else
+{
 
-                <!-- Top right content goes here -->
-             
+    foreach (var item in SearchResults)
+    {
 
-                <div class="trending-case ">
-                    <div class="trending-case-img">
-                        <a href="profile.html"><img src="@item.PosterImg" alt=""></a>
-                        <p>@item.PosterName · @item.PosterSpeciality</p>
-                    </div>
-                    <h6>@item.Topic</h6>
-                    <p>@item.NrOfLikes Likes · @item.NrOfComments comments</p>
-                </div>
-                <hr>
-                }
-       
+        <!-- Top right content goes here -->
 
-        }
+
+        <div class="trending-case ">
+            <div class="trending-case-img">
+                <a href="/profile/@item.PosterId"><img src="@item.PosterImg" alt=""></a>
+                <p>@item.PosterName · @item.PosterSpeciality</p>
+            </div>
+            <h6><a href="/viewcase/@item.ID">@item.Topic</a></h6>
+            <p>@item.NrOfLikes Likes · @item.NrOfComments comments</p>
+        </div>
+        <hr>
+    }
+
+
+}
 
 
 
