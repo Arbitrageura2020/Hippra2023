@@ -31,6 +31,7 @@
 @inject IAuthorizationService AuthorizationService
 @inject CommonService commonService;
 @inject IHistoryLogService historyLogService;
+@inject ICaseService caseService;
 <div class="container">
     <!-- Ask 4 -->
     <div id="post-ask-4-content" class="post-tab-content">
@@ -141,29 +142,37 @@
                             <h3>File Upload</h3>
                             <div class="form-group file">
                                 @* <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg> *@
-
-                                @if (@CaseModel.Files != null)
-                                {
-                                    @foreach (var document in CaseModel.Files)
+                                <button class="attach-btn" id="uploadFileButton" type="button" @onclick="OpenFilePicker">
+                                    <img src="/img/icons/attachment.svg" alt="">
+                                    Attach files
+                                </button>
+                                <InputFile id="uploadFileInput" hidden="" type="file" OnChange="@HandleUploadFileNew" @ref="_filePicker" multiple />
+                            </div>
+                            <div class="attached-files">
+                                <div class="files">
+                                    @if (@CaseModel.Files != null)
                                     {
-                                        <div class="files">
-                                            <p>
-                                                @document.FileName <button class="attach-btn" @onclick="(e => { DeleteSavedFile(document); })">    <img src="/img/icons/delete-icon.svg" alt=""></button>
+                                        @foreach (var document in CaseModel.Files)
+                                        {
+                                            <div class="files">
+                                                <p>
+                                                    @document.FileName <button class="attach-btn" @onclick="(e => { DeleteSavedFile(document); })">    <img src="/img/icons/delete-icon.svg" alt=""></button>
 
-                                            </p>
-                                        </div>
+                                                </p>
+                                            </div>
+                                        }
                                     }
-                                }
-                                @if (NewCaseUploadedFiles != null)
-                                {
-                                    @foreach (var document in NewCaseUploadedFiles)
+                                    @if (NewCaseUploadedFiles != null)
                                     {
-                                        <div class="files">
+                                        @foreach (var document in NewCaseUploadedFiles)
+                                        {
                                             <p>@document.Name</p>
-                                            <button @onclick="(e => { DeleteUploadedFile(document); })"> <img src="/img/icons/delete-icon.svg" alt=""></button>
-                                        </div>
+                                            <button @onclick="(e => { DeleteUploadedFile(document); })">
+                                                <img src="/img/icons/close.svg" alt="">
+                                            </button>
+                                        }
                                     }
-                                }
+                                </div>
                             </div>
                         </div>
 
@@ -242,6 +251,15 @@
     private long maxFileSize = 1024 * 1024 * 100;
     private int maxAllowedFiles = 3;
 
+
+    private InputFile _filePicker;
+    private async Task OpenFilePicker()
+        => await JSRuntime.InvokeVoidAsync("HTMLElement.prototype.click.call",
+            _filePicker.Element);
+    private async Task OpenFileClick()
+    {
+        await JSRuntime.InvokeVoidAsync("HandleCommentUploadButtonClick");
+    }
     private string mainItemClass
     {
         get
@@ -262,15 +280,7 @@
             try
             {
                 userId = user.Claims.FirstOrDefault(s => s.Type == "UserId")?.Value;
-                var caseItem = await hService.GetCaseNoTracking(caseId);
-                if (caseItem == null)
-                {
-                    // didn't find it, should flag for error
-                    return;
-                }
-                CaseModel = caseItem.ToViewModelCase();
-
-                //pCase.Comments = await hService.GetCommentsNoTracking(caseId);
+                CaseModel = await caseService.GetCase(caseId);
 
             }
             catch (FormatException e)
@@ -305,7 +315,21 @@
     {
         HistoryLog newHistory = new HistoryLog();
 
-        var result = await hService.EditCase(CaseModel);
+        var saveResult = await caseService.EditCase(CaseModel);
+        if (saveResult.IsSuccess)
+        {
+            if (NewCaseUploadedFiles != null)
+            {
+                foreach (var file in NewCaseUploadedFiles)
+                {
+                    var c = file.OpenReadStream(maxFileSize);
+                    await caseService.SaveCaseFile(c, saveResult.EntityId, file.Name, file.ContentType, userId);
+                }
+
+            }
+        }
+
+
         if (isCaseClose)
         {
             await historyLogService.AddToHistory("closed a case", this.CaseModel);
@@ -349,6 +373,25 @@
         // }
 
         this.StateHasChanged();
+    }
+
+    public async Task HandleUploadFileNew(InputFileChangeEventArgs e)
+    {
+        //  NewCaseUploadedFiles.Clear();
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            try
+            {
+                NewCaseUploadedFiles.Add(file);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        StateHasChanged();
     }
 
 }

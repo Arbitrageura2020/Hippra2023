@@ -139,6 +139,8 @@ namespace Hippra.Data
             // Upload the file
             await blockBlob.UploadFromStreamAsync(fileStream);
         }
+
+
         public async Task<Stream> GetBlobFile(string blobName)
         {
             MemoryStream memstream = new MemoryStream();
@@ -208,6 +210,15 @@ namespace Hippra.Data
                 return false;
             }
             return true;
+        }
+
+        public async Task SaveFileToBlob(string container,string blobName, Stream fileStream)
+        {
+           
+            CloudBlockBlob blockBlob = chatRootContainer.GetBlockBlobReference(blobName);
+            //await blockBlob.UploadTextAsync(data);
+            // Upload the file
+            await blockBlob.UploadFromStreamAsync(fileStream);
         }
     }
 }

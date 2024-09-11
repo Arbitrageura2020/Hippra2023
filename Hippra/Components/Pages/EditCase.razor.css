@@ -194,3 +194,44 @@ input[type="radio"] {
         font-size: 1rem;
     }
 }
+
+
+.attach-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* position: absolute; */
+    top: 25px;
+    right: 100px;
+    width: 175px;
+    height: 40px;
+    border: 1px solid #e0e4ec;
+    background: #ffffff;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+    .attach-btn img {
+        margin-right: 5px !important;
+    }
+
+.files {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.files {
+    width: 500px;
+    height: 50px;
+    background: #ffffff;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+    .files button {
+        border: none;
+        background: #f6fbfb;
+        height: 0;
+        cursor: pointer;
+    }

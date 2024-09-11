@@ -160,7 +160,7 @@ namespace Hippra.Models.ViewModel
         public string FileType { get; set; }
         public DateTime UploadDate { get; set; }
 
-        public static CaseFileViewModel FromEntity(CaseFiles file)
+        public static CaseFileViewModel FromEntity(CaseFile file)
         {
 
             return new CaseFileViewModel()
@@ -175,7 +175,7 @@ namespace Hippra.Models.ViewModel
             };
         }
 
-        public static IList<CaseFileViewModel> FromEntityList(ICollection<CaseFiles> items)
+        public static IList<CaseFileViewModel> FromEntityList(ICollection<CaseFile> items)
         {
             return items.Select(x => FromEntity(x)).ToList();
         }

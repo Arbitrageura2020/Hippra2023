@@ -105,7 +105,11 @@ builder.Services.AddScoped<IEmailService, SendgridEmailService>(client =>
     var appKey = Configuration["SendgridAppKey"];
     return new SendgridEmailService(appKey);
 });
-
+builder.Services.AddScoped<IFileClient, AzureBlobFileClient>(client =>
+{
+    var cloudConnStr = Configuration["StorageConnectionString"];
+    return new AzureBlobFileClient(cloudConnStr);
+});
 
 
 var app = builder.Build();

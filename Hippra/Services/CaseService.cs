@@ -38,13 +38,15 @@ namespace Hippra.Services
     {
         private IDbContextFactory<ApplicationDbContext> DbFactory;
         private AzureStorage _azureStorage;
+        private IFileClient _fileClient;
         private AppSettings AppSettings { get; set; }
         public CaseService(
-            IDbContextFactory<ApplicationDbContext> dbFactory, AzureStorage azureStorage, IOptions<AppSettings> settings)
+            IDbContextFactory<ApplicationDbContext> dbFactory, AzureStorage azureStorage, IOptions<AppSettings> settings, IFileClient fileClient)
         {
             DbFactory = dbFactory;
             _azureStorage = azureStorage;
             AppSettings = settings?.Value;
+            _fileClient = fileClient;
         }
 
         public async Task<IList<CaseViewModel>> GetMyCases(string userId)
@@ -69,6 +71,41 @@ namespace Hippra.Services
                     TagId = t.ID,
                 }).ToList()
             }).AsNoTracking().ToListAsync();
+            return result;
+        }
+
+        public async Task<AddEditCaseViewModel> GetCase(int caseId)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var result = await _context.Cases.Where(x => x.ID == caseId).Select(x => new AddEditCaseViewModel()
+            {
+                ID = x.ID,
+                Description = x.Description,
+                Topic = x.Topic,
+                DateLastUpdated = x.DateLastUpdated,
+                PosterName = x.User.FullName,
+              UserId = x.User.Id,
+                CurrentStageOfDisease = x.CurrentStageOfDisease,
+                CurrentTreatmentAdministered = x.CurrentTreatmentAdministered,
+                DateCreated = x.DateCreated,
+                LabValues = x.LabValues,
+                Ethnicity = x.Ethnicity,
+                Gender = x.Gender,
+                Type = x.Type,
+                Race = x.Race,
+                PatientAge = x.PatientAge,
+                TreatmentOutcomes = x.TreatmentOutcomes,
+                Status = x.Status,
+                SelectedTagsObjects = x.Tags,
+                Files = x.Files.Select(t => new CaseFileViewModel()
+                {
+                    ID = t.ID,
+                    FileName = t.FileName,
+                    FileType = t.FileType,
+                    FileLink = t.FileLink,
+                }).ToList(),
+            }).FirstOrDefaultAsync();
             return result;
         }
 
@@ -164,6 +201,67 @@ namespace Hippra.Services
             return true;
         }
 
+        [Authorize]
+        public async Task<Result> EditCase(AddEditCaseViewModel inputCase)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            var caseObject = await _context.Cases.Include(x => x.Tags).FirstOrDefaultAsync(m => m.ID == inputCase.ID);
+
+            if (caseObject == null)
+            {
+                return Result.Failure(new List<string>() { "Case not found." });
+            }
+            if (!inputCase.Status)
+            {
+                caseObject.DateClosed = DateTime.Now;
+                caseObject.Status = false;
+            }
+
+            caseObject.DateLastUpdated = DateTime.Now;
+
+            caseObject.Topic = inputCase.Topic;
+            caseObject.Description = inputCase.Description;
+            caseObject.PatientAge = inputCase.PatientAge;
+
+            caseObject.Gender = inputCase.Gender;
+            caseObject.Race = inputCase.Race;
+            caseObject.Ethnicity = inputCase.Ethnicity;
+            caseObject.LabValues = inputCase.LabValues;
+            caseObject.CurrentStageOfDisease = inputCase.CurrentStageOfDisease;
+
+            caseObject.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
+            caseObject.TreatmentOutcomes = inputCase.TreatmentOutcomes;
+            caseObject.imgUrl = inputCase.imgUrl;
+
+            //if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
+            //{
+            //    caseObject.Tags = inputCase.SelectedTagsObjects.ToList();
+            //}
+
+            try
+            {
+                 _context.Cases.Update(caseObject);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                //if (!CaseExists(inputCase.ID))
+                //{
+                //    return false;
+                //}
+                //else
+                //{
+                //    throw;
+                //}
+
+                var t = e;
+                return Result.Failure(new List<string>() { "Error saving case." });
+            }
+
+            return Result.Success(caseObject.ID);
+        }
+
         private bool CaseExists(int id)
         {
             using var _context = DbFactory.CreateDbContext();
@@ -206,6 +304,36 @@ namespace Hippra.Services
             }
 
             return false;
+        }
+
+        public async Task<Result> SaveCaseFile(Stream fileStream, long caseId, string fileName, string fileType, string userId)
+        {
+            try
+            {
+                using var _context = DbFactory.CreateDbContext();
+                var extension = Path.GetExtension(fileName);
+                var plainFileName = Path.GetFileNameWithoutExtension(fileName);
+                var uniquefileName = plainFileName + Guid.NewGuid().ToString() + extension;
+                // await _azureStorage.SetBlobFile(uniquefileName, fileStream).ConfigureAwait(true);
+                await _fileClient.SaveFile("casefiles",uniquefileName, fileStream);
+
+                var fileLink = await _fileClient.GetFileUrl("casefiles", uniquefileName);
+                var newCaseFile = new CaseFile();
+                newCaseFile.CaseId = caseId;
+                newCaseFile.FileName = fileName;
+                newCaseFile.FileType = fileType;
+                newCaseFile.FileLink = fileLink;
+                newCaseFile.UploadDate = DateTime.Now;
+                newCaseFile.UploadedByUserId = userId;
+                _context.CaseFiles.Add(newCaseFile);
+                await _context.SaveChangesAsync();
+                return Result.Success(newCaseFile.ID);
+            }
+            catch (Exception e)
+            {
+                var t = e;
+                return Result.Failure(new List<string>() { "Error saving case comment file" });
+            }
         }
 
 

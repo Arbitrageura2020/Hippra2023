@@ -172,64 +172,7 @@ namespace Hippra.Services
             return result;
         }
 
-        [Authorize]
-        public async Task<bool> EditCase(AddEditCaseViewModel inputCase)
-        {
-            var userInfo = await _userManager.GetUserAsync(WebContext.User);
-            using var _context = DbFactory.CreateDbContext();
-
-            var caseObject = await _context.Cases.Include(x => x.Tags).FirstOrDefaultAsync(m => m.ID == inputCase.ID);
-
-            if (caseObject == null)
-            {
-                return false;
-            }
-            if (!inputCase.Status)
-            {
-                caseObject.DateClosed = DateTime.Now;
-                caseObject.Status = false;
-            }
-
-            caseObject.DateLastUpdated = DateTime.Now;
-
-            caseObject.Topic = inputCase.Topic;
-            caseObject.Description = inputCase.Description;
-            caseObject.PatientAge = inputCase.PatientAge;
-
-            caseObject.Gender = inputCase.Gender;
-            caseObject.Race = inputCase.Race;
-            caseObject.Ethnicity = inputCase.Ethnicity;
-            caseObject.LabValues = inputCase.LabValues;
-            caseObject.CurrentStageOfDisease = inputCase.CurrentStageOfDisease;
-
-            caseObject.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
-            caseObject.TreatmentOutcomes = inputCase.TreatmentOutcomes;
-            caseObject.imgUrl = inputCase.imgUrl;
-
-            if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
-            {
-                caseObject.Tags = inputCase.SelectedTagsObjects.ToList();
-            }
-
-            try
-            {
-                _context.Update(caseObject);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CaseExists(inputCase.ID))
-                {
-                    return false;
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return true;
-        }
+     
 
         public async Task<bool> CloseCase(int CaseId)
         {

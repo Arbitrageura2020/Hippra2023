@@ -37,7 +37,7 @@ namespace Hippra.Data
         
         public DbSet<CaseLike> CaseLikes { get; set; }
         public DbSet<CaseCommentReport> CaseCommentReports { get; set; }
-        public DbSet<CaseFiles> CaseFiles { get; set; }
+        public DbSet<CaseFile> CaseFiles { get; set; }
 
     }
 }
