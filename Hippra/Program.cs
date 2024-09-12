@@ -131,13 +131,13 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
-
+app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapControllers();
+  //  endpoints.MapControllers();
     endpoints.MapRazorPages();
 });
 

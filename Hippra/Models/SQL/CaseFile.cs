@@ -6,7 +6,7 @@ namespace Hippra.Models.SQL
     {
         public long ID { get; set; }
 		public string UploadedByUserId { get; set; }
-		public long CaseId { get; set; }
+		public int CaseID { get; set; }
         public Case Case { get; set; }
         public string Container { get; set; }
         public string FileName { get; set; }

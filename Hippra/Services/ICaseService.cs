@@ -28,6 +28,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Hippra.Models.ViewModel;
 using Hippra.Components;
+using Hippra.Models.DTO;
 
 namespace Hippra.Services
 {
@@ -41,7 +42,8 @@ namespace Hippra.Services
         Task<bool> CheckLike(string userId, int caseId);
         Task<bool> AddLike(string userId, int caseId);
         Task<bool> RemoveLike(string userId, int caseId);
-        Task<Result> SaveCaseFile(Stream fileStream, long caseId, string fileName, string fileType, string userId);
+        Task<Result> SaveCaseFile(Stream fileStream, int caseId, string fileName, string fileType, string userId);
+        Task<FileDownloadResult> DownloadCaseFile(long id);
 
         //comments
         Task<List<CaseCommentViewModel>> GetCommentsNoTracking(int caseId, string currentUserId);

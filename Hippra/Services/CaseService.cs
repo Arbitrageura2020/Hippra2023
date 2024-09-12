@@ -31,6 +31,7 @@ using Hippra.Components;
 using Hippra.Models.DTO;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Microsoft.CodeAnalysis.Operations;
+using SendGrid.Helpers.Mail;
 
 namespace Hippra.Services
 {
@@ -85,7 +86,7 @@ namespace Hippra.Services
                 Topic = x.Topic,
                 DateLastUpdated = x.DateLastUpdated,
                 PosterName = x.User.FullName,
-              UserId = x.User.Id,
+                UserId = x.User.Id,
                 CurrentStageOfDisease = x.CurrentStageOfDisease,
                 CurrentTreatmentAdministered = x.CurrentTreatmentAdministered,
                 DateCreated = x.DateCreated,
@@ -121,7 +122,7 @@ namespace Hippra.Services
                 DateLastUpdated = x.DateLastUpdated,
                 PosterName = x.User.FullName,
                 PosterId = x.User.Id,
-                PosterSpeciality = x.User.MedicalSpecialty!=null?@EnumsHelper.GetDisplayName(x.User.MedicalSpecialty):"",
+                PosterSpeciality = x.User.MedicalSpecialty != null ? @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty) : "",
                 PosterImg = x.User.ProfileUrl,
                 CurrentStageOfDisease = x.CurrentStageOfDisease,
                 CurrentTreatmentAdministered = x.CurrentTreatmentAdministered,
@@ -141,10 +142,10 @@ namespace Hippra.Services
                 }).ToList(),
                 Files = x.Files.Select(t => new CaseFileViewModel()
                 {
-                   ID=t.ID,
-                   FileName=t.FileName,
-                   FileType = t.FileType,   
-                   FileLink = t.FileLink,
+                    ID = t.ID,
+                    FileName = t.FileName,
+                    FileType = t.FileType,
+                    FileLink = t.FileLink,
                 }).ToList(),
                 LikedByCurrentUser = x.Likes.Any(y => y.LikedByUserId == currentUserId),
             }).FirstOrDefaultAsync();
@@ -173,7 +174,7 @@ namespace Hippra.Services
             newCase.LabValues = inputCase.LabValues;
             newCase.CurrentStageOfDisease = inputCase.CurrentStageOfDisease;
             newCase.imgUrl = inputCase.imgUrl;
-            newCase.PostedAnonymosley=inputCase.PostAnonymosly;
+            newCase.PostedAnonymosley = inputCase.PostAnonymosly;
             newCase.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
             newCase.TreatmentOutcomes = inputCase.TreatmentOutcomes;
             if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
@@ -241,7 +242,7 @@ namespace Hippra.Services
 
             try
             {
-                 _context.Cases.Update(caseObject);
+                _context.Cases.Update(caseObject);
                 await _context.SaveChangesAsync();
             }
             catch (Exception e)
@@ -306,7 +307,7 @@ namespace Hippra.Services
             return false;
         }
 
-        public async Task<Result> SaveCaseFile(Stream fileStream, long caseId, string fileName, string fileType, string userId)
+        public async Task<Result> SaveCaseFile(Stream fileStream, int caseId, string fileName, string fileType, string userId)
         {
             try
             {
@@ -315,12 +316,12 @@ namespace Hippra.Services
                 var plainFileName = Path.GetFileNameWithoutExtension(fileName);
                 var uniquefileName = plainFileName + Guid.NewGuid().ToString() + extension;
                 // await _azureStorage.SetBlobFile(uniquefileName, fileStream).ConfigureAwait(true);
-                await _fileClient.SaveFile("casefiles",uniquefileName, fileStream);
+                await _fileClient.SaveFile("casefiles", uniquefileName, fileStream);
 
                 var fileLink = await _fileClient.GetFileUrl("casefiles", uniquefileName);
                 var newCaseFile = new CaseFile();
-                newCaseFile.CaseId = caseId;
-                newCaseFile.FileName = fileName;
+                newCaseFile.CaseID = caseId;
+                newCaseFile.FileName = uniquefileName;
                 newCaseFile.FileType = fileType;
                 newCaseFile.FileLink = fileLink;
                 newCaseFile.UploadDate = DateTime.Now;
@@ -334,6 +335,24 @@ namespace Hippra.Services
                 var t = e;
                 return Result.Failure(new List<string>() { "Error saving case comment file" });
             }
+        }
+
+        public async Task<FileDownloadResult> DownloadCaseFile(long id)
+        {
+            using var _context = DbFactory.CreateDbContext();
+            var file = await _context.CaseFiles.FirstOrDefaultAsync(x => x.ID == id);
+            var fileExists = await _fileClient.FileExists("casefiles", file.FileName);
+
+            var result = new FileDownloadResult();
+            if (file != null && fileExists)
+            {
+                result.FileName = file.FileName;
+                result.FileType = file.FileType;
+                result.FileContent= await _fileClient.GetFile("casefiles", file.FileName);
+                return result;
+            }
+            else
+                return null;
         }
 
 
@@ -537,7 +556,7 @@ namespace Hippra.Services
             return false;
         }
 
-        public async Task<bool> ReportComment(string userId,long commentId,int caseId, string reportText)
+        public async Task<bool> ReportComment(string userId, long commentId, int caseId, string reportText)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -546,8 +565,8 @@ namespace Hippra.Services
                 CommentId = commentId,
                 UserId = userId,
                 DateAdded = DateTime.UtcNow,
-                CaseId = caseId,    
-                ReportText= reportText
+                CaseId = caseId,
+                ReportText = reportText
             });
             await _context.SaveChangesAsync();
             return true;

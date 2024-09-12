@@ -4,6 +4,7 @@ using Hippra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hippra.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240912140741_caseidupdatestables2")]
+    partial class caseidupdatestables2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,8 +27,8 @@ namespace Hippra.Migrations
 
             modelBuilder.Entity("CaseTag", b =>
                 {
-                    b.Property<int>("CasesID")
-                        .HasColumnType("int");
+                    b.Property<long>("CasesID")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("TagsID")
                         .HasColumnType("int");
@@ -187,11 +190,11 @@ namespace Hippra.Migrations
 
             modelBuilder.Entity("Hippra.Models.SQL.Case", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<long>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
                     b.Property<string>("CurrentStageOfDisease")
                         .HasColumnType("nvarchar(max)");
@@ -279,8 +282,8 @@ namespace Hippra.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
-                    b.Property<int>("CaseID")
-                        .HasColumnType("int");
+                    b.Property<long>("CaseID")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
@@ -403,8 +406,8 @@ namespace Hippra.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
-                    b.Property<int>("CaseID")
-                        .HasColumnType("int");
+                    b.Property<long>("CaseID")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Container")
                         .HasColumnType("nvarchar(max)");
@@ -439,8 +442,8 @@ namespace Hippra.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<int>("CaseId")
-                        .HasColumnType("int");
+                    b.Property<long>("CaseId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("LikeDate")
                         .HasColumnType("datetime2");
@@ -463,8 +466,8 @@ namespace Hippra.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
-                    b.Property<int?>("CaseID")
-                        .HasColumnType("int");
+                    b.Property<long?>("CaseID")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("CasesID")
                         .HasColumnType("int");
@@ -523,8 +526,8 @@ namespace Hippra.Migrations
                     b.Property<long>("NotificationID")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("PostID")
-                        .HasColumnType("int");
+                    b.Property<long>("PostID")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Tag")
                         .HasColumnType("nvarchar(max)");
@@ -567,8 +570,8 @@ namespace Hippra.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
-                    b.Property<int>("CaseId")
-                        .HasColumnType("int");
+                    b.Property<long>("CaseId")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("CommentId")
                         .HasColumnType("bigint");

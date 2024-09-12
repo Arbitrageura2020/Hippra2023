@@ -323,7 +323,7 @@
                 foreach (var file in NewCaseUploadedFiles)
                 {
                     var c = file.OpenReadStream(maxFileSize);
-                    await caseService.SaveCaseFile(c, saveResult.EntityId, file.Name, file.ContentType, userId);
+                    await caseService.SaveCaseFile(c, CaseModel.ID, file.Name, file.ContentType, userId);
                 }
 
             }
