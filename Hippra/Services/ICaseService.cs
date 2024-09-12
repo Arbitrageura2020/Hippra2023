@@ -36,7 +36,7 @@ namespace Hippra.Services
     {
         Task<IList<CaseViewModel>> GetMyCases(string userId);
         Task<CaseViewModel> GetCaseNoTracking(int caseId, string currentUserId);
-        Task<bool> AddNewCase(AddEditCaseViewModel inputCase);
+        Task<Result> AddNewCase(AddEditCaseViewModel inputCase);
         Task<Result> EditCase(AddEditCaseViewModel inputCase);
         Task<AddEditCaseViewModel> GetCase(int caseId);
         Task<bool> CheckLike(string userId, int caseId);

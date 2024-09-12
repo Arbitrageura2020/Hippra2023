@@ -32,6 +32,7 @@ using Hippra.Models.DTO;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Microsoft.CodeAnalysis.Operations;
 using SendGrid.Helpers.Mail;
+using System.CodeDom;
 
 namespace Hippra.Services
 {
@@ -153,7 +154,7 @@ namespace Hippra.Services
         }
 
         [Authorize]
-        public async Task<bool> AddNewCase(AddEditCaseViewModel inputCase)
+        public async Task<Result> AddNewCase(AddEditCaseViewModel inputCase)
         {
 
             using var _context = DbFactory.CreateDbContext();
@@ -173,33 +174,26 @@ namespace Hippra.Services
             newCase.Ethnicity = inputCase.Ethnicity;
             newCase.LabValues = inputCase.LabValues;
             newCase.CurrentStageOfDisease = inputCase.CurrentStageOfDisease;
-            newCase.imgUrl = inputCase.imgUrl;
             newCase.PostedAnonymosley = inputCase.PostAnonymosly;
             newCase.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
             newCase.TreatmentOutcomes = inputCase.TreatmentOutcomes;
-            if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
-            {
-                newCase.Tags = inputCase.SelectedTagsObjects.ToList();
-            }
+            //if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
+            //{
+            //    newCase.Tags = inputCase.SelectedTagsObjects.ToList();
+            //}
 
             try
             {
                 await _context.AddAsync(newCase);
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception e)
             {
-                if (!CaseExists(inputCase.ID))
-                {
-                    return false;
-                }
-                else
-                {
-                    throw;
-                }
+                var tem = e;
+                return Result.Failure(new List<string>() { "Error saving case." });
             }
 
-            return true;
+            return Result.Success(newCase.ID);
         }
 
         [Authorize]

@@ -139,7 +139,7 @@
                         </div>
 
                         <div class="ask-4-file">
-                            <h3>File Upload</h3>
+                            <h3>Files Upload</h3>
                             <div class="form-group file">
                                 @* <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg> *@
                                 <button class="attach-btn" id="uploadFileButton" type="button" @onclick="OpenFilePicker">
@@ -249,7 +249,7 @@
     private string seletedItems { get; set; }
     private List<IBrowserFile> NewCaseUploadedFiles = new();
     private long maxFileSize = 1024 * 1024 * 100;
-    private int maxAllowedFiles = 3;
+    private int maxAllowedFiles = 5;
 
 
     private InputFile _filePicker;

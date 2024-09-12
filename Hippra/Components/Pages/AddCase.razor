@@ -138,10 +138,29 @@
                         </div>
 
                         <div class="ask-4-file">
-                            <h3>File Upload</h3>
+                            <h3>Files Upload</h3>
+                         
                             <div class="form-group file">
-                                <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg>
+                                @* <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg> *@
+                                <button class="attach-btn" id="uploadFileButton" type="button" @onclick="OpenFilePicker">
+                                    <img src="/img/icons/attachment.svg" alt="">
+                                    Attach files
+                                </button>
+                                <InputFile id="uploadFileInput" hidden="" type="file" OnChange="@HandleUploadFileNew" @ref="_filePicker" multiple />
                             </div>
+                                  <div class="attached-files">
+                                <div class="files">
+                            @if (NewCaseUploadedFiles != null)
+                            {
+                                @foreach (var document in NewCaseUploadedFiles)
+                                {
+                                    <p>@document.Name</p>
+                                    <button @onclick="(e => { DeleteUploadedFile(document); })">
+                                        <img src="/img/icons/close.svg" alt="">
+                                    </button>
+                                }
+                            }
+                            </div</div>
                         </div>
 
                         <div class="form-group topicsdiv">
@@ -213,8 +232,10 @@
     private List<Tag> AllTags { get; set; } = new List<Tag>();
     private string debug { get; set; } = "";
 
-    private string fileName;
-    private string imgUrl;
+     FluentAutocomplete<Tag> TagsList = default!;
+        private List<IBrowserFile> NewCaseUploadedFiles = new();
+    private long maxFileSize = 1024 * 1024 * 100;
+    private int maxAllowedFiles = 3;
 
     private bool isSubmitted = false;
 
@@ -222,11 +243,19 @@
     private string userId { get; set; } = "";
     private string seletedItems { get; set; }
 
-    FluentAutocomplete<Tag> TagsList = default!;
-
+   
     private void OnSearch(OptionsSearchEventArgs<Tag> e)
     {
         e.Items = AllTags.Where(i => i.Name.StartsWith(e.Text, StringComparison.OrdinalIgnoreCase)).OrderBy(i => i.Name);
+    }
+
+    private InputFile _filePicker;
+    private async Task OpenFilePicker()
+        => await JSRuntime.InvokeVoidAsync("HTMLElement.prototype.click.call",
+            _filePicker.Element);
+    private async Task OpenFileClick()
+    {
+        await JSRuntime.InvokeVoidAsync("HandleCommentUploadButtonClick");
     }
 
     protected override async Task OnInitializedAsync()
@@ -266,13 +295,49 @@
 
     private async Task CreateCase()
     {
-        CaseModel.imgUrl = imgUrl;
         CaseModel.UserId = userId;
         var result = await caseService.AddNewCase(CaseModel);
-        if (result)
-            NavigationManager.NavigateTo("/");
+        if (result.IsSuccess)
+        {
+            if (NewCaseUploadedFiles != null)
+            {
+                foreach (var file in NewCaseUploadedFiles)
+                {
+                    var c = file.OpenReadStream(maxFileSize);
+                    await caseService.SaveCaseFile(c,(int)result.EntityId, file.Name, file.ContentType, userId);
+                }
+
+            }
+               NavigationManager.NavigateTo("/");
+
+        }    
         else
             hasError = true;
+    }
+
+      public async Task HandleUploadFileNew(InputFileChangeEventArgs e)
+    {
+        //  NewCaseUploadedFiles.Clear();
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            try
+            {
+                NewCaseUploadedFiles.Add(file);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    public async Task DeleteUploadedFile(IBrowserFile file)
+    {
+        NewCaseUploadedFiles.Remove(file);
+        this.StateHasChanged();
     }
 
 }
