@@ -156,7 +156,7 @@
                                         {
                                             <div class="files">
                                                 <p>
-                                                    @document.FileName <button class="attach-btn" @onclick="(e => { DeleteSavedFile(document); })">    <img src="/img/icons/delete-icon.svg" alt=""></button>
+                                                    <a href="/Files/Download/@document.ID">@document.FileName</a>  <button class="attach-btn" @onclick="(e => { DeleteSavedFile(document); })">    <img src="/img/icons/delete-icon.svg" alt=""></button>
 
                                                 </p>
                                             </div>
