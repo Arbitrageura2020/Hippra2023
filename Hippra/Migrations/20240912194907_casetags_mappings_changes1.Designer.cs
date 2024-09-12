@@ -4,6 +4,7 @@ using Hippra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hippra.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240912194907_casetags_mappings_changes1")]
+    partial class casetags_mappings_changes1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,15 +27,15 @@ namespace Hippra.Migrations
 
             modelBuilder.Entity("CaseTag", b =>
                 {
+                    b.Property<int>("CaseTagsID")
+                        .HasColumnType("int");
+
                     b.Property<int>("CasesID")
                         .HasColumnType("int");
 
-                    b.Property<int>("TagsID")
-                        .HasColumnType("int");
+                    b.HasKey("CaseTagsID", "CasesID");
 
-                    b.HasKey("CasesID", "TagsID");
-
-                    b.HasIndex("TagsID");
+                    b.HasIndex("CasesID");
 
                     b.ToTable("CaseTag");
                 });
@@ -722,15 +725,15 @@ namespace Hippra.Migrations
 
             modelBuilder.Entity("CaseTag", b =>
                 {
-                    b.HasOne("Hippra.Models.SQL.Case", null)
+                    b.HasOne("Hippra.Models.SQL.Tag", null)
                         .WithMany()
-                        .HasForeignKey("CasesID")
+                        .HasForeignKey("CaseTagsID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Hippra.Models.SQL.Tag", null)
+                    b.HasOne("Hippra.Models.SQL.Case", null)
                         .WithMany()
-                        .HasForeignKey("TagsID")
+                        .HasForeignKey("CasesID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

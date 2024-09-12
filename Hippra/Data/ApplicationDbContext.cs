@@ -19,9 +19,6 @@ namespace Hippra.Data
 
         public DbSet<CaseComment> CaseComments { get; set; }
 
-
-        public DbSet<CaseTag> PostTags { get; set; }
-
         public DbSet<HistoryLog> HistoryLogs { get; set; }
 
         public DbSet<CaseCommentVote> CaseCommentVotes { get; set; }

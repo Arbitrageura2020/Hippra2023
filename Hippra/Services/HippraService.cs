@@ -229,50 +229,50 @@ namespace Hippra.Services
 
         // Tags
 
-        public async Task<List<Tag>> GetTagsNoTracking(int caseId)
-        {
-            using var _context = DbFactory.CreateDbContext();
+        //public async Task<List<Tag>> GetTagsNoTracking(int caseId)
+        //{
+        //    using var _context = DbFactory.CreateDbContext();
 
-            var result = await _context.PostTags.Include(x => x.Tag).Select(x => x.Tag).ToListAsync();
-            return result;
+        //    var result = await _context.PostTags.Include(x => x.Tag).Select(x => x.Tag).ToListAsync();
+        //    return result;
 
-        }
+        //}
 
-        public async Task<List<int>> GetCasesIdByTag(int tagId)
-        {
-            using var _context = DbFactory.CreateDbContext();
+        //public async Task<List<int>> GetCasesIdByTag(int tagId)
+        //{
+        //    using var _context = DbFactory.CreateDbContext();
 
-            var CaseTag = await _context.PostTags.AsNoTracking().Where(t => t.TagsId == tagId).ToListAsync();
-            List<int> result = new List<int>();
-            if (CaseTag != null)
-            {
+        //    var CaseTag = await _context.PostTags.AsNoTracking().Where(t => t.TagsId == tagId).ToListAsync();
+        //    List<int> result = new List<int>();
+        //    if (CaseTag != null)
+        //    {
 
-                foreach (var item in CaseTag)
-                {
-                    result.Add(item.CasesID);
-                }
-            }
+        //        foreach (var item in CaseTag)
+        //        {
+        //            result.Add(item.CasesID);
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        public async Task<List<Case>> GetCasesByTag(int tagId)
-        {
-            using var _context = DbFactory.CreateDbContext();
+        //public async Task<List<Case>> GetCasesByTag(int tagId)
+        //{
+        //    using var _context = DbFactory.CreateDbContext();
 
-            var CaseTag = await _context.PostTags.AsNoTracking().Where(t => t.TagsId == tagId).Include(x => x.Case).ThenInclude(x => x.User).ToListAsync();
-            List<Case> result = new List<Case>();
-            if (CaseTag != null)
-            {
+        //    var CaseTag = await _context.PostTags.AsNoTracking().Where(t => t.TagsId == tagId).Include(x => x.Case).ThenInclude(x => x.User).ToListAsync();
+        //    List<Case> result = new List<Case>();
+        //    if (CaseTag != null)
+        //    {
 
-                foreach (var item in CaseTag)
-                {
-                    result.Add(item.Case);
-                }
-            }
+        //        foreach (var item in CaseTag)
+        //        {
+        //            result.Add(item.Case);
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
 
 

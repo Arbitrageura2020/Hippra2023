@@ -33,6 +33,7 @@ using Microsoft.Identity.Client.Extensions.Msal;
 using Microsoft.CodeAnalysis.Operations;
 using SendGrid.Helpers.Mail;
 using System.CodeDom;
+using Hippra.Components.Pages;
 
 namespace Hippra.Services
 {
@@ -177,10 +178,18 @@ namespace Hippra.Services
             newCase.PostedAnonymosley = inputCase.PostAnonymosly;
             newCase.CurrentTreatmentAdministered = inputCase.CurrentTreatmentAdministered;
             newCase.TreatmentOutcomes = inputCase.TreatmentOutcomes;
-            //if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
-            //{
-            //    newCase.Tags = inputCase.SelectedTagsObjects.ToList();
-            //}
+            if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
+            {
+                newCase.Tags = new List<Tag>();
+                foreach (var tag in inputCase.SelectedTagsObjects)
+                {
+                    var foundTag = _context.Tags.Find(tag.ID);
+                    if (foundTag != null)
+                    {
+                        newCase.Tags.Add(foundTag);
+                    }
+                }
+            }
 
             try
             {
@@ -229,10 +238,18 @@ namespace Hippra.Services
             caseObject.TreatmentOutcomes = inputCase.TreatmentOutcomes;
             caseObject.imgUrl = inputCase.imgUrl;
 
-            //if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
-            //{
-            //    caseObject.Tags = inputCase.SelectedTagsObjects.ToList();
-            //}
+            if (inputCase.SelectedTagsObjects != null && inputCase.SelectedTagsObjects.Any())
+            {
+                caseObject.Tags = new List<Tag>();
+                foreach (var tag in inputCase.SelectedTagsObjects)
+                {
+                    var foundTag = _context.Tags.Find(tag.ID);
+                    if (foundTag != null)
+                    {
+                        caseObject.Tags.Add(foundTag);
+                    }
+                }
+            }
 
             try
             {
@@ -342,7 +359,7 @@ namespace Hippra.Services
             {
                 result.FileName = file.FileName;
                 result.FileType = file.FileType;
-                result.FileContent= await _fileClient.GetFile("casefiles", file.FileName);
+                result.FileContent = await _fileClient.GetFile("casefiles", file.FileName);
                 return result;
             }
             else
