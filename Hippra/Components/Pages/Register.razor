@@ -3,7 +3,6 @@
 @using Hippra.Models.Enums
 @using Hippra.Models.ViewModel
 @using Hippra.Services
-@inject ProfileService pService;
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @layout LoginLayout
 @inherits OwningComponentBase
@@ -283,6 +282,7 @@
     private EditContext step2Context;
     private EditContext step3Context;
     private bool EmailExist { get; set; } = false;
+    public ProfileService pService;
     public async Task NextPage()
     {
         showLoading = true;
@@ -326,7 +326,7 @@
 
     protected override void OnInitialized()
     {
-
+        pService = (ProfileService)ScopedServices.GetService(typeof(ProfileService));
         //        profileService = (ProfileService)ScopedServices.GetService(typeof(ProfileService));
         step1Context = new(Step1InputModel);
         step2Context = new(Step2InputModel);
