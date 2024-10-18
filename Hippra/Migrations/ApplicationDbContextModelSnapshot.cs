@@ -24,8 +24,8 @@ namespace Hippra.Migrations
 
             modelBuilder.Entity("CaseTag", b =>
                 {
-                    b.Property<int>("CasesID")
-                        .HasColumnType("int");
+                    b.Property<long>("CasesID")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("TagsID")
                         .HasColumnType("int");
@@ -187,11 +187,11 @@ namespace Hippra.Migrations
 
             modelBuilder.Entity("Hippra.Models.SQL.Case", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<long>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
                     b.Property<string>("CurrentStageOfDisease")
                         .HasColumnType("nvarchar(max)");
@@ -279,8 +279,8 @@ namespace Hippra.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
-                    b.Property<int>("CaseID")
-                        .HasColumnType("int");
+                    b.Property<long>("CaseID")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
@@ -347,11 +347,11 @@ namespace Hippra.Migrations
 
             modelBuilder.Entity("Hippra.Models.SQL.CaseCommentReport", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<long>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
                     b.Property<long>("CaseId")
                         .HasColumnType("bigint");
@@ -375,13 +375,13 @@ namespace Hippra.Migrations
 
             modelBuilder.Entity("Hippra.Models.SQL.CaseCommentVote", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<long>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
-                    b.Property<long>("CommentId")
+                    b.Property<long>("CaseCommentId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("UserId")
@@ -391,6 +391,8 @@ namespace Hippra.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("CaseCommentId");
 
                     b.ToTable("CaseCommentVotes");
                 });
@@ -403,8 +405,8 @@ namespace Hippra.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
-                    b.Property<int>("CaseID")
-                        .HasColumnType("int");
+                    b.Property<long>("CaseID")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Container")
                         .HasColumnType("nvarchar(max)");
@@ -433,14 +435,14 @@ namespace Hippra.Migrations
 
             modelBuilder.Entity("Hippra.Models.SQL.CaseLike", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<long>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
-                    b.Property<int>("CaseId")
-                        .HasColumnType("int");
+                    b.Property<long>("CaseId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("LikeDate")
                         .HasColumnType("datetime2");
@@ -494,8 +496,8 @@ namespace Hippra.Migrations
                     b.Property<long>("NotificationID")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("PostID")
-                        .HasColumnType("int");
+                    b.Property<long>("PostID")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Tag")
                         .HasColumnType("nvarchar(max)");
@@ -538,8 +540,8 @@ namespace Hippra.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
-                    b.Property<int>("CaseId")
-                        .HasColumnType("int");
+                    b.Property<long>("CaseId")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("CommentId")
                         .HasColumnType("bigint");
@@ -780,6 +782,17 @@ namespace Hippra.Migrations
                     b.Navigation("CaseComment");
                 });
 
+            modelBuilder.Entity("Hippra.Models.SQL.CaseCommentVote", b =>
+                {
+                    b.HasOne("Hippra.Models.SQL.CaseComment", "CaseComment")
+                        .WithMany("CaseCommentVotes")
+                        .HasForeignKey("CaseCommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CaseComment");
+                });
+
             modelBuilder.Entity("Hippra.Models.SQL.CaseFile", b =>
                 {
                     b.HasOne("Hippra.Models.SQL.Case", "Case")
@@ -879,6 +892,8 @@ namespace Hippra.Migrations
 
             modelBuilder.Entity("Hippra.Models.SQL.CaseComment", b =>
                 {
+                    b.Navigation("CaseCommentVotes");
+
                     b.Navigation("Files");
                 });
 #pragma warning restore 612, 618

@@ -1,12 +1,4 @@
-﻿.comment-author {
-    position: relative;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    overflow: hidden;
-}
-
-.profile-frame {
+﻿.profile-frame {
     position: relative;
     background: #f6fbfb;
     border-radius: 10px;
@@ -356,4 +348,55 @@
     .activities-list-item .activity-bot {
         padding: 10px 25px;
     }
+}
+
+
+/*case styling from case.css*/
+
+.comment-user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.comment-info h6 {
+    font-family: "roboto";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-transform: capitalize;
+    margin-bottom: 5px;
+}
+
+.comment-author {
+    position: relative;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.comment-btns {
+    display: flex;
+    justify-content: space-between;
+}
+
+    .comment-btns button {
+        margin-top: 30px;
+        font-family: Roboto;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 500;
+        padding: 10px 30px 10px 30px;
+        line-height: normal;
+        align-items: center;
+        border: none;
+        border-radius: 20px;
+        background: #d9d9d9;
+        cursor: pointer;
+    }
+
+.light-text {
+    color: #6b6b6b;
 }

@@ -27,11 +27,11 @@
         cursor: pointer;
     }
 
-.main-layout.orange .case-top-action button {
+.case-layout.orange .case-top-action button {
     color: var(--orange);
 }
 
-    .main-layout.orange .case-top-action button svg path {
+    .case-layout.orange .case-top-action button svg path {
         stroke: var(--orange);
     }
 
@@ -685,60 +685,60 @@
 
 /********************* Orange Theme *********************/
 
-.main-layout.orange .case-patient {
+.case-layout.orange .case-patient {
     background-color: #fff5ef;
 }
 
-.main-layout.orange .case-patient-info h4 {
+.case-layout.orange .case-patient-info h4 {
     color: var(--orange);
 }
 
-.main-layout.orange .case-info-title h4 {
+.case-layout.orange .case-info-title h4 {
     color: var(--orange);
 }
 
-.main-layout.orange .case-patient-lab h6 {
+.case-layout.orange .case-patient-lab h6 {
     color: var(--orange);
 }
 
-.main-layout.orange .case-patient-tags h6 {
+.case-layout.orange .case-patient-tags h6 {
     color: var(--orange);
 }
 
-.main-layout.orange .case-patient-tags ul li a.active {
+.case-layout.orange .case-patient-tags ul li a.active {
     background-color: #ffc6c6;
 }
 
-.main-layout.orange .case-info-title hr {
+.case-layout.orange .case-info-title hr {
     background-color: var(--orange);
 }
 
-.main-layout.orange .case-tab-btn {
+.case-layout.orange .case-tab-btn {
     color: var(--orange);
 }
 
-    .main-layout.orange .case-tab-btn.active {
+    .case-layout.orange .case-tab-btn.active {
         background-color: var(--orange);
         color: #ffffff;
     }
 
-.main-layout.orange .clicked-btn {
+.case-layout.orange .clicked-btn {
     color: var(--orange);
 }
 
-.main-layout.orange .comment-form-box input:focus-visible {
+.case-layout.orange .comment-form-box input:focus-visible {
     border-color: var(--orange);
 }
 
-.main-layout.orange .case-tab-right::after {
+.case-layout.orange .case-tab-right::after {
     background-color: var(--orange);
 }
 
-.main-layout.orange .case-tab-left::after {
+.case-layout.orange .case-tab-left::after {
     background-color: var(--orange);
 }
 
-.main-layout.orange .last-two-btns :last-child {
+.case-layout.orange .last-two-btns :last-child {
     background: var(--orange);
 }
 
@@ -791,21 +791,7 @@
 }
 
 
-.relevant-files-container {
-    display: flex;
-    gap: 20px;
-}
 
-.relevant-file {
-    padding-left: 10px;
-    padding-top: 10px;
-    width: 230px;
-    height: 160px;
-    display: flex;
-    border-radius: 10px;
-    border: 1px solid lightgray;
-    background-color: #F7F7F7;
-}
 
 .profile-tags {
     position: relative;
@@ -837,4 +823,8 @@
         flex-wrap: wrap;
     }
 
+    .profile-tags .ask-for-help-case {
+        color: #da5810;
+        background: #fff3ed;
+    }
 

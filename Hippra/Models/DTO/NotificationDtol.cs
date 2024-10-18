@@ -12,7 +12,7 @@ namespace Hippra.Models.ViewModel
         public NotificationType Type { get; set; } = NotificationType.AddedComment;
         public bool IsNotificationRead { get; set; }
         public DateTime CreationDate { get; set; }
-        public int PostID { get; set; }
+        public long PostID { get; set; }
         public long CommentId { get; set; }
 
         public string PostTitle { get; set; }

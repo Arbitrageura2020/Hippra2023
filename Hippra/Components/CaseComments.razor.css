@@ -286,3 +286,12 @@
         .report-section textarea::placeholder {
             padding: 10px;
         }
+
+.comment-buttons {
+    align-items: end;
+    text-align: right;
+    float: right;
+    display: flex;
+    position:absolute;
+    right:15px;
+}

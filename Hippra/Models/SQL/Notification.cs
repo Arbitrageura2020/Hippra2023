@@ -12,7 +12,7 @@ namespace Hippra.Models.SQL
         public NotificationType Type { get; set; } = NotificationType.AddedComment;
         public bool IsNotificationRead { get; set; }
         public DateTime CreationDate { get; set; }
-        public int CaseId { get; set; }
+        public long CaseId { get; set; }
         public Case Case { get; set; }
         public long CommentId { get; set; }
 

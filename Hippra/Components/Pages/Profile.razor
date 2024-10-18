@@ -56,11 +56,11 @@
                     {
                         @if (isFollowed)
                         {
-                            <button class="prof-f-btn" @onclick="@RemoveFromFollowerList">Followed</button>
+                            <button class="btn btn-sm btn-green" @onclick="@RemoveFromFollowerList">Followed</button>
                         }
                         else
                         {
-                            <button class="prof-f-btn" @onclick="@AddToFollowerList">Follow+</button>
+                            <button class="btn btn-sm btn-green" @onclick="@AddToFollowerList">Follow+</button>
                         }
                     }
                     else
@@ -85,46 +85,13 @@
                     <h4>About @profile.FullName</h4>
                 </div>
                 <p>@profile.Bio</p>
-                <hr>
-            </div>
-            <!--Profile Sepciality  -->
-            <div class="profile-speciality">
-                <div class="content-heading">
-                    <h4>Speciality</h4>
-                </div>
-                <!-- Profile Sepciality Tag Loop Here -->
-                <div class="profile-tags">
-                    <ul>
-                        <li>  @EnumsHelper.GetDisplayName(profile.MedicalSpecialty)</li>
-                    </ul>
-                </div>
-            </div>
-            <!-- Profile Contact -->
-            <div class="profile-contact">
-                <div class="content-heading">
-                    <h4>Contact</h4>
-                </div>
-                <div class="profile-contact-info">
-                    <div class="profile-contact-item">
-                        <label for="">Email</label>
-                        <div class="profile-contact-box">
-                            @profile.Email
-                        </div>
-                    </div>
-                    <div class="profile-contact-item">
-                        <label for="">Phone</label>
-                        <div class="profile-contact-box">
-                            @profile.PhoneNumber
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         <!-- Past Activities -->
         <div class="profile-content-right">
             <div class="profile-activities">
                 <div class="content-heading">
-                    <h4>Past Activities</h4>
+                    <h4>Recent Activities</h4>
                 </div>
                 <div class="profile-activities-list">
                     @foreach (var caseItem in ListOfCases)
@@ -146,7 +113,7 @@
                             </div>
                             <div>
                                 <h3>   <a href=@($"/viewcase/{caseItem.ID}")>@caseItem.Topic</a></h3>
-                                <p>     @caseItem.Description.Left(200) ...</p>
+                                <p>     @caseItem.Description.Left(1500) ...</p>
                             </div>
                             <div class="tags-and-btns">
                                 <div class="profile-tags">
@@ -169,8 +136,8 @@
                                     </ul>
                                 </div>
                                 <div>
-                                    <button><img src="/frontend//Dashboard/img/icons/thumbs-up-hollow.svg" alt=""><span>Like</span></button>
-                                    <button><img src="/frontend/Dashboard/img/icons/comment.svg" alt=""><span>Comment</span></button>
+                                    <button><img src="/img/icons/thumbs-up-hollow.svg" alt=""><span>Like</span></button>
+                                    <button><img src="/img/icons/comment.svg" alt=""><span>Comment</span></button>
                                 </div>
                             </div>
                         </div>

@@ -16,10 +16,11 @@ namespace Hippra.Models.ViewModel
         public string PosterImage { get; set; } = "/img/hippra/blank-profile.png";
         public string Comment { get; set; }
         public DateTime PostedDate { get; set; }
-        public int CaseID { get; set; }
+        public long CaseID { get; set; }
         public int Votes { get; set; }
         public bool IsAnonymos { get; set; }
         public bool IsMyOwnComment { get; set; }
+        public bool VotedByCurrentUser { get; set; }
         public string TimeDifferenceText
         {
             get

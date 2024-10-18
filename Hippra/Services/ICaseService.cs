@@ -35,21 +35,21 @@ namespace Hippra.Services
     public interface ICaseService
     {
         Task<IList<CaseViewModel>> GetMyCases(string userId);
-        Task<CaseViewModel> GetCaseNoTracking(int caseId, string currentUserId);
+        Task<CaseViewModel> GetCaseNoTracking(long caseId, string currentUserId);
         Task<Result> AddNewCase(AddEditCaseViewModel inputCase);
         Task<Result> EditCase(AddEditCaseViewModel inputCase);
-        Task<AddEditCaseViewModel> GetCase(int caseId);
-        Task<bool> CheckLike(string userId, int caseId);
-        Task<bool> AddLike(string userId, int caseId);
-        Task<bool> RemoveLike(string userId, int caseId);
-        Task<Result> SaveCaseFile(Stream fileStream, int caseId, string fileName, string fileType, string userId);
+        Task<AddEditCaseViewModel> GetCase(long caseId);
+        Task<bool> CheckLike(string userId, long caseId);
+        Task<bool> AddLike(string userId, long caseId);
+        Task<bool> RemoveLike(string userId, long caseId);
+        Task<Result> SaveCaseFile(Stream fileStream, long caseId, string fileName, string fileType, string userId);
         Task<FileDownloadResult> DownloadCaseFile(long id);
 
         //comments
-        Task<List<CaseCommentViewModel>> GetCommentsNoTracking(int caseId, string currentUserId);
+        Task<List<CaseCommentViewModel>> GetCommentsNoTracking(long caseId, string currentUserId);
         Task<int> GetCommentAddedCount(string posterId);
         Task<CaseCommentViewModel> GetComment(long commentId, string currentUserId);
-        Task<Result> AddComment(int caseId, string comment, string userId);
+        Task<Result> AddComment(long caseId, string comment, string userId);
         Task<Result> UpdateComment(long commentId, string comment);
         Task<Result> SaveCaseCommentFile(Stream fileStream, long caseCommentId, string fileName, string fileType, string userId);
         Task<Result> DeleteCommentFile(long commentFileId, string userId);
@@ -58,6 +58,6 @@ namespace Hippra.Services
         Task<bool> CheckVote(string voterId, long commentId);
         Task<bool> AddVote(string voterId, long commentId);
         Task<bool> RemoveVote(string voterId, long commentId);
-        Task<bool> ReportComment(string userId, long commentId, int caseId, string reportText);
+        Task<bool> ReportComment(string userId, long commentId, long caseId, string reportText);
     }
 }

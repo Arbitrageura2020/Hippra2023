@@ -28,7 +28,7 @@
 @inject ICaseService caseService
 @inject IFollowService followService;
 
-<div class="case-layout">
+<div class="case-layout @(CaseItem.Type==CaseType.AskForHelp?"orange":"") ">
     <div class="case-top">
         <div class="case-top-action">
             <FTBackBtn BackTitle="Back" UseRedirect="false"></FTBackBtn>
@@ -104,14 +104,14 @@
                     {
                         @if (CaseItem.LikedByCurrentUser)
                         {
-                            <button @onclick="Like">
-                                <img src="/frontend//Dashboard/img/icons/thumbs-up-hollow.svg" alt="">
+                            <button>
+                                <img src="/img/icons/thumbs-up-hollow.svg" alt="">
                                 <span>Liked</span>
                             </button>
                         }
                         else
                         {
-                            <button>
+                            <button @onclick="Like">
                                 <img src="/img/icons/thumbs-up-hollow.svg" alt="">
                                 <span>Like</span>
                             </button>
@@ -257,14 +257,14 @@
                     {
                         @if (CaseItem.LikedByCurrentUser)
                         {
-                            <button @onclick="Like">
-                                <img src="/frontend//Dashboard/img/icons/thumbs-up-hollow.svg" alt="">
+                            <button>
+                                <img src="/img/icons/thumbs-up-hollow.svg" alt="">
                                 <span>Liked</span>
                             </button>
                         }
                         else
                         {
-                            <button>
+                            <button @onclick="Like">
                                 <img src="/img/icons/thumbs-up-hollow.svg" alt="">
                                 <span>Like</span>
                             </button>

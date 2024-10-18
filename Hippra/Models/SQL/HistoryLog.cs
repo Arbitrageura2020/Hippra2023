@@ -7,7 +7,7 @@ namespace Hippra.Models.SQL
     {
         public long ID { get; set; }
         public HistoryLogType Type { get; set; }
-        public int PostID { get; set; }
+        public long PostID { get; set; }
         public long CommentId { get; set; }
 
         public string UserId { get; set; }

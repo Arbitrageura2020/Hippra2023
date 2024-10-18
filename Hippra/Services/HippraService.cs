@@ -164,7 +164,7 @@ namespace Hippra.Services
             return result;
         }
 
-        public async Task<Case> GetCaseNoTracking(int caseId)
+        public async Task<Case> GetCaseNoTracking(long caseId)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -174,7 +174,7 @@ namespace Hippra.Services
 
      
 
-        public async Task<bool> CloseCase(int CaseId)
+        public async Task<bool> CloseCase(long CaseId)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -206,7 +206,7 @@ namespace Hippra.Services
 
             return true;
         }
-        private bool CaseExists(int id)
+        private bool CaseExists(long id)
         {
             using var _context = DbFactory.CreateDbContext();
 

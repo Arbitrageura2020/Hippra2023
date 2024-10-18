@@ -56,7 +56,7 @@ namespace Hippra.Services
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var result = await _context.Cases.Where(x => x.UserId == userId).Select(x => new CaseViewModel()
+            var result = await _context.Cases.Where(x => x.UserId == userId && !x.PostedAnonymosley).Select(x => new CaseViewModel()
             {
                 ID = x.ID,
                 Description = x.Description,
@@ -77,7 +77,7 @@ namespace Hippra.Services
             return result;
         }
 
-        public async Task<AddEditCaseViewModel> GetCase(int caseId)
+        public async Task<AddEditCaseViewModel> GetCase(long caseId)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -112,7 +112,7 @@ namespace Hippra.Services
             return result;
         }
 
-        public async Task<CaseViewModel> GetCaseNoTracking(int caseId, string currentUserId)
+        public async Task<CaseViewModel> GetCaseNoTracking(long caseId, string currentUserId)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -274,21 +274,21 @@ namespace Hippra.Services
             return Result.Success(caseObject.ID);
         }
 
-        private bool CaseExists(int id)
+        private bool CaseExists(long id)
         {
             using var _context = DbFactory.CreateDbContext();
 
             return _context.Cases.Include(x => x.MedicalSubCategory).AsNoTracking().Any(e => e.ID == id);
         }
 
-        public async Task<bool> CheckLike(string userId, int caseId)
+        public async Task<bool> CheckLike(string userId, long caseId)
         {
             using var _context = DbFactory.CreateDbContext();
 
             return await _context.CaseLikes.AnyAsync(v => v.LikedByUserId == userId && v.CaseId == caseId);
         }
 
-        public async Task<bool> AddLike(string userId, int caseId)
+        public async Task<bool> AddLike(string userId, long caseId)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -303,7 +303,7 @@ namespace Hippra.Services
         }
 
 
-        public async Task<bool> RemoveLike(string userId, int caseId)
+        public async Task<bool> RemoveLike(string userId, long caseId)
         {
             using var _context = DbFactory.CreateDbContext();
 
@@ -318,7 +318,7 @@ namespace Hippra.Services
             return false;
         }
 
-        public async Task<Result> SaveCaseFile(Stream fileStream, int caseId, string fileName, string fileType, string userId)
+        public async Task<Result> SaveCaseFile(Stream fileStream, long caseId, string fileName, string fileType, string userId)
         {
             try
             {
@@ -368,11 +368,11 @@ namespace Hippra.Services
 
 
         //comments
-        public async Task<List<CaseCommentViewModel>> GetCommentsNoTracking(int caseId, string currentUserId)
+        public async Task<List<CaseCommentViewModel>> GetCommentsNoTracking(long caseId, string currentUserId)
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var result = await _context.CaseComments.Where(c => c.CaseID == caseId).Select(x =>
+            var result = await _context.CaseComments.Include(x=>x.CaseCommentVotes).Where(c => c.CaseID == caseId).Select(x =>
               new CaseCommentViewModel()
               {
                   CaseID = x.CaseID,
@@ -385,7 +385,8 @@ namespace Hippra.Services
                   PosterSpeciality = @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty),
                   PosterImage = x.User.ProfileUrl,
                   IsAnonymos = x.IsAnonymus,
-                  IsMyOwnComment = x.UserId == currentUserId
+                  IsMyOwnComment = x.UserId == currentUserId,
+                  VotedByCurrentUser=x.CaseCommentVotes.Any(x => x.UserId == currentUserId),
               }).AsNoTracking().ToListAsync();
 
 
@@ -418,13 +419,13 @@ namespace Hippra.Services
                  PosterSpeciality = @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty),
                  PosterImage = x.User.ProfileUrl,
                  IsAnonymos = x.IsAnonymus,
-                 IsMyOwnComment = x.UserId == currentUserId
+                 IsMyOwnComment = x.UserId == currentUserId,
              }).FirstOrDefaultAsync();
             return result;
         }
 
         [Authorize]
-        public async Task<Result> AddComment(int caseId, string comment, string userId)
+        public async Task<Result> AddComment(long caseId, string comment, string userId)
         {
             using var _context = DbFactory.CreateDbContext();
             var addComment = new CaseComment();
@@ -529,7 +530,7 @@ namespace Hippra.Services
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var vote = await _context.CaseCommentVotes.FirstOrDefaultAsync(v => v.UserId == voterId && v.CommentId == commentId);
+            var vote = await _context.CaseCommentVotes.FirstOrDefaultAsync(v => v.UserId == voterId && v.CaseCommentId == commentId);
             if (vote != null)
             {
                 return true;
@@ -543,7 +544,7 @@ namespace Hippra.Services
 
             _context.CaseCommentVotes.Add(new CaseCommentVote()
             {
-                CommentId = commentId,
+                CaseCommentId = commentId,
                 UserId = voterId,
                 VoteDate = DateTime.UtcNow
             });
@@ -556,7 +557,7 @@ namespace Hippra.Services
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var vote = await _context.CaseCommentVotes.FirstOrDefaultAsync(v => v.UserId == voterId && v.CommentId == commentId);
+            var vote = await _context.CaseCommentVotes.FirstOrDefaultAsync(v => v.UserId == voterId && v.CaseCommentId == commentId);
             if (vote != null)
             {
                 _context.CaseCommentVotes.Remove(vote);
@@ -567,7 +568,7 @@ namespace Hippra.Services
             return false;
         }
 
-        public async Task<bool> ReportComment(string userId, long commentId, int caseId, string reportText)
+        public async Task<bool> ReportComment(string userId, long commentId, long caseId, string reportText)
         {
             using var _context = DbFactory.CreateDbContext();
 

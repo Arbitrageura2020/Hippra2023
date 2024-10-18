@@ -30,7 +30,7 @@ namespace Hippra.Models.ViewModel
             }
         }
 
-        public int ID { get; set; }
+        public long ID { get; set; }
         // poster 
         public string PosterId { get; set; }
         public AppUser User { get; set; }

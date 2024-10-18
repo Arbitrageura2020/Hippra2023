@@ -10,7 +10,7 @@ namespace Hippra.Models.DTO
         public string SenderUserID { get; set; }
         public string ReceiverUserID { get; set; }
         public NotificationType Type { get; set; } = NotificationType.AddedComment;
-        public int PostID { get; set; }
+        public long PostID { get; set; }
         public long CommentId { get; set; }
     }
 }

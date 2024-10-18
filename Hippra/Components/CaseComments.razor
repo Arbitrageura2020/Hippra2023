@@ -57,6 +57,7 @@
             </div>
         </EditForm>
     </div>
+
     <div class="case-comments">
         @if (dataReady && CommentList != null)
         {
@@ -81,26 +82,30 @@
                                 </div>
                                 <h6 class="light-text">@comment.TimeDifferenceText</h6>
                             </div>
-                        </div>
-                        @if (comment.PosterId == userId)
-                        {
-                            <button class="comment-edit" @onclick="(e => { EditComment(comment.ID); })">
-                                <img src="/img/icons/edit-icon.svg" alt="">
-                                Edit
-                            </button>
+                            <div class="comment-buttons">
+                                @if (comment.PosterId == userId)
+                                {
 
-                            <button class="comment-edit" @onclick="(e => { DeleteComment(comment); })">
-                                <img src="/img/icons/edit-icon.svg" alt="">
-                                Delete
-                            </button>
-                        }
-                        @*  else
-            { *@
-                        <button class="comment-edit" @onclick="(e => { EditInDialog(comment.ID); })">
-                            <img src="/img/icons/report-icon.svg" alt="">
-                            Report
-                        </button>
-                        @*  } *@
+                                    <button class="comment-edit" @onclick="(e => { EditComment(comment.ID); })">
+                                        <img src="/img/icons/edit-icon.svg" alt="">
+                                        Edit
+                                    </button>
+
+                                    <button class="comment-edit" @onclick="(e => { DeleteComment(comment); })">
+                                        <img src="/img/icons/delete-icon.svg" alt="">
+                                        Delete
+                                    </button>
+
+                                }
+
+                                <button class="comment-edit" @onclick="(e => { EditInDialog(comment.ID); })">
+                                    <img src="/img/icons/report-icon.svg" alt="">
+                                    Report
+                                </button>
+
+                            </div>
+                        </div>
+
                         <p>
                             @comment.Comment
                         </p>
@@ -115,10 +120,20 @@
                         @*  @comment.Votes Upvotes *@
                         @if (comment.PosterId != userId)
                         {
-                            <button class="upvote-btn" @onclick="(e => { AddVote(comment.ID); })">
-                                <img src="/img/icons/upward-arrow-hollow.svg" alt="">
-                                Upvote
-                            </button>
+                            if (comment.VotedByCurrentUser)
+                            {
+                                <button class="upvote-btn" @onclick="(e => { RemoveVote(comment); })">
+                                    <img src="/img/icons/upward-arrow-clicked.svg" alt="">
+                                    Upvote
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="upvote-btn" @onclick="(e => { AddVote(comment); })">
+                                    <img src="/img/icons/upward-arrow-hollow.svg" alt="">
+                                    Upvote
+                                </button>
+                            }
                         }
                     </div>
                 }
@@ -129,7 +144,7 @@
                             <DataAnnotationsValidator />
                             <ValidationSummary />
                             <div class="comment-form-box">
-                                <input type="text" placeholder="Write a Comment" @bind="@comment.Comment" required></input>
+                                <textarea type="text" placeholder="Write a Comment" class="form-control textarea" @bind="@comment.Comment" required rows="3"></textarea>
                                 <div class="attached-files">
                                     @if (comment.Files != null)
                                     {
@@ -177,7 +192,7 @@
 
 @code {
     [Parameter]
-    public int caseId { get; set; }
+    public long caseId { get; set; }
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
@@ -442,31 +457,41 @@
     }
 
 
-    private async Task AddVote(long commentId)
+    private async Task AddVote(CaseCommentViewModel comment)
     {
-        bool isVoted = await caseService.CheckVote(userId, commentId);
+        bool isVoted = await caseService.CheckVote(userId, comment.ID);
         if (!isVoted)
         {
-            await caseService.AddVote(userId, commentId);
-            //add notification
-            AddNotificationDto request = new AddNotificationDto()
+            var result= await caseService.AddVote(userId, comment.ID);
+            if(result)
+            {
+                comment.VotedByCurrentUser = true;
+                this.StateHasChanged();
+                //add notification
+                AddNotificationDto request = new AddNotificationDto()
                 {
                     SenderUserID = userId,
                     Type = NotificationType.AddedUpVote,
                     PostID = caseId,
-                    CommentId = commentId
+                    CommentId = comment.ID
                 };
 
-            await notificationsService.AddNotification(request);
+                await notificationsService.AddNotification(request);
+            }
         }
     }
 
-    private async Task RemoveVote(long commentId)
+    private async Task RemoveVote(CaseCommentViewModel comment)
     {
-        bool isVoted = await caseService.CheckVote(userId, commentId);
+        bool isVoted = await caseService.CheckVote(userId, comment.ID);
         if (isVoted)
         {
-            await caseService.AddVote(userId, commentId);
+            var result= await caseService.AddVote(userId, comment.ID);
+            if(result)
+            {
+                comment.VotedByCurrentUser = false;
+                this.StateHasChanged();
+            }
         }
     }
 

@@ -8,7 +8,7 @@ namespace Hippra.Models.SQL
 {
     public class Case
     {
-        public int ID { get; set; }
+        public long ID { get; set; }
         // poster 
         public int PosterID { get; set; }
         public string UserId { get; set; }
