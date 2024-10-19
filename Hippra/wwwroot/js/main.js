@@ -1,6 +1,5 @@
 window.mainScripts = {
-    setupProfileDropdown: function ()
-    {
+    setupProfileDropdown: function () {
 
         // Handle Profile Dropdown
         const profileDropdownBtn = document.querySelector(".nav-profile .profile-btn");
@@ -15,9 +14,55 @@ window.mainScripts = {
                 profileDropdownMenu.classList.toggle("visible");
             });
         }
+
+        //document.addEventListener("click", (e) => {
+
+        //    const icon = profileDropdownBtn.querySelector(".profile-icon");
+
+        //    if (icon.classList.contains("rotate")) {
+
+        //        icon.classList.remove("rotate");
+
+        //        profileDropdownMenu.classList.remove("visible");
+        //    }
+        //});
     },
 
-        // Handle Toggle Search Dropdown
+
+
+    setupCasePageTabs:function ()
+    {
+        // Handle Case Page Tabs
+
+        const caseTabButtons = document.querySelectorAll(".case-tab-btn");
+        const caseTabContents = document.querySelectorAll(".case-tab-content");
+
+        if (caseTabButtons) {
+            caseTabButtons.forEach((item) => {
+                item.addEventListener("click", (e) => {
+                    const contentTabName = e.target.getAttribute("data-target");
+
+                    const upperDivWithCaseContent = item.closest(".case-layout.case-1");
+                    if (upperDivWithCaseContent) {
+                        mainLayout.classList.remove("orange");
+                    }
+
+                    caseTabButtons.forEach((item) => {
+                        item.classList.remove("active");
+                    });
+
+                    caseTabContents.forEach((item) => {
+                        item.classList.remove("active");
+                    });
+
+                    e.target.classList.add("active");
+                    document.querySelector(`.${contentTabName}`).classList.add("active");
+                });
+            });
+        }
+    },
+
+    // Handle Toggle Search Dropdown
     toggleSearchDropdown: function () {
         const searchDropdown = document.querySelector("#search-dropdown");
         if (searchDropdown) {
@@ -178,7 +223,7 @@ const handleScrollable = () => {
     });
 };
 
- function handlePageScrollable() {
+function handlePageScrollable() {
     handleScrollable();
 
     window.addEventListener("resize", handleScrollable);
@@ -211,4 +256,21 @@ function InitCasePage() {
             document.querySelector(`.${contentTabName}`).classList.add("active");
         });
     });
+}
+
+
+// Handle Comments File Upload
+const uploadButton = document.querySelector("#uploadFileButton");
+const uploadInput = document.querySelector("#uploadProfilePictureInput");
+function HandleCommentUploadButtonClick() {
+
+    var upldBtn = document.querySelector("#uploadFileButton");
+    const uplInput = document.querySelector("#uploadFileInput");
+    // Trigger Upload
+    if (upldBtn) {
+
+        uplInput.click();
+
+
+    }
 }

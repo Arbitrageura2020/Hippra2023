@@ -149,30 +149,33 @@
                                 <InputFile id="uploadFileInput" hidden="" type="file" OnChange="@HandleUploadFileNew" @ref="_filePicker" multiple />
                             </div>
                             <div class="attached-files">
-                                <div class="files">
-                                    @if (@CaseModel.Files != null)
-                                    {
-                                        @foreach (var document in CaseModel.Files)
-                                        {
-                                            <div class="files">
-                                                <p>
-                                                    <a href="/Files/Download/@document.ID">@document.FileName</a>  <button class="attach-btn" @onclick="(e => { DeleteSavedFile(document); })">    <img src="/img/icons/delete-icon.svg" alt=""></button>
 
-                                                </p>
-                                            </div>
-                                        }
-                                    }
-                                    @if (NewCaseUploadedFiles != null)
+                                @if (@CaseModel.Files != null)
+                                {
+                                    @foreach (var document in CaseModel.Files)
                                     {
-                                        @foreach (var document in NewCaseUploadedFiles)
-                                        {
+                                        <div class="files">
+                                            <p>
+                                                <a href="/Files/Download/@document.ID">@document.FileName</a>
+
+                                            </p>
+                                            <button @onclick="(e => { DeleteSavedFile(document); })">    <img src="/img/icons/close.svg" alt=""></button>
+                                        </div>
+                                    }
+                                }
+                                @if (NewCaseUploadedFiles != null)
+                                {
+                                    @foreach (var document in NewCaseUploadedFiles)
+                                    {
+                                        <div class="files">
                                             <p>@document.Name</p>
                                             <button @onclick="(e => { DeleteUploadedFile(document); })">
                                                 <img src="/img/icons/close.svg" alt="">
                                             </button>
-                                        }
+                                        </div>
                                     }
-                                </div>
+                                }
+
                             </div>
                         </div>
 
@@ -210,10 +213,10 @@
                             <label for="anonymousPost">I understand and want to post anonymously</label>
                         </div>
                         <div class="form-group post-case-actions">
-                            <button class="btn btn-sm btn-roboto green-btn" type="submit">
-                                Post Case
+                            <button class="btn btn-lg btn-roboto green-btn" type="submit" disabled="@(isSubmitting)">
+                                @(isSubmitting ? "Saving ..." : "Save changes")
                             </button>
-                            <button class="btn btn-sm btn-roboto">Cancel</button>
+                            <button class="btn btn-lg btn-roboto" type="button" disabled="@(isSubmitting)">Cancel</button>
                         </div>
                     </EditForm>
                 </div>
@@ -239,7 +242,7 @@
     private List<Tag> AllTags { get; set; } = new List<Tag>();
     private string debug { get; set; } = "";
     private const int MAXTAGS = 25;
-    private bool isSubmitted = false;
+    private bool isSubmitting = false;
 
 
     [CascadingParameter]
@@ -300,12 +303,6 @@
 
     }
 
-
-    private async Task Submitted()
-    {
-        isSubmitted = true;
-    }
-
     private void OnSearch(OptionsSearchEventArgs<Tag> e)
     {
         e.Items = AllTags.Where(i => i.Name.StartsWith(e.Text, StringComparison.OrdinalIgnoreCase)).OrderBy(i => i.Name);
@@ -313,6 +310,8 @@
 
     private async Task UpdateCase()
     {
+
+        isSubmitting = true;
         HistoryLog newHistory = new HistoryLog();
 
         var saveResult = await caseService.EditCase(CaseModel);
@@ -339,6 +338,7 @@
             await historyLogService.AddToHistory("edited a case", this.CaseModel);
         }
 
+        isSubmitting = false;
         NavigationManager.NavigateTo(returnUrl);
     }
 

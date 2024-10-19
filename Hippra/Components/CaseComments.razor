@@ -37,19 +37,19 @@
                         {
                             <div class="files">
                                 <p>@document.Name</p>
-                                <button @onclick="(e => { DeleteUploadedFile(document); })"> <img src="/img/icons/delete-icon.svg" alt=""></button>
+                                <button @onclick="(e => { DeleteUploadedFile(document); })"> <img src="/img/icons/close.svg" alt=""></button>
                             </div>
                         }
                     }
                 </div>
                 <div class="comment-btns">
                     <button class="attach-btn" id="uploadFileButton" type="button" @onclick="OpenFilePicker">
-                        <img src="/frontend/Dashboard/img/icons/attachment.svg" alt="">
+                        <img src="/img/" alt="">
                         Attach files
                     </button>
                     <InputFile id="uploadFileInput" hidden="" type="file" OnChange="@HandleUploadFileNew" @ref="_filePicker" multiple />
                     <div class="last-two-btns">
-                        <button>Cancel</button>
+                        <button type="button" @onclick="CancelNewComment">Cancel</button>
                         <button type="submit" disabled="@(!isSubmitted)"> @(isSubmitted ? "Post" : "Saving ...") </button>
                     </div>
                 </div>
@@ -113,7 +113,7 @@
                             @foreach (var document in comment.Files)
                             {
                                 <div class="files">
-                                    <p><a href="@document.FileLink">@document.FileName</a></p>
+                                    <p><a href="/Files/DownloadCommentFile/@document.ID">@document.FileName</a></p>
                                 </div>
                             }
                         </div>
@@ -145,6 +145,7 @@
                             <ValidationSummary />
                             <div class="comment-form-box">
                                 <textarea type="text" placeholder="Write a Comment" class="form-control textarea" @bind="@comment.Comment" required rows="3"></textarea>
+
                                 <div class="attached-files">
                                     @if (comment.Files != null)
                                     {
@@ -152,9 +153,9 @@
                                         {
                                             <div class="files">
                                                 <p>
-                                                    @document.FileName <button class="attach-btn" @onclick="(e => { DeleteSavedFile(comment, document); })">    <img src="/img/icons/delete-icon.svg" alt=""></button>
-
+                                                    @document.FileName
                                                 </p>
+                                                <button @onclick="(e => { DeleteSavedFile(comment, document); })">    <img src="/img/icons/close.svg" alt=""></button>
                                             </div>
                                         }
                                     }
@@ -175,7 +176,7 @@
                                     </button>
                                     <InputFile id="uploadFileInputEdit" hidden="" type="file" OnChange="@HandleUploadFileEdit" @ref="_filePickerEdit" multiple />
                                     <div class="last-two-btns">
-                                        <button @onclick="(e => { EditCommentId=-1; })">Cancel </button>
+                                        <button @onclick="CancelEditComment" >Cancel </button>
                                         <button type="submit" disabled="@(!isSubmitted)"> @(isUpdated ? "Update Comment" : "Saving ...")  </button>
                                     </div>
                                 </div>
@@ -298,6 +299,14 @@
         this.StateHasChanged();
     }
 
+    private async Task CancelEditComment()
+    {
+        isUpdated = true;
+        EditCommentId = -1;
+        editComment.Comment = "";
+        EditCaseUploadedFiles.Clear();
+    }
+
     public async Task DeleteComment(CaseCommentViewModel commentObject)
     {
         var dialogParameters = new DialogParameters
@@ -403,6 +412,12 @@
         }
     }
 
+    private async Task CancelNewComment()
+    {
+        newComment.Comment = "";
+        NewCaseUploadedFiles.Clear();
+    }
+
     private InputFile _filePicker;
     private async Task OpenFilePicker()
         => await JSRuntime.InvokeVoidAsync("HTMLElement.prototype.click.call",
@@ -413,10 +428,10 @@
         => await JSRuntime.InvokeVoidAsync("HTMLElement.prototype.click.call",
             _filePickerEdit.Element);
 
-    private async Task OpenFileClick()
-    {
-        await JSRuntime.InvokeVoidAsync("HandleCommentUploadButtonClick");
-    }
+    // private async Task OpenFileClick()
+    // {
+    //     await JSRuntime.InvokeVoidAsync("HandleCommentUploadButtonClick");
+    // }
 
     public async Task HandleUploadFileNew(InputFileChangeEventArgs e)
     {
@@ -462,19 +477,19 @@
         bool isVoted = await caseService.CheckVote(userId, comment.ID);
         if (!isVoted)
         {
-            var result= await caseService.AddVote(userId, comment.ID);
-            if(result)
+            var result = await caseService.AddVote(userId, comment.ID);
+            if (result)
             {
                 comment.VotedByCurrentUser = true;
                 this.StateHasChanged();
                 //add notification
                 AddNotificationDto request = new AddNotificationDto()
-                {
-                    SenderUserID = userId,
-                    Type = NotificationType.AddedUpVote,
-                    PostID = caseId,
-                    CommentId = comment.ID
-                };
+                    {
+                        SenderUserID = userId,
+                        Type = NotificationType.AddedUpVote,
+                        PostID = caseId,
+                        CommentId = comment.ID
+                    };
 
                 await notificationsService.AddNotification(request);
             }
@@ -486,8 +501,8 @@
         bool isVoted = await caseService.CheckVote(userId, comment.ID);
         if (isVoted)
         {
-            var result= await caseService.AddVote(userId, comment.ID);
-            if(result)
+            var result = await caseService.AddVote(userId, comment.ID);
+            if (result)
             {
                 comment.VotedByCurrentUser = false;
                 this.StateHasChanged();

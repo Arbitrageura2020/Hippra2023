@@ -34,5 +34,24 @@ namespace Hippra.Controllers
             else
                 return NotFound();
         }
+
+        [Route("/Files/DownloadCommentFile/{id}")]
+        public async Task<IActionResult> DownloadCommentFile(int id)
+        {
+            var fileStream = await _caseService.DownloadCaseCommentFile(id);
+            var cd = new System.Net.Mime.ContentDisposition
+            {
+                FileName = fileStream.FileName,
+                Inline = false,
+            };
+
+            Response.Headers.Add("Content-Disposition", cd.ToString());
+            if (fileStream != null)
+            {
+                return File(fileStream.FileContent, fileStream.FileType);
+            }
+            else
+                return NotFound();
+        }
     }
 }

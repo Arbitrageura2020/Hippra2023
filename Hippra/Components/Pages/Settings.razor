@@ -146,18 +146,8 @@
                                     </div>
                                     <div class="settings-row">
                                         <div class="form-group">
-                                            <label for="">Country</label>
-                                            <div class="form-select-wrapper">
-                                                <select class="form-select main" name="">
-                                                    <option value="" selected="" disabled="" hidden="">
-                                                        Please select your country of residence
-                                                    </option>
-                                                    <option value="option1">Option 1</option>
-                                                    <option value="option2">Option 2</option>
-                                                    <option value="option3">Option 3</option>
-                                                </select>
-                                                <img src="./img/icons/chevron-down.svg" alt="">
-                                            </div>
+                                            <label for="">Country </label>
+                                            <input type="text" class="form-control" placeholder="Please enter your country" @bind="@UserProfile.Country">
                                         </div>
                                         <div class="form-group">
                                             <label for="">State </label>

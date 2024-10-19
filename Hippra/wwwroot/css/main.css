@@ -497,7 +497,7 @@ select {
         font-weight: 500;
     }
 
-.form-group.file {
+/*.form-group.file {
     position: relative;
 }
 
@@ -507,7 +507,7 @@ select {
         left: 0;
         top: 0;
         transform: translate(100px, 5px);
-    }
+    }*/
 
 .form-group.new-post {
     position: relative;

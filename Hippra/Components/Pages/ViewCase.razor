@@ -104,8 +104,8 @@
                     {
                         @if (CaseItem.LikedByCurrentUser)
                         {
-                            <button>
-                                <img src="/img/icons/thumbs-up-hollow.svg" alt="">
+                            <button @onclick="UnLike">
+                                <img src="/img/icons/thumbs-up-clicked.svg" alt="">
                                 <span>Liked</span>
                             </button>
                         }
@@ -257,8 +257,8 @@
                     {
                         @if (CaseItem.LikedByCurrentUser)
                         {
-                            <button>
-                                <img src="/img/icons/thumbs-up-hollow.svg" alt="">
+                            <button @onclick="UnLike">
+                                <img src="/img/icons/thumbs-up-clicked.svg" alt="">
                                 <span>Liked</span>
                             </button>
                         }
@@ -274,11 +274,12 @@
             </div>
         </section>
     }
-    @if (dataReady)
-    {
-        <CaseComments caseId="@CaseItem.ID" isOpened="true" />
-    }
-
+    <div id="newcomment">
+        @if (dataReady)
+        {
+            <CaseComments caseId="@CaseItem.ID" isOpened="true" />
+        }
+    </div>
 </div>
 
 @code {
@@ -310,6 +311,11 @@
         //   await JSRuntime.InvokeVoidAsync("handlePageScrollable");
         // await JSRuntime.InvokeVoidAsync("InitCasePage");
         //}
+
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("mainScripts.setupCasePageTabs");
+        }
     }
 
     protected override async Task OnInitializedAsync()
@@ -375,7 +381,10 @@
         {
             var result = await caseService.AddLike(userId, caseId);
             if (result)
+            {
                 CaseItem.LikedByCurrentUser = true;
+                StateHasChanged();
+            }
         }
     }
 
@@ -385,7 +394,10 @@
         {
             var result = await caseService.RemoveLike(userId, caseId);
             if (result)
+            {
                 CaseItem.LikedByCurrentUser = false;
+                StateHasChanged();
+            }
         }
     }
 
@@ -405,4 +417,6 @@
         // await addToHistory("unfollowed");
         StateHasChanged();
     }
+
+
 }

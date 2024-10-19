@@ -171,10 +171,7 @@
     margin-bottom: 0px;
 }
 
-    .post-case-actions .btn-roboto {
-        padding: 5px 10px;
-        cursor: pointer;
-    }
+
 
         .post-case-actions .btn-roboto.green-btn {
             background-color: var(--green);
@@ -182,6 +179,20 @@
             border: none;
         }
 
+    .post-case-actions button {
+        margin-top: 30px;
+        font-family: Roboto;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 500;
+        padding: 10px 30px 10px 30px;
+        line-height: normal;
+        align-items: center;
+        border: none;
+        border-radius: 20px;
+        background: #d9d9d9;
+        cursor: pointer;
+    }
 input[type="radio"] {
     accent-color: #1DA39D;
 }
@@ -227,6 +238,9 @@ input[type="radio"] {
     background: #ffffff;
     margin-top: 10px;
     border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
 }
 
     .files button {
@@ -235,3 +249,25 @@ input[type="radio"] {
         height: 0;
         cursor: pointer;
     }
+
+
+.attach-btn {
+    margin-top: 30px;
+    font-family: Roboto;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+/*    padding: 10px 30px 10px 30px;*/
+    line-height: normal;
+    align-items: center;
+    border: none;
+    border-radius: 20px;
+    background: #d9d9d9;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+}
+
+.attached-files {
+    margin-top: 20px;
+}

@@ -169,6 +169,22 @@
     margin-top: 10px;
 }
 
+    .tags-and-btns a {
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        background: transparent;
+        color: #6b6b6b;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+        .tags-and-btns a img {
+            margin-right: 8px;
+            height: 24px;
+            width: 24px;
+        }
+
     .tags-and-btns button {
         border: none;
         display: inline-flex;
@@ -185,9 +201,9 @@
             width: 24px;
         }
 
-        .tags-and-btns button span {
-            display: inline-block;
-        }
+    .tags-and-btns button span {
+        display: inline-block;
+    }
 
 .profile-contact {
     position: relative;
@@ -375,6 +391,7 @@
     height: 45px;
     border-radius: 50%;
     overflow: hidden;
+    margin-right:15px;
 }
 
 .comment-btns {

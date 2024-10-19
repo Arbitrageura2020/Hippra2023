@@ -53,6 +53,7 @@ namespace Hippra.Services
         Task<Result> UpdateComment(long commentId, string comment);
         Task<Result> SaveCaseCommentFile(Stream fileStream, long caseCommentId, string fileName, string fileType, string userId);
         Task<Result> DeleteCommentFile(long commentFileId, string userId);
+        Task<FileDownloadResult> DownloadCaseCommentFile(long id);
         Task<bool> DeleteComment(long commentId, string userId);
 
         Task<bool> CheckVote(string voterId, long commentId);

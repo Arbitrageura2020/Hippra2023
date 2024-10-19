@@ -61,6 +61,7 @@ namespace Hippra.Services
                 ID = x.ID,
                 Description = x.Description,
                 Topic = x.Topic,
+                DateCreated=x.DateCreated,
                 DateLastUpdated = x.DateLastUpdated,
                 PosterName = x.User.FullName,
                 PosterId = x.User.Id,
@@ -372,7 +373,7 @@ namespace Hippra.Services
         {
             using var _context = DbFactory.CreateDbContext();
 
-            var result = await _context.CaseComments.Include(x=>x.CaseCommentVotes).Where(c => c.CaseID == caseId).Select(x =>
+            var result = await _context.CaseComments.Include(x => x.CaseCommentVotes).Where(c => c.CaseID == caseId).Select(x =>
               new CaseCommentViewModel()
               {
                   CaseID = x.CaseID,
@@ -386,7 +387,7 @@ namespace Hippra.Services
                   PosterImage = x.User.ProfileUrl,
                   IsAnonymos = x.IsAnonymus,
                   IsMyOwnComment = x.UserId == currentUserId,
-                  VotedByCurrentUser=x.CaseCommentVotes.Any(x => x.UserId == currentUserId),
+                  VotedByCurrentUser = x.CaseCommentVotes.Any(x => x.UserId == currentUserId),
               }).AsNoTracking().ToListAsync();
 
 
@@ -468,15 +469,16 @@ namespace Hippra.Services
                 using var _context = DbFactory.CreateDbContext();
                 var extension = Path.GetExtension(fileName);
                 var plainFileName = Path.GetFileNameWithoutExtension(fileName);
-                var uniquefileName = plainFileName + Guid.NewGuid().ToString() + extension;
-                await _azureStorage.SetBlobFile(uniquefileName, fileStream).ConfigureAwait(true);
+                var uniquefileName = "/" + caseCommentId.ToString() + "/" + plainFileName + Guid.NewGuid().ToString() + extension;
+                // await _azureStorage.SetBlobFile(uniquefileName, fileStream).ConfigureAwait(true);
+                await _fileClient.SaveFile("commentfiles", uniquefileName, fileStream);
 
-                var fileLink = GetImgStorageUrl() + uniquefileName;
                 var newCaseCommentFile = new CaseCommentFile();
                 newCaseCommentFile.CaseCommentId = caseCommentId;
                 newCaseCommentFile.FileName = fileName;
                 newCaseCommentFile.FileType = fileType;
-                newCaseCommentFile.FileLink = fileLink;
+                newCaseCommentFile.FileLink = uniquefileName;
+                newCaseCommentFile.Container = "commentfiles";
                 newCaseCommentFile.UploadDate = DateTime.Now;
                 newCaseCommentFile.UploadedByUserId = userId;
                 _context.CaseCommentFiles.Add(newCaseCommentFile);
@@ -506,6 +508,24 @@ namespace Hippra.Services
         }
 
 
+        public async Task<FileDownloadResult> DownloadCaseCommentFile(long id)
+        {
+            using var _context = DbFactory.CreateDbContext();
+            var file = await _context.CaseCommentFiles.FirstOrDefaultAsync(x => x.ID == id);
+            var fileExists = await _fileClient.FileExists("commentfiles", file.FileLink);
+
+            var result = new FileDownloadResult();
+            if (file != null && fileExists)
+            {
+                result.FileName = file.FileName;
+                result.FileType = file.FileType;
+                result.FileContent = await _fileClient.GetFile("commentfiles", file.FileName);
+                return result;
+            }
+            else
+                return null;
+        }
+
         public async Task<bool> DeleteComment(long commentId, string userId)
         {
             using var _context = DbFactory.CreateDbContext();
@@ -519,11 +539,6 @@ namespace Hippra.Services
                 return true;
             }
             return false;
-        }
-
-        public string GetImgStorageUrl()
-        {
-            return AppSettings.StorageUrl;
         }
 
         public async Task<bool> CheckVote(string voterId, long commentId)

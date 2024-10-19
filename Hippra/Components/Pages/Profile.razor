@@ -113,7 +113,7 @@
                             </div>
                             <div>
                                 <h3>   <a href=@($"/viewcase/{caseItem.ID}")>@caseItem.Topic</a></h3>
-                                <p>     @caseItem.Description.Left(1500) ...</p>
+                                <p>     @caseItem.ShortDescription</p>
                             </div>
                             <div class="tags-and-btns">
                                 <div class="profile-tags">
@@ -136,8 +136,22 @@
                                     </ul>
                                 </div>
                                 <div>
-                                    <button><img src="/img/icons/thumbs-up-hollow.svg" alt=""><span>Like</span></button>
-                                    <button><img src="/img/icons/comment.svg" alt=""><span>Comment</span></button>
+                                    @if (caseItem.LikedByCurrentUser)
+                                    {
+                                        <button @onclick="(e => { CaseUnLike(caseItem); })">
+                                            <img src="/img/icons/thumbs-up-clicked.svg" alt="">
+                                            <span>Liked</span>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button @onclick="(e => { CaseLike(caseItem); })">
+                                            <img src="/img/icons/thumbs-up-hollow.svg" alt="">
+                                            <span>Like</span>
+                                        </button>
+                                    }
+                                    @* <a><img src="/img/icons/thumbs-up-hollow.svg" alt=""><span>Like</span></a> *@
+                                    <a href="/viewcase/@caseItem.ID#newcomment"><img src="/img/icons/comment.svg" alt=""><span>Comment</span></a>
                                 </div>
                             </div>
                         </div>
@@ -244,6 +258,32 @@
         NrOfFollowers--;
         // await addToHistory("unfollowed");
         StateHasChanged();
+    }
+
+    private async Task CaseLike(CaseViewModel caseItem)
+    {
+        if (!caseItem.LikedByCurrentUser)
+        {
+            var result = await caseService.AddLike(userId, caseItem.ID);
+            if (result)
+            {
+                caseItem.LikedByCurrentUser = true;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task CaseUnLike(CaseViewModel caseItem)
+    {
+        if (caseItem.LikedByCurrentUser)
+        {
+            var result = await caseService.RemoveLike(userId, caseItem.ID);
+            if (result)
+            {
+                caseItem.LikedByCurrentUser = false;
+                StateHasChanged();
+            }
+        }
     }
 
 }

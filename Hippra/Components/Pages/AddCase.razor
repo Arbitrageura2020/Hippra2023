@@ -40,7 +40,7 @@
                 <div class="content-form inside-scroll">
                     <EditForm Model="@CaseModel" OnValidSubmit="@CreateCase">
                         <DataAnnotationsValidator />
-                        <ValidationSummary />
+                        @*            <ValidationSummary /> *@
                         <div class="form-group">
                             <h3>Case Title *</h3>
 
@@ -139,7 +139,7 @@
 
                         <div class="ask-4-file">
                             <h3>Files Upload</h3>
-                         
+
                             <div class="form-group file">
                                 @* <TestMultiImg @bind-fileName="fileName" @bind-imgUrl="imgUrl"></TestMultiImg> *@
                                 <button class="attach-btn" id="uploadFileButton" type="button" @onclick="OpenFilePicker">
@@ -148,24 +148,24 @@
                                 </button>
                                 <InputFile id="uploadFileInput" hidden="" type="file" OnChange="@HandleUploadFileNew" @ref="_filePicker" multiple />
                             </div>
-                                  <div class="attached-files">
-                                <div class="files">
-                            @if (NewCaseUploadedFiles != null)
-                            {
-                                @foreach (var document in NewCaseUploadedFiles)
+                            <div class="attached-files">
+                                @if (NewCaseUploadedFiles != null)
                                 {
-                                    <p>@document.Name</p>
-                                    <button @onclick="(e => { DeleteUploadedFile(document); })">
-                                        <img src="/img/icons/close.svg" alt="">
-                                    </button>
+                                    @foreach (var document in NewCaseUploadedFiles)
+                                    {
+                                        <div class="files">
+                                            <p>@document.Name</p>
+                                            <button @onclick="(e => { DeleteUploadedFile(document); })">
+                                                <img src="/img/icons/close.svg" alt="">
+                                            </button>
+                                        </div>
+                                    }
                                 }
-                            }
-                            </div</div>
+                            </div>
                         </div>
-
                         <div class="form-group topicsdiv">
                             <h3>Topics *</h3>
-                     @*        <input type="text" class="form-control tag-search" placeholder="Add Tag(s) to so that users know what your case is about."> *@
+                            @*        <input type="text" class="form-control tag-search" placeholder="Add Tag(s) to so that users know what your case is about."> *@
                             <FluentAutocomplete Id="my-customized"
                                                 @ref="TagsList"
                                                 TOption="Tag"
@@ -197,10 +197,10 @@
                             <label for="anonymousPost">I understand and want to post anonymously</label>
                         </div>
                         <div class="form-group post-case-actions">
-                            <button class="btn btn-sm btn-roboto green-btn" type="submit">
-                                Post Case
+                            <button class="btn btn-sm btn-roboto green-btn" type="submit" disabled="@(isSubmitting)">
+                                @(isSubmitting ? "Saving ..." : "Post Case")
                             </button>
-                            <button class="btn btn-sm btn-roboto">Cancel</button>
+                            <button class="btn btn-sm btn-roboto" type="button" disabled="@(isSubmitting)">Cancel</button>
                         </div>
                     </EditForm>
                 </div>
@@ -232,18 +232,18 @@
     private List<Tag> AllTags { get; set; } = new List<Tag>();
     private string debug { get; set; } = "";
 
-     FluentAutocomplete<Tag> TagsList = default!;
-        private List<IBrowserFile> NewCaseUploadedFiles = new();
+    FluentAutocomplete<Tag> TagsList = default!;
+    private List<IBrowserFile> NewCaseUploadedFiles = new();
     private long maxFileSize = 1024 * 1024 * 100;
     private int maxAllowedFiles = 3;
 
-    private bool isSubmitted = false;
+    private bool isSubmitting = false;
 
     private bool IsAskHelpCase = true;
     private string userId { get; set; } = "";
     private string seletedItems { get; set; }
 
-   
+
     private void OnSearch(OptionsSearchEventArgs<Tag> e)
     {
         e.Items = AllTags.Where(i => i.Name.StartsWith(e.Text, StringComparison.OrdinalIgnoreCase)).OrderBy(i => i.Name);
@@ -295,6 +295,7 @@
 
     private async Task CreateCase()
     {
+        isSubmitting = true;
         CaseModel.UserId = userId;
         var result = await caseService.AddNewCase(CaseModel);
         if (result.IsSuccess)
@@ -304,18 +305,23 @@
                 foreach (var file in NewCaseUploadedFiles)
                 {
                     var c = file.OpenReadStream(maxFileSize);
-                    await caseService.SaveCaseFile(c,(int)result.EntityId, file.Name, file.ContentType, userId);
+                    await caseService.SaveCaseFile(c, (int)result.EntityId, file.Name, file.ContentType, userId);
                 }
 
             }
-               NavigationManager.NavigateTo("/");
+            isSubmitting = false;
+            NavigationManager.NavigateTo("/");
 
-        }    
+        }
         else
+        {
             hasError = true;
+            isSubmitting = false;
+        }
+        
     }
 
-      public async Task HandleUploadFileNew(InputFileChangeEventArgs e)
+    public async Task HandleUploadFileNew(InputFileChangeEventArgs e)
     {
         //  NewCaseUploadedFiles.Clear();
 
