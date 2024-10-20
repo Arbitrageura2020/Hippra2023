@@ -27,7 +27,7 @@
 @inject IAuthorizationService AuthorizationService
 @inject ICaseService caseService
 @inject IFollowService followService;
-
+@inject INotificationsService notificationsService;
 <div class="case-layout @(CaseItem.Type==CaseType.AskForHelp?"orange":"") ">
     <div class="case-top">
         <div class="case-top-action">
@@ -69,7 +69,7 @@
                     <img src="@CaseItem.PosterImg" alt="">
                     <div class="case-profile-info">
                         <div>
-                            <h4>@CaseItem.PosterName</h4>
+                            <h4><a href="/profile/@CaseItem.PosterId"></a>@CaseItem.PosterName</h4>
                             @if (!isOwner)
                             {
                                 @if (isFollowed)
@@ -384,6 +384,16 @@
             {
                 CaseItem.LikedByCurrentUser = true;
                 StateHasChanged();
+
+                //add notification
+                AddNotificationDto request = new AddNotificationDto()
+                    {
+                        SenderUserID = userId,
+                        Type = NotificationType.PostLiked,
+                        PostID = caseId
+                    };
+
+                await notificationsService.AddNotification(request);
             }
         }
     }
@@ -407,6 +417,15 @@
         isFollowed = true;
         // await addToHistory("followed");
         // await Notify(-1);
+        //add notification
+        AddNotificationDto request = new AddNotificationDto()
+            {
+                SenderUserID = userId,
+                Type = NotificationType.Followed,
+                ReceiverUserID = CaseItem.PosterId
+            };
+
+        await notificationsService.AddNotification(request);
         StateHasChanged();
     }
 

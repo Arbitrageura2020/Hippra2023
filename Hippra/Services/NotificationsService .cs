@@ -68,7 +68,17 @@ namespace Hippra.Services
 
                 if (request.Type == NotificationType.Followed)
                 {
-
+                    var notification = new Notification()
+                    {
+                        SenderUserId = request.SenderUserID,
+                        CreationDate = DateTime.UtcNow,
+                        Type = request.Type,
+                        ReceiverUserID = request.ReceiverUserID
+                    };
+                    _context.Notifications.Add(notification);
+                }
+                if (request.Type == NotificationType.PostLiked)
+                {
                     var notification = new Notification()
                     {
                         SenderUserId = request.SenderUserID,
@@ -78,7 +88,6 @@ namespace Hippra.Services
                         ReceiverUserID = request.ReceiverUserID
                     };
                     _context.Notifications.Add(notification);
-
                 }
                 try
                 {

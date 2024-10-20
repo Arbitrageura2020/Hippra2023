@@ -269,6 +269,16 @@
             {
                 caseItem.LikedByCurrentUser = true;
                 StateHasChanged();
+
+                //add notification
+                AddNotificationDto request = new AddNotificationDto()
+                    {
+                        SenderUserID = userId,
+                        Type = NotificationType.PostLiked,
+                        PostID = caseItem.ID
+                    };
+
+                await notificationsService.AddNotification(request);
             }
         }
     }

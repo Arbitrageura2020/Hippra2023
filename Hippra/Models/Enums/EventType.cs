@@ -8,11 +8,11 @@ namespace Hippra.Models.Enums
 {
     public enum EventType
     {
-		[Display(Name = "Ask for help")]
+		[Display(Name = "Comment Added")]
 		CommentAdded =0,
-		[Display(Name = "Clnical Knowledge")]
+		[Display(Name = "Followed You")]
 		Followed=1,
-        [Display(Name = "Clnical Knowledge")]
+        [Display(Name = "New Post Added")]
         NewPostAdded = 2,
     }
 }
