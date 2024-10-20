@@ -52,6 +52,9 @@ namespace Hippra.Services
             _fileClient = fileClient;
         }
 
+
+
+
         public async Task<IList<CaseViewModel>> GetMyCases(string userId)
         {
             using var _context = DbFactory.CreateDbContext();
@@ -365,6 +368,61 @@ namespace Hippra.Services
             }
             else
                 return null;
+        }
+
+
+        public async Task<IList<CaseViewModel>> GetExploreTopics(List<int> selectedTags)
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            List<CaseViewModel> cases = await _context.Cases.Where(x => x.UserId != null && x.Tags.Select(t => t.ID).Intersect(selectedTags).Any()).Include(c => c.Tags).OrderByDescending(s => s.DateCreated).Select(x => new CaseViewModel()
+            {
+                ID = x.ID,
+                Description = x.Description,
+                Topic = x.Topic,
+                DateLastUpdated = x.DateLastUpdated,
+                PosterName = x.User.FullName,
+                PosterId = x.User.Id,
+                PosterSpeciality = x.User.MedicalSpecialty != null ? @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty) : "",
+                PosterImg = x.User.ProfileUrl,
+                DateCreated = x.DateCreated,
+                Tags = x.Tags.Select(t => new CaseTagViewModel()
+                {
+                    Name = t.Name,
+                    TagId = t.ID,
+                }).ToList(),
+                NrOfLikes = x.Likes.Count,
+                NrOfComments = x.Comments.Count,
+            }).AsNoTracking().ToListAsync();
+
+            return cases;
+        }
+
+        public async Task<IList<CaseViewModel>> GetTrendingPosts()
+        {
+            using var _context = DbFactory.CreateDbContext();
+
+            List<CaseViewModel> cases = await _context.Cases.Where(x => x.UserId != null).Include(c => c.Tags).Select(x => new CaseViewModel()
+            {
+                ID = x.ID,
+                Description = x.Description,
+                Topic = x.Topic,
+                DateLastUpdated = x.DateLastUpdated,
+                PosterName = x.User.FullName,
+                PosterId = x.User.Id,
+                PosterSpeciality = x.User.MedicalSpecialty != null ? @EnumsHelper.GetDisplayName(x.User.MedicalSpecialty) : "",
+                PosterImg = x.User.ProfileUrl,
+                DateCreated = x.DateCreated,
+                Tags = x.Tags.Select(t => new CaseTagViewModel()
+                {
+                    Name = t.Name,
+                    TagId = t.ID,
+                }).ToList(),
+                NrOfLikes = x.Likes.Count,
+                NrOfComments = x.Comments.Count,
+            }).AsNoTracking().OrderByDescending(x => x.NrOfLikes).ThenByDescending(x => x.NrOfComments).Take(3).ToListAsync();
+
+            return cases;
         }
 
 

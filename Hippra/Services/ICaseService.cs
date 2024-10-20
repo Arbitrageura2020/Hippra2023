@@ -44,6 +44,8 @@ namespace Hippra.Services
         Task<bool> RemoveLike(string userId, long caseId);
         Task<Result> SaveCaseFile(Stream fileStream, long caseId, string fileName, string fileType, string userId);
         Task<FileDownloadResult> DownloadCaseFile(long id);
+        Task<IList<CaseViewModel>> GetExploreTopics(List<int> selectedTags);
+        Task<IList<CaseViewModel>> GetTrendingPosts();
 
         //comments
         Task<List<CaseCommentViewModel>> GetCommentsNoTracking(long caseId, string currentUserId);

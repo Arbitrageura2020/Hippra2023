@@ -5,7 +5,7 @@
 @using Hippra.Models.ViewModel
 @using Hippra.Services
 @inject IJSRuntime JSRuntime
-@inject HippraService hService
+@inject ICaseService caseService
 
 <div class="mb-3"><h3>Trending Clinical Cases</h3></div>
 
@@ -61,7 +61,7 @@ else
 
     private async Task GetSearchResults()
     {
-        SearchResults = await hService.GetTrendingPosts();
+        SearchResults = await caseService.GetTrendingPosts();
 
 
         IsLoading = false;

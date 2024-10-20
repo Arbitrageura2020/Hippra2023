@@ -7,7 +7,7 @@
 @using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Identity
 @inject IJSRuntime JSRuntime
-@inject HippraService hService
+@inject ICaseService caseService
 @inject UserManager<AppUser> UserManager
 @inject IHttpContextAccessor httpContextAccessor
 <div>
@@ -100,12 +100,10 @@
     //     //}
     // }
 
-
     private async Task GetSearchResults()
     {
-
         var selectedTags = new List<int>() { 7 };
-        SearchResults = await hService.GetExploreTopics(selectedTags);
+        SearchResults = await caseService.GetExploreTopics(selectedTags);
 
         IsLoading = false;
     }
