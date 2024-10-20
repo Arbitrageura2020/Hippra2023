@@ -1,0 +1,141 @@
+﻿@page "/dashboard"
+@layout MainLayout
+@using System.ComponentModel.DataAnnotations
+@using Hippra.Models.DTO
+@using Hippra.Models.ViewModel
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@using Hippra.Models.FTDesign
+@using Hippra.Services
+@using Hippra.Models.SQL
+@using Hippra.Models.Enums
+@using Hippra.Extensions
+@using Hippra.Pages.FTDesign.Features
+@using Hippra.Pages.FTDesign
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
+@inject IJSRuntime JSRuntime
+@*@inject SignInManager<AppUser> SignInManager
+	@inject UserManager<AppUser> UserManager*@
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject IHistoryLogService historyLogService;
+@inject ProfileService pService
+@inject HippraService hService
+@inject IAuthorizationService AuthorizationService
+@attribute [Authorize]
+<div class="dashboard-layout">
+    <div class="dashboard-left">
+        <!-- Left side content goes here -->
+
+
+        <div class="d-flex flex-column button-container">
+            <div class="mb-2"> <h2>Explore Healthcare Topics</h2></div>
+            <div>
+                <button class="btn btn-primary">Following</button>
+                <button class="btn btn-primary">Family Medicine</button>
+                <button class="btn btn-primary">Women's Health</button>
+                <button class="btn btn-primary">Pediatrics</button>
+                <button class="btn btn-primary">Rare Diseases</button>
+                <button class="btn btn-primary">+</button>
+            </div>
+        </div>
+        <br>
+
+
+        <!-- Topics -->
+        <ExploreTopics />
+
+    </div>
+    <!-- Topics end-->
+    <div class="dashboard-right d-flex flex-column">
+        <div class="dashboard-right-top d-flex flex-column p-3 ">
+            <TrendingTopics />
+        </div>
+        <div class="dashboard-right-bottom d-flex flex-column p-3">
+            <!-- Bottom right content goes here -->
+            <ExpertsToFollow />
+            <hr>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code {
+    [Parameter]
+    public int userId { get; set; } = -1; // public ID
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private AuthenticationState authState { get; set; }
+    private ClaimsPrincipal user { get; set; }
+    private IList<CaseViewModel> SearchResults { get; set; } = new List<CaseViewModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        authState = await authenticationStateTask;
+        user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            @*usr = await UserManager.GetUserAsync(user);*@
+
+            try
+            {
+                if (userId == -1)
+                {
+                    userId = Int32.Parse(user.Claims.FirstOrDefault(s => s.Type == "PublicId")?.Value);
+                }
+
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+
+            await GetSearchResults();
+
+
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //if (firstRender)
+        //{
+        //    var test = await JSRuntime.InvokeAsync<string>("blazorExtensions.SubscribeAnimalChange", "animalIcon");
+        //}
+    }
+
+
+    private async Task GetSearchResults()
+    {
+        SearchResults = new List<CaseViewModel>();
+
+
+    }
+
+    // ver 2
+    private async Task NavToCreateCase()
+    {
+        NavigationManager.NavigateTo("/createcase");
+    }
+
+
+}

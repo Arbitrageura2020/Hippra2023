@@ -1,5 +1,5 @@
-﻿@page "/dashboardindex"
-@layout MainLayout
+﻿@page "/"
+
 @using System.ComponentModel.DataAnnotations
 @using Hippra.Models.DTO
 @using Hippra.Models.ViewModel
@@ -16,66 +16,29 @@
 @using Hippra.Extensions
 @using Hippra.Pages.FTDesign.Features
 @using Hippra.Pages.FTDesign
-@using Hippra.Pages.Home
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor httpContextAccessor
 @inject IJSRuntime JSRuntime
 @*@inject SignInManager<AppUser> SignInManager
 	@inject UserManager<AppUser> UserManager*@
-@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
-@inject IHistoryLogService historyLogService;
+@inject NavigationManager NavigationManager
 @inject ProfileService pService
 @inject HippraService hService
+@inject IHistoryLogService historyLogService;
 @inject IAuthorizationService AuthorizationService
-@attribute [Authorize]
-<div class="dashboard-layout">
-    <div class="dashboard-left">
-        <!-- Left side content goes here -->
 
 
-        <div class="d-flex flex-column button-container">
-            <div class="mb-2"> <h2>Explore Healthcare Topics</h2></div>
-            <div>
-                <button class="btn btn-primary">Following</button>
-                <button class="btn btn-primary">Family Medicine</button>
-                <button class="btn btn-primary">Women's Health</button>
-                <button class="btn btn-primary">Pediatrics</button>
-                <button class="btn btn-primary">Rare Diseases</button>
-                <button class="btn btn-primary">+</button>
-            </div>
-        </div>
-        <br>
+<AuthorizeView>
+    <Authorized Context="HomeContext">
+        @* 	<DashboardIndex></DashboardIndex> *@
 
+    </Authorized>
+    <NotAuthorized>
+        @* <Landing></Landing> *@
 
-        <!-- Topics -->
-        <ExploreTopics />
-
-    </div>
-    <!-- Topics end-->
-    <div class="dashboard-right d-flex flex-column">
-        <div class="dashboard-right-top d-flex flex-column p-3 ">
-            <TrendingTopics />
-        </div>
-        <div class="dashboard-right-bottom d-flex flex-column p-3">
-            <!-- Bottom right content goes here -->
-            <ExpertsToFollow />
-            <hr>
-        </div>
-    </div>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
+    </NotAuthorized>
+</AuthorizeView>
 
 
 @code {
@@ -86,8 +49,7 @@
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private AuthenticationState authState { get; set; }
     private ClaimsPrincipal user { get; set; }
-    private IList<CaseViewModel> SearchResults { get; set; } = new List<CaseViewModel>();
-
+   
     protected override async Task OnInitializedAsync()
     {
         authState = await authenticationStateTask;
@@ -95,7 +57,7 @@
 
         if (user.Identity.IsAuthenticated)
         {
-            @*usr = await UserManager.GetUserAsync(user);*@
+          
 
             try
             {
@@ -111,11 +73,14 @@
             }
 
 
-            await GetSearchResults();
+            NavigationManager.NavigateTo("dashboard");
 
 
         }
+        else
+            NavigationManager.NavigateTo("landing");
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         //if (firstRender)
@@ -123,20 +88,5 @@
         //    var test = await JSRuntime.InvokeAsync<string>("blazorExtensions.SubscribeAnimalChange", "animalIcon");
         //}
     }
-
-
-    private async Task GetSearchResults()
-    {
-        SearchResults = new List<CaseViewModel>();
-
-
-    }
-
-    // ver 2
-    private async Task NavToCreateCase()
-    {
-        NavigationManager.NavigateTo("/createcase");
-    }
-
 
 }

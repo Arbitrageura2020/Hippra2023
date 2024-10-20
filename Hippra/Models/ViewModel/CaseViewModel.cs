@@ -1,7 +1,6 @@
 ﻿using Hippra.Extensions;
 using Hippra.Models.Enums;
 using Hippra.Models.SQL;
-using Hippra.Pages.Home;
 using System;
 using System.Collections.Generic;
 using System.Linq;
