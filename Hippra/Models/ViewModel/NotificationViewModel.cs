@@ -43,11 +43,19 @@ namespace Hippra.Models.ViewModel
                 var link = "#";
                 if (Type == NotificationType.AddedComment)
                 {
-                    link = "/viewcase/" + this.PostID;
+                    link = "/viewcase/" + this.PostID+"#comment"+this.CommentId;
+                }
+                if (Type == NotificationType.AddedUpVote)
+                {
+                    link = "/viewcase/" + this.PostID + "#comment" + this.CommentId;
                 }
                 if (Type == NotificationType.Followed)
                 {
                     link = "/profile/" + this.SenderUserID;
+                }
+                if (Type == NotificationType.PostLiked)
+                {
+                    link = "/viewcase/" + this.PostID;
                 }
                 return link;
             }

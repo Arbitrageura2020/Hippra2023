@@ -180,22 +180,14 @@
     {
         await notificationService.NotificationRead(notification.ID);
         notification.IsNotificationRead = true;
-        //  NavigationManager.NavigateTo(notification.NavigationLink);
+        NavigationManager.NavigateTo(notification.NavigationLink);
     }
-
-    // private async Task ClearNotification(PostHistory h)
-    // {
-    //     await hService.DeleteNotification(h.ID);
-    //     notificationList.Remove(h);
-    //     StateHasChanged();
-
-    // }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("notificationsScripts.setupNotificationsTabs");
+            await JSRuntime.InvokeVoidAsync("mainScripts.setupNotificationsTabs");
         }
     }
 

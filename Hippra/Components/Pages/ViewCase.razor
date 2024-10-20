@@ -14,7 +14,6 @@
 @using Hippra.Services
 @using Hippra.Models.SQL
 @using Hippra.Extensions
-@using Hippra.Pages.Common
 @using Hippra.Pages.FTDesign.Features
 @using Hippra.Pages.FTDesign
 @using Hippra.Pages.Home
@@ -69,7 +68,7 @@
                     <img src="@CaseItem.PosterImg" alt="">
                     <div class="case-profile-info">
                         <div>
-                            <h4><a href="/profile/@CaseItem.PosterId"></a>@CaseItem.PosterName</h4>
+                            <h4><a href="/profile/@CaseItem.PosterId">@CaseItem.PosterName</a></h4>
                             @if (!isOwner)
                             {
                                 @if (isFollowed)
@@ -191,20 +190,25 @@
         <section class="case-tabs">
             <div class="case-tab-top">
                 <div class="case-tab-left">
-                    <button class="case-tab-btn active" data-target="tab-case-one">
+                    <button class="case-tab-btn active" data-target="tab-case-one" data-tab="tab-case-one">
                         Current Treatment Administered
                     </button>
                 </div>
                 <div class="case-tab-right">
-                    <button class="case-tab-btn" data-target="tab-case-two">
+                    <button class="case-tab-btn" data-target="tab-case-two" data-tab="tab-case-two">
                         Treatment Outcomes
                     </button>
                 </div>
             </div>
             <!-- Current Treatment Administered Content -->
-            <div class="case-tab-content tab-case-one active">
+            <div class="case-tab-content tab-case-one active" id="tab-case-one" data-content="tab-case-one">
                 <p>
                     @CaseItem.CurrentTreatmentAdministered
+                </p>
+            </div>
+            <div class="case-tab-content tab-case-two" id="tab-case-two" data-content="tab-case-two">
+                <p>
+                    @CaseItem.TreatmentOutcomes
                 </p>
             </div>
         </section>
@@ -312,10 +316,9 @@
         // await JSRuntime.InvokeVoidAsync("InitCasePage");
         //}
 
-        if (firstRender)
-        {
+       
             await JSRuntime.InvokeVoidAsync("mainScripts.setupCasePageTabs");
-        }
+                 
     }
 
     protected override async Task OnInitializedAsync()
